@@ -1,0 +1,194 @@
+<Manager>:
+    MainWindow:
+    ScanWindow:
+    PatientDetails:
+        id: scn
+    ResponseWindow:
+
+
+<MainWindow>:
+    name: "Main"
+    BoxLayout:
+        orientation: "vertical"
+        BoxLayout:
+            size_hint_y: None
+            height: 50
+            canvas.before:
+                Color:
+                    rgba: (1,1,1,1)
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+            Label:
+                text: "ELECTRONIC BP MONITORING SYSTEM"
+                size_hint_x: .9
+                bold:True
+                color: (0,0,0,1)
+            Label:
+                text: "x"
+                color: (0,0,0,1)
+                size_hint_x: .1
+        Label:
+            id: sp1
+            size_hint_x: None
+            height: 40
+        Button:
+            text: "Click to Scan ID"
+            pos_hint: {"center_x": 0.5, "center_y": .5}
+            size_hint_x: .5
+            size_hint_y: None
+            color: (0,0,0,1)
+            background_color: (1,1,1,1)
+            background_normal: ""
+            height:50
+#            on_release:
+#                app.root.current = "Scan"
+#                root.manager.transition.direction = "left"
+
+        Label:
+            id: sp2
+
+<ScanWindow>:
+    name: "Scan"
+    on_enter:root.callback()
+    spacing: 10
+    BoxLayout:
+        orientation: "vertical"
+        spacing: 10
+        BoxLayout:
+            size_hint_y: None
+            height: 50
+            canvas.before:
+                Color:
+                    rgba: (1,1,1,1)
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+            Button:
+                text: "<-"
+                size_hint_x: .1
+                bold:True
+                color: (0,0,0,1)
+                on_release:
+                    app.root.current = "Main"
+                    root.manager.transition.direction = "right"
+
+
+            Label:
+                text: "CAPTURE DEMOGRAPHIC DATA"
+                color: (0,0,0,1)
+                size_hint_x: .9
+
+        Label:
+            text: "Scan the National ID below to capture demographic data of the client"
+            pos_hint: {"center_x": 0.5, "center_y": .5}
+            size_hint_x: .7
+            size_hint_y: None
+            color: (1,1,1,1)
+            background_color: (1,1,1,1)
+            background_normal: ""
+            height:50
+
+        Image:
+            source: "images/id.jpg"
+            size_hint: (.4, .7)
+            pos_hint: {"center_x": 0.5}
+
+
+        Image:
+            padding: 10
+            source: "images/index.png"
+            size_hint: (.4, .2)
+            pos_hint: {"center_x": 0.5}
+
+        TextInput:
+            id:Textinput
+            size_hint_x: 0.2
+            size_hint_y: None
+            height: 40
+            pos_hint: {"center_x": 0.5}
+
+        Label:
+            id: sp
+
+
+<PatientDetails>:
+    name: "Patient_Details"
+    natID: N_id
+    fName: f_name
+    gen: gender
+    dOB: dob
+    bloodP: bp
+    GridLayout:
+        cols: 1
+        Label:
+            text: "Capture BP Vitals"
+            size_hint: (.2, .2)
+        GridLayout:
+            cols:2
+            Label:
+                text: "ID:"
+                font_size: "20dp"
+            Label:
+                id: N_id
+                font_size: "25dp"
+            Label:
+                text: "Full name:"
+                font_size: "20dp"
+            Label:
+                id: f_name
+                font_size: "25dp"
+            Label:
+                text: "Gender"
+                font_size: "20dp"
+            Label:
+                id: gender
+                font_size: "25dp"
+            Label:
+                text: "Date Of Birth"
+                font_size: "20dp"
+            Label:
+                id: dob
+                font_size: "25dp"
+            Label:
+                text: ""
+            Label:
+                id: bp
+
+        Label:
+            text: "Press The Start Button on the Bp Machine to Start"
+            size_hint: (.2, .2)
+
+<ResponseWindow>:
+    name: "Response"
+    BoxLayout:
+        orientation: "vertical"
+        BoxLayout:
+            size_hint_y: None
+            height: 50
+            canvas.before:
+                Color:
+                    rgba: (1,1,1,1)
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+            Label:
+                text: "RESPONSE WINDOW"
+                size_hint_x: .9
+                bold:True
+                color: (0,0,0,1)
+            Label:
+                text: "x"
+                color: (0,0,0,1)
+                size_hint_x: .1
+        Label:
+            id: space
+        Button:
+            text: "Finish"
+            size_hint_x: .4
+            size_hint_y: None
+            height: 40
+            pos_hint: {"center_x": 0.5, "center_y":0.2}
+        Label:
+            id: bottom
+
