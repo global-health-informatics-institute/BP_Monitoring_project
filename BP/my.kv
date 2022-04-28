@@ -2,7 +2,6 @@
     MainWindow:
     ScanWindow:
     PatientDetails:
-        id: scn
     ResponseWindow:
 
 
@@ -41,17 +40,17 @@
             background_color: (1,1,1,1)
             background_normal: ""
             height:50
-#            on_release:
-#                app.root.current = "Scan"
-#                root.manager.transition.direction = "left"
+            on_release:
+                app.root.current = "Scan"
+                root.manager.transition.direction = "left"
+                root.manager.get_screen("Scan").ids["textFocus"].focus = True
 
         Label:
             id: sp2
 
 <ScanWindow>:
     name: "Scan"
-    on_enter:root.callback()
-    spacing: 10
+    spacing: 20
     BoxLayout:
         orientation: "vertical"
         spacing: 10
@@ -64,6 +63,7 @@
                 Rectangle:
                     size: self.size
                     pos: self.pos
+
             Button:
                 text: "<-"
                 size_hint_x: .1
@@ -102,11 +102,12 @@
             pos_hint: {"center_x": 0.5}
 
         TextInput:
-            id:Textinput
-            size_hint_x: 0.2
-            size_hint_y: None
-            height: 40
-            pos_hint: {"center_x": 0.5}
+            id: textFocus
+            size_hint: .6,.1
+            multiline: False
+            pos_hint: {"center_x": 0.5, "centre_y":0.7}
+            on_text_validate:
+                root.callback()
 
         Label:
             id: sp
@@ -192,3 +193,10 @@
         Label:
             id: bottom
 
+#<MainWindow>:
+#    BoxLayout:
+#        TextInput:
+#            size_hint: .6,.1
+#            multiline: False
+#            pos_hint: {"center_x": 0.5, "centre_y":0.5}
+#            focus: True
