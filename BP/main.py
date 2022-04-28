@@ -36,6 +36,11 @@ class ScanWindow(Screen):
             cur.execute("SELECT * FROM Patients WHERE id=%s", [N_id])
             record = cur.fetchall()
             if record:
+                self.manager.get_screen("Patient_Details").ids["N_id"].text = str(N_id)
+                self.manager.get_screen("Patient_Details").ids["f_name"].text = str(fname)
+                self.manager.get_screen("Patient_Details").ids["gender"].text = str(gender)
+                self.manager.get_screen("Patient_Details").ids["dob"].text = str(DOB)
+                self.manager.get_screen("Patient_Details").ids["bp"].text = str(BP)
                 self.parent.current = "Patient_Details"
 
             else:
@@ -43,12 +48,18 @@ class ScanWindow(Screen):
                             (N_id, fname, gender, DOB, BP))
                 db.commit()
                 db.close()
+                self.manager.get_screen("Patient_Details").ids["N_id"].text = str(N_id)
+                self.manager.get_screen("Patient_Details").ids["f_name"].text = str(fname)
+                self.manager.get_screen("Patient_Details").ids["gender"].text = str(gender)
+                self.manager.get_screen("Patient_Details").ids["dob"].text = str(DOB)
+                self.manager.get_screen("Patient_Details").ids["bp"].text = str(BP)
                 self.parent.current = "Patient_Details"
 
         else:
-            self.manager.get_screen("Scan").ids["textFocus"].text = ""
-            self.manager.get_screen("Scan").ids["textFocus"].text
+
             self.parent.current = "Scan"
+            self.manager.get_screen("Scan").ids["textFocus"].text = " "
+            self.manager.get_screen("Scan").ids["textFocus"].focus = True
 
 
 class PatientDetails(Screen):
