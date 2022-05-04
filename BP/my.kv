@@ -1,8 +1,9 @@
 <Manager>:
     MainWindow:
     ScanWindow:
-    PatientDetails:
     ResponseWindow:
+    PatientDetails:
+
 
 
 <MainWindow>:
@@ -23,10 +24,12 @@
                 size_hint_x: .9
                 bold:True
                 color: (0,0,0,1)
-            Label:
+            Button:
                 text: "x"
                 color: (0,0,0,1)
                 size_hint_x: .1
+                on_release:
+                    root.callback()
         Label:
             id: sp1
             size_hint_x: None
@@ -113,6 +116,7 @@
             id: sp
 
 
+
 <PatientDetails>:
     name: "Patient_Details"
     GridLayout:
@@ -154,9 +158,19 @@
         Label:
             text: "Press The Start Button on the Bp Machine to Start"
             size_hint: (.2, .2)
+        Button:
+            text: "PRESS ME"
+            size_hint_x: .4
+            size_hint_y: None
+            height: 40
+            pos_hint: {"center_x": 0.5, "center_y":0.2}
+            on_release:
+                root.generate_BP()
+                app.root.current = "Response"
 
 <ResponseWindow>:
     name: "Response"
+    on_enter: root.compose_response()
     BoxLayout:
         orientation: "vertical"
         BoxLayout:
@@ -173,12 +187,18 @@
                 size_hint_x: .9
                 bold:True
                 color: (0,0,0,1)
-            Label:
-                text: "x"
+            Button:
+                text: "X"
                 color: (0,0,0,1)
                 size_hint_x: .1
-        Label:
-            id: space
+                on_release:
+                    root.callback()
+        TextInput:
+            multiline: True
+            id: response
+            size_hint: .6, .5
+            pos_hint: {"center_x":0.5}
+
         Button:
             text: "Finish"
             size_hint_x: .4
