@@ -128,28 +128,32 @@
             cols:2
             Label:
                 text: "ID:"
-                font_size: "20dp"
+                font_size: "15dp"
             Label:
                 id: N_id
-                font_size: "25dp"
+                font_size: "15dp"
+                bold:True
             Label:
                 text: "Full name:"
-                font_size: "20dp"
+                font_size: "15dp"
             Label:
                 id: f_name
-                font_size: "25dp"
+                font_size: "15dp"
+                bold:True
             Label:
                 text: "Gender"
-                font_size: "20dp"
+                font_size: "15dp"
             Label:
                 id: gender
-                font_size: "25dp"
+                font_size: "15dp"
+                bold:True
             Label:
                 text: "Date Of Birth"
-                font_size: "20dp"
+                font_size: "15dp"
             Label:
                 id: dob
-                font_size: "25dp"
+                font_size: "15dp"
+                bold:True
             Label:
                 text: ""
             Label:
@@ -193,19 +197,46 @@
                 size_hint_x: .1
                 on_release:
                     root.callback()
+
+        Label:
+            text: "Response"
+            size_hint: .2,.4
+            pos_hint: {"center_x": 0.5}
+
         TextInput:
             multiline: True
             id: response
-            font_size: 32
+            font_size: 20
             size_hint: .6, .5
             pos_hint: {"center_x":0.5}
 
+        Label:
+            text: "Recommendation"
+            size_hint: .2,.4
+            pos_hint: {"center_x":0.5}
+
+
+        TextInput:
+            multiline: True
+            id: comment
+            font_size: 20
+            size_hint: .7, .5
+            pos_hint: {"center_x":0.5}
+
+        Label:
+            size_hint:.2,.4
+            pos_hint:{"center_x": 0.5}
+
         Button:
             text: "Finish"
+            padding:  [20,10]
             size_hint_x: .4
             size_hint_y: None
             height: 40
             pos_hint: {"center_x": 0.5, "center_y":0.2}
+            on_release:
+                app.root.current = "Main"
+
         Label:
             id: bottom
 
