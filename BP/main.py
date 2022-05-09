@@ -50,7 +50,6 @@ class ScanWindow(Screen):
                 cur.execute("INSERT INTO Demographic (id, Full_name, Gender, DOB) VALUES (%s, %s, %s, %s) ",
                             (N_id, fname, gender, DOB))
                 db.commit()
-                db.close()
                 self.manager.get_screen("Patient_Details").ids["N_id"].text = str(N_id)
                 self.manager.get_screen("Patient_Details").ids["f_name"].text = str(fname)
                 self.manager.get_screen("Patient_Details").ids["gender"].text = str(gender)
@@ -69,11 +68,11 @@ class PatientDetails(Screen):
         N_id = self.manager.get_screen("Patient_Details").ids["N_id"].text
         systolic = random.randint(8, 170)
         diastolic = random.randint(6, 120)
+        print(systolic)
+        print(diastolic)
         cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg) VALUES (%s,%s, %s) ",
                     (N_id, systolic, diastolic))
         db.commit()
-        print(diastolic)
-        print(N_id)
 
 
 class ResponseWindow(Screen):
@@ -91,7 +90,7 @@ class ResponseWindow(Screen):
         previous_BPdia = int()
 
         for row in rows:
-            N_id = row[0]
+            N_id = self.manager.get_screen("Patient_Details").ids["N_id"].text
 
         cur.execute("SELECT sys_mmHg, dia_mmHg  FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 0,1", [N_id])
         rows = cur.fetchall()
@@ -103,46 +102,39 @@ class ResponseWindow(Screen):
         for row in rows:
             current_BPsys = int(row[0])
             current_BPdia = int(row[1])
-        print(current_BPsys)
-        print(current_BPdia)
 
         # Response
         if current_BPsys > 1 and current_BPdia > 1:
 
             if (current_BPsys < 120) and (current_BPdia < 80):
                 recommendation = "Your BP is: " + str(current_BPsys) + "/" + str(
-                    current_BPdia) + "\nYour Blood pressure is normal"
+                    current_BPdia) + "\n\nYour Blood pressure is normal"
                 self.manager.get_screen("Response").ids["response"].text = recommendation
 
             elif (current_BPsys in range(121, 128)) and (current_BPdia < 80):
                 recommendation = "Your BP is: " + str(current_BPsys) + "/" + str(
-                    current_BPdia) + " \nYour BP is elevated. See clinician within a month"
+                    current_BPdia) + " \n\nYour BP is elevated. See clinician within a month"
                 self.manager.get_screen("Response").ids["response"].text = recommendation
 
             elif (current_BPsys in range(129, 139)) or (current_BPdia in range(81, 89)):
                 recommendation = "Your BP is: " + str(current_BPsys) + "/" + str(
-                    current_BPdia) + " \nYou have hypertension (Stage one)..See a clinician soon"
+                    current_BPdia) + " \n\nYou have hypertension (Stage one)..See a clinician soon"
                 self.manager.get_screen("Response").ids["response"].text = recommendation
 
             elif (current_BPsys >= 140) or (current_BPdia > 90):
                 recommendation = " Your BP is: " + str(current_BPsys) + "/" + str(
-                    current_BPdia) + "\nHigh Blood Pressure..visit a doctor in a week"
+                    current_BPdia) + "\n\nHigh Blood Pressure..visit a doctor in a week"
                 self.manager.get_screen("Response").ids["response"].text = recommendation
 
             elif (current_BPsys > 180) or (current_BPdia > 120):
                 recommendation = " Your BP is: " + str(current_BPsys) + "/" + str(
-                    current_BPdia) + "\nHigh Blood Pressure..visit a doctor in a now"
+                    current_BPdia) + "\n\nHigh Blood Pressure..visit a doctor in a now"
                 self.manager.get_screen("Response").ids["response"].text = recommendation
             else:
                 pass
 
         else:
-
-            bp = "Your BP is: " + str(current_BPsys) + "/" + str(
-                current_BPdia)
-            comment = "Your Blood Pressure has been recorded successfully"
-            self.manager.get_screen("Response").ids["response"].text = bp
-            self.manager.get_screen("Response").ids["comment"].text = comment
+            pass
 
         # Comparison
 
@@ -150,22 +142,16 @@ class ResponseWindow(Screen):
         rows = cur.fetchall()
         for row in rows:
             if len(str(row[0])) < 1 or len(str(row[1])) < 1:
-
-                bp = "Your BP is: " + str(current_BPsys) + "/" + str(
-                    current_BPdia)
-                comment = "You do not have any history record. Your Blood Pressure has been recorded successfully"
-                self.manager.get_screen("Response").ids["response"].text = bp
-                self.manager.get_screen("Response").ids["comment"].text = comment
+                pass
 
             else:
                 previous_BPsys = int(row[0])
                 previous_BPdia = int(row[1])
 
-                print(previous_BPdia)
                 print(previous_BPsys)
-                print(current_BPdia)
+                print(previous_BPdia)
                 print(current_BPsys)
-
+                print(current_BPdia)
                 if previous_BPsys > 1 and previous_BPdia > 1:
 
                     if (previous_BPsys > current_BPsys) and (previous_BPdia > current_BPdia):
@@ -190,7 +176,7 @@ class Manager(ScreenManager):
 class MyApp(App):
     def build(self):
         Window.clearcolor = (0, 0, 1, 1)
-        Window.borderless = True
+        # Window.borderless = True
         # Window.custom_titlebar = True
 
         return Manager()
