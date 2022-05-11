@@ -2,7 +2,7 @@ from kivy.app import App
 import mysql.connector as mysql
 from kivy.uix.screenmanager import Screen, ScreenManager
 from kivy.core.window import Window
-import random
+import serial
 
 Window.size = (480, 800)
 
@@ -66,13 +66,26 @@ class ScanWindow(Screen):
 class PatientDetails(Screen):
     def generate_BP(self):
         N_id = self.manager.get_screen("Patient_Details").ids["N_id"].text
-        systolic = random.randint(8, 170)
-        diastolic = random.randint(6, 120)
-        print(systolic)
-        print(diastolic)
-        cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg) VALUES (%s,%s, %s) ",
-                    (N_id, systolic, diastolic))
-        db.commit()
+        serialPort = serial.Serial("/dev/ttyUSB0", baudrate=9600, timeout=0.5, bytesize=8, stopbits=serial.STOPBITS_ONE)
+        serialData = ""
+        m = True
+
+        while m:
+            if serialPort.inWaiting() > 0:
+                serialData = serialPort.readall()
+                data = str(serialData.decode('ASCII'))
+                BP = list(data)
+                if len(data) == 10:
+                    dia_mmHg = int(BP[4] + BP[5], 16)
+                    x = int(BP[2] + BP[3], 16)
+                    sys_mmHg = dia_mmHg + x
+
+                    print(sys_mmHg)
+                    print(dia_mmHg)
+                    cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg) VALUES (%s,%s, %s) ",
+                                (N_id, sys_mmHg, dia_mmHg))
+                    db.commit()
+                m = False
 
 
 class ResponseWindow(Screen):
@@ -176,7 +189,7 @@ class Manager(ScreenManager):
 class MyApp(App):
     def build(self):
         Window.clearcolor = (0, 0, 1, 1)
-        # Window.borderless = True
+        Window.borderless = True
         # Window.custom_titlebar = True
 
         return Manager()
