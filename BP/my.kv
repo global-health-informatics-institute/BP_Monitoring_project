@@ -15,7 +15,7 @@
             height: 50
             canvas.before:
                 Color:
-                    rgba: (1,1,1,1)
+                    rgba: (210/255,210/255,207/255,1)
                 Rectangle:
                     size: self.size
                     pos: self.pos
@@ -25,8 +25,11 @@
                 bold:True
                 color: (0,0,0,1)
             Button:
-                text: "x"
+                text: "X"
                 color: (0,0,0,1)
+                bold: True
+                background_normal: ""
+                background_color: (210/255,210/255,207/255,1)
                 size_hint_x: .1
                 on_release:
                     root.callback()
@@ -35,12 +38,13 @@
             size_hint_x: None
             height: 40
         Button:
+            bold: True
             text: "Click to Scan ID"
             pos_hint: {"center_x": 0.5, "center_y": .5}
             size_hint_x: .5
             size_hint_y: None
             color: (0,0,0,1)
-            background_color: (1,1,1,1)
+            background_color: (210/255,210/255,207/255,1)
             background_normal: ""
             height:50
             on_release:
@@ -62,7 +66,7 @@
             height: 50
             canvas.before:
                 Color:
-                    rgba: (1,1,1,1)
+                    rgba: (210/255,210/255,207/255,1)
                 Rectangle:
                     size: self.size
                     pos: self.pos
@@ -72,6 +76,8 @@
                 size_hint_x: .1
                 bold:True
                 color: (0,0,0,1)
+                background_color: (210/255,210/255,207/255,1)
+                background_normal: ""
                 on_release:
                     app.root.current = "Main"
                     root.manager.transition.direction = "right"
@@ -81,31 +87,29 @@
                 text: "CAPTURE DEMOGRAPHIC DATA"
                 color: (0,0,0,1)
                 size_hint_x: .9
+                bold: True
 
         Label:
-            text: "Scan the National ID below to capture demographic data of the client"
+            text: "Scan National id to capture demographic data"
+            font_size:20
             pos_hint: {"center_x": 0.5, "center_y": .5}
             size_hint_x: .7
             size_hint_y: None
-            color: (1,1,1,1)
+            color: (0,0,0,1)
             background_color: (1,1,1,1)
             background_normal: ""
             height:50
 
         Image:
-            source: "images/id.jpg"
-            size_hint: (.4, .7)
-            pos_hint: {"center_x": 0.5}
-
-
-        Image:
-            padding: 10
-            source: "images/index.png"
-            size_hint: (.4, .2)
+            source: "images/id.jpeg"
+            size_hint: (.5, .6)
             pos_hint: {"center_x": 0.5}
 
         TextInput:
             id: textFocus
+            opacity: 0
+            cursor_blink: False
+            cursor_color: (210/255,210/255,207/255,1)
             size_hint: .6,.1
             multiline: False
             pos_hint: {"center_x": 0.5, "centre_y":0.7}
@@ -113,55 +117,134 @@
                 root.callback()
 
         Label:
-            id: sp
+            id: ss
+
+        Image:
+            padding: 10
+            source: "images/index.png"
+            size_hint: (.5, .3)
+            pos_hint: {"center_x": 0.5}
+
 
 
 
 <PatientDetails>:
     name: "Patient_Details"
-    GridLayout:
-        cols: 1
-        Label:
-            text: "Capture BP Vitals"
-            size_hint: (.2, .2)
+    BoxLayout:
+        orientation: "vertical"
+        BoxLayout:
+            size_hint_y: None
+            height: 50
+            canvas.before:
+                Color:
+                    rgba: (210/255,210/255,207/255,1)
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+            Label:
+                text: "CAPTURE BP VITALS"
+                size_hint_x: 1
+                bold:True
+                color: (0,0,0,1)
+                background_normal: ""
+                background_color: (210/255,210/255,207/255,1)
         GridLayout:
-            cols:2
-            Label:
-                text: "ID:"
-                font_size: "15dp"
-            Label:
-                id: N_id
-                font_size: "15dp"
-                bold:True
-            Label:
-                text: "Full name:"
-                font_size: "15dp"
-            Label:
-                id: f_name
-                font_size: "15dp"
-                bold:True
-            Label:
-                text: "Gender"
-                font_size: "15dp"
-            Label:
-                id: gender
-                font_size: "15dp"
-                bold:True
-            Label:
-                text: "Date Of Birth"
-                font_size: "15dp"
-            Label:
-                id: dob
-                font_size: "15dp"
-                bold:True
-            Label:
-                text: ""
-            Label:
-                id: bp
+            cols: 1
+            GridLayout:
+                cols:2
+                Label:
+                    color: (0,0,0,1)
+                    text: "ID:"
+                    font_size: "15dp"
+                    text_size: self.size
+                    halign: "left"
+                    valign: "middle"
+                    padding_x: 20
 
-        Label:
-            text: "Press The Start Button on the Bp Machine to Start"
-            size_hint: (.2, .2)
+                Label:
+                    color: (0,0,0,1)
+                    id: N_id
+                    font_size: "15dp"
+                    bold:True
+                    text_size: self.size
+                    halign: "left"
+                    valign: "middle"
+                Label:
+                    text: "Full name:"
+                    font_size: "15dp"
+                    color: (0,0,0,1)
+                    text_size: self.size
+                    halign: "left"
+                    valign: "middle"
+                    padding_x: 20
+                Label:
+                    id: f_name
+                    font_size: "15dp"
+                    bold:True
+                    color: (0,0,0,1)
+                    text_size: self.size
+                    halign: "left"
+                    valign: "middle"
+                Label:
+                    text: "Gender"
+                    font_size: "15dp"
+                    color: (0,0,0,1)
+                    text_size: self.size
+                    halign: "left"
+                    valign: "middle"
+                    padding_x: 20
+                Label:
+                    id: gender
+                    font_size: "15dp"
+                    bold:True
+                    color: (0,0,0,1)
+                    text_size: self.size
+                    halign: "left"
+                    valign: "middle"
+                Label:
+                    text: "Date Of Birth"
+                    font_size: "15dp"
+                    color: (0,0,0,1)
+                    text_size: self.size
+                    halign: "left"
+                    valign: "middle"
+                    padding_x: 20
+                Label:
+                    id: dob
+                    font_size: "15dp"
+                    bold:True
+                    color: (0,0,0,1)
+                    text_size: self.size
+                    halign: "left"
+                    valign: "middle"
+                Label:
+                    id:bp
+                    color: (0,0,0,1)
+                    text_size: self.size
+                    halign: "left"
+                    valign: "middle"
+                    padding_x: 20
+                Label:
+                    id: bpValue
+                    color: (0,0,0,1)
+                    text: "Waiting for BP Vitals..."
+                    text_size: self.size
+                    halign: "left"
+                    valign: "middle"
+
+            Label:
+                text: "Press The Start Button on the Bp Machine to Start"
+                size_hint: (.2, .2)
+                color: (0,0,0,1)
+
+        Button:
+            text: "Restart"
+            padding:  [20,10]
+            size_hint_x: .4
+            size_hint_y: None
+            height: 40
+            pos_hint: {"center_x": 0.5, "center_y":0.2}
+
         Button:
             text: "PRESS ME"
             size_hint_x: .4

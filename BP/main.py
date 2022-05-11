@@ -36,7 +36,6 @@ class ScanWindow(Screen):
 
             gender = val[8]
             DOB = val[9]
-            BP = 0
             cur.execute("SELECT * FROM Demographic WHERE id=%s", [N_id])
             record = cur.fetchall()
             if record:
@@ -69,7 +68,6 @@ class PatientDetails(Screen):
         serialPort = serial.Serial("/dev/ttyUSB0", baudrate=9600, timeout=0.5, bytesize=8, stopbits=serial.STOPBITS_ONE)
         serialData = ""
         m = True
-
         while m:
             if serialPort.inWaiting() > 0:
                 serialData = serialPort.readall()
@@ -188,7 +186,7 @@ class Manager(ScreenManager):
 
 class MyApp(App):
     def build(self):
-        Window.clearcolor = (0, 0, 1, 1)
+        Window.clearcolor = (248/255, 247/255, 255/255, 1)
         Window.borderless = True
         # Window.custom_titlebar = True
 
