@@ -4,8 +4,6 @@
     ResponseWindow:
     PatientDetails:
 
-
-
 <MainWindow>:
     name: "Main"
     BoxLayout:
@@ -118,6 +116,13 @@
 
         Label:
             id: ss
+        Label:
+            text: "Insert id here"
+            size_hint_x: .7
+            size_hint_y: None
+            height: 40
+            pos_hint: {"center_x": 0.5, "center_y": .5}
+            color: (0,0,0,1)
 
         Image:
             padding: 10
@@ -130,6 +135,9 @@
 
 <PatientDetails>:
     name: "Patient_Details"
+    on_enter:
+        root.generate_BP()
+
     BoxLayout:
         orientation: "vertical"
         BoxLayout:
@@ -222,6 +230,9 @@
                     color: (0,0,0,1)
                     text_size: self.size
                     halign: "left"
+                    text: "BP"
+                    bold: True
+                    font_size: "15dp"
                     valign: "middle"
                     padding_x: 20
                 Label:
@@ -229,6 +240,8 @@
                     color: (0,0,0,1)
                     text: "Waiting for BP Vitals..."
                     text_size: self.size
+                    bold: True
+                    font_size: "17dp"
                     halign: "left"
                     valign: "middle"
 
@@ -236,24 +249,35 @@
                 text: "Press The Start Button on the Bp Machine to Start"
                 size_hint: (.2, .2)
                 color: (0,0,0,1)
-
-        Button:
-            text: "Restart"
-            padding:  [20,10]
-            size_hint_x: .4
+        BoxLayout:
             size_hint_y: None
             height: 40
-            pos_hint: {"center_x": 0.5, "center_y":0.2}
+            padding: 50
+            spacing: 100
+            Button:
+                text: "Restart"
+                padding:  [20,10]
+                size_hint_x: .2
+                size_hint_y: None
+                height: 40
+                pos_hint: {"center_x": 0.5, "center_y":0.2}
+                on_release:
+#                    app.restart()
+                    app.root.current = "Main"
+                    root.manager.transition.direction = "right"
 
-        Button:
-            text: "PRESS ME"
-            size_hint_x: .4
-            size_hint_y: None
-            height: 40
-            pos_hint: {"center_x": 0.5, "center_y":0.2}
-            on_release:
-                root.generate_BP()
-                app.root.current = "Response"
+            Button:
+                id: recommend
+                text: "Recommendation"
+                size_hint_x: .2
+                size_hint_y: None
+                opacity: 0
+                height: 40
+                pos_hint: {"center_x": 0.5, "center_y":0.2}
+                on_release:
+                    app.root.current = "Response"
+
+
 
 <ResponseWindow>:
     name: "Response"
@@ -265,7 +289,7 @@
             height: 50
             canvas.before:
                 Color:
-                    rgba: (1,1,1,1)
+                    rgba: (210/255,210/255,207/255,1)
                 Rectangle:
                     size: self.size
                     pos: self.pos
@@ -277,6 +301,8 @@
             Button:
                 text: "X"
                 color: (0,0,0,1)
+                background_color: (210/255,210/255,207/255,1)
+                background_normal: ""
                 size_hint_x: .1
                 on_release:
                     root.callback()
@@ -284,6 +310,7 @@
         Label:
             text: "Response"
             bold: True
+            color: (0,0,0,1)
             size_hint: .2,.4
             pos_hint: {"center_x": 0.5}
 
@@ -298,6 +325,7 @@
             text: "Recommendation"
             bold: True
             size_hint: .2,.4
+            color: (0,0,0,1)
             pos_hint: {"center_x":0.5}
 
 

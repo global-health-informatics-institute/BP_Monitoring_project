@@ -4,6 +4,8 @@ from kivy.uix.screenmanager import Screen, ScreenManager
 from kivy.core.window import Window
 import serial
 
+# import sys, os
+
 Window.size = (480, 800)
 
 db = mysql.connect(
@@ -67,6 +69,7 @@ class PatientDetails(Screen):
         N_id = self.manager.get_screen("Patient_Details").ids["N_id"].text
         serialPort = serial.Serial("/dev/ttyUSB0", baudrate=9600, timeout=0.5, bytesize=8, stopbits=serial.STOPBITS_ONE)
         serialData = ""
+        bp = ""
         m = True
         while m:
             if serialPort.inWaiting() > 0:
@@ -83,6 +86,10 @@ class PatientDetails(Screen):
                     cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg) VALUES (%s,%s, %s) ",
                                 (N_id, sys_mmHg, dia_mmHg))
                     db.commit()
+                    bp = str(sys_mmHg) + "/" + str(dia_mmHg)
+                    self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
+                    self.manager.get_screen("Patient_Details").ids["recommend"].opacity = 1
+
                 m = False
 
 
@@ -186,11 +193,16 @@ class Manager(ScreenManager):
 
 class MyApp(App):
     def build(self):
-        Window.clearcolor = (248/255, 247/255, 255/255, 1)
-        Window.borderless = True
+        Window.clearcolor = (248 / 255, 247 / 255, 255 / 255, 1)
+        # Window.borderless = True
         # Window.custom_titlebar = True
 
         return Manager()
+
+    # @staticmethod
+    # def restart():
+    #     print(f'exec: {sys.executable} {["python"] + sys.argv}')
+    #     os.execvp(sys.executable, ['python'] + sys.argv)
 
 
 if __name__ == "__main__":
