@@ -10,7 +10,7 @@
         orientation: "vertical"
         BoxLayout:
             size_hint_y: None
-            height: 50
+            height: 80
             canvas.before:
                 Color:
                     rgba: (210/255,210/255,207/255,1)
@@ -19,18 +19,11 @@
                     pos: self.pos
             Label:
                 text: "ELECTRONIC BP MONITORING SYSTEM"
-                size_hint_x: .9
+                size_hint_x: 1
+                font_size: 18
                 bold:True
                 color: (0,0,0,1)
-            Button:
-                text: "X"
-                color: (0,0,0,1)
-                bold: True
-                background_normal: ""
-                background_color: (210/255,210/255,207/255,1)
-                size_hint_x: .1
-                on_release:
-                    root.callback()
+
         Label:
             id: sp1
             size_hint_x: None
@@ -38,6 +31,7 @@
         Button:
             bold: True
             text: "Click to Scan ID"
+            font_size: 15
             pos_hint: {"center_x": 0.5, "center_y": .5}
             size_hint_x: .5
             size_hint_y: None
@@ -61,7 +55,7 @@
         spacing: 10
         BoxLayout:
             size_hint_y: None
-            height: 50
+            height: 80
             canvas.before:
                 Color:
                     rgba: (210/255,210/255,207/255,1)
@@ -71,7 +65,8 @@
 
             Button:
                 text: "<-"
-                size_hint_x: .1
+                size_hint_x: .2
+                font_size: 18
                 bold:True
                 color: (0,0,0,1)
                 background_color: (210/255,210/255,207/255,1)
@@ -84,11 +79,12 @@
             Label:
                 text: "CAPTURE DEMOGRAPHIC DATA"
                 color: (0,0,0,1)
-                size_hint_x: .9
+                size_hint_x: .8
                 bold: True
+                font_size: 18
 
         Label:
-            text: "Scan National id to capture demographic data"
+            text: "Scan National ID to capture demographic data"
             font_size:20
             pos_hint: {"center_x": 0.5, "center_y": .5}
             size_hint_x: .7
@@ -100,7 +96,7 @@
 
         Image:
             source: "images/id.jpeg"
-            size_hint: (.5, .6)
+            size_hint: (.7, .8)
             pos_hint: {"center_x": 0.5}
 
         TextInput:
@@ -117,7 +113,8 @@
         Label:
             id: ss
         Label:
-            text: "Insert id here"
+            text: "Insert ID here"
+            bold: True
             size_hint_x: .7
             size_hint_y: None
             height: 40
@@ -142,7 +139,7 @@
         orientation: "vertical"
         BoxLayout:
             size_hint_y: None
-            height: 50
+            height: 80
             canvas.before:
                 Color:
                     rgba: (210/255,210/255,207/255,1)
@@ -231,7 +228,6 @@
                     text_size: self.size
                     halign: "left"
                     text: "BP"
-                    bold: True
                     font_size: "15dp"
                     valign: "middle"
                     padding_x: 20
@@ -286,7 +282,7 @@
         orientation: "vertical"
         BoxLayout:
             size_hint_y: None
-            height: 50
+            height: 80
             canvas.before:
                 Color:
                     rgba: (210/255,210/255,207/255,1)
@@ -295,17 +291,10 @@
                     pos: self.pos
             Label:
                 text: "RESPONSE WINDOW"
-                size_hint_x: .9
+                font_size: 18
+                size_hint_x: 1
                 bold:True
                 color: (0,0,0,1)
-            Button:
-                text: "X"
-                color: (0,0,0,1)
-                background_color: (210/255,210/255,207/255,1)
-                background_normal: ""
-                size_hint_x: .1
-                on_release:
-                    root.callback()
 
         Label:
             text: "Response"
@@ -352,4 +341,3 @@
 
         Label:
             id: bottom
-
