@@ -44,6 +44,7 @@ class ScanWindow(Screen):
                 self.manager.get_screen("Patient_Details").ids["f_name"].text = str(fname)
                 self.manager.get_screen("Patient_Details").ids["gender"].text = str(gender)
                 self.manager.get_screen("Patient_Details").ids["dob"].text = str(DOB)
+                self.manager.transition.direction = "left"
                 self.parent.current = "Patient_Details"
 
             else:
@@ -54,6 +55,7 @@ class ScanWindow(Screen):
                 self.manager.get_screen("Patient_Details").ids["f_name"].text = str(fname)
                 self.manager.get_screen("Patient_Details").ids["gender"].text = str(gender)
                 self.manager.get_screen("Patient_Details").ids["dob"].text = str(DOB)
+                self.manager.transition.direction = "left"
                 self.parent.current = "Patient_Details"
 
         else:
@@ -96,7 +98,7 @@ class PatientDetails(Screen):
                 m = False
 
     def enter(self):
-        self.manager.get_screen("Patient_Details").ids["recommend"].opacity = 0
+        # self.manager.get_screen("Patient_Details").ids["recommend"].opacity = 0
         self.manager.get_screen("Patient_Details").ids["bpValue"].text = "Waiting for BP vitals..."
 
 
