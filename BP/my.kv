@@ -39,7 +39,7 @@
             background_color: (210/255,210/255,207/255,1)
             background_normal: ""
             height:50
-            on_release:
+            on_press:
                 app.root.current = "Scan"
                 root.manager.transition.direction = "left"
                 root.manager.get_screen("Scan").ids["textFocus"].focus = True
@@ -50,6 +50,8 @@
 <ScanWindow>:
     name: "Scan"
     spacing: 20
+    on_enter:
+        root.enter()
     BoxLayout:
         orientation: "vertical"
         spacing: 10
@@ -71,7 +73,7 @@
                 color: (0,0,0,1)
                 background_color: (210/255,210/255,207/255,1)
                 background_normal: ""
-                on_release:
+                on_press:
                     app.root.current = "Main"
                     root.manager.transition.direction = "right"
 
@@ -101,7 +103,7 @@
 
         TextInput:
             id: textFocus
-            opacity: 0
+            opacity: 1
             cursor_blink: False
             cursor_color: (210/255,210/255,207/255,1)
             size_hint: .6,.1
@@ -257,9 +259,9 @@
                 size_hint_y: None
                 height: 40
                 pos_hint: {"center_x": 0.5, "center_y":0.2}
-                on_release:
-#                    app.restart()
-                    app.root.current = "Main"
+                on_press:
+                    root.enter()
+                    app.root.current = "Scan"
                     root.manager.transition.direction = "right"
 
             Button:
@@ -270,7 +272,7 @@
                 opacity: 0
                 height: 40
                 pos_hint: {"center_x": 0.5, "center_y":0.2}
-                on_release:
+                on_press:
                     app.root.current = "Response"
 
 
@@ -336,7 +338,7 @@
             size_hint_y: None
             height: 40
             pos_hint: {"center_x": 0.5, "center_y":0.2}
-            on_release:
+            on_press:
                 app.root.current = "Main"
 
         Label:

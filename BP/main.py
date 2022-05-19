@@ -18,12 +18,11 @@ cur = db.cursor()
 
 
 class MainWindow(Screen):
-    def callback(self):
-        App.stop(self)
-        Window.close()
+    pass
 
 
 class ScanWindow(Screen):
+
     def callback(self):
         name = self.manager.get_screen("Scan").ids["textFocus"].text
         val = name.split('~')
@@ -63,6 +62,10 @@ class ScanWindow(Screen):
             self.manager.get_screen("Scan").ids["textFocus"].text = " "
             self.manager.get_screen("Scan").ids["textFocus"].focus = True
 
+    def enter(self):
+        self.manager.get_screen("Scan").ids["textFocus"].text = " "
+        self.manager.get_screen("Scan").ids["textFocus"].focus = True
+
 
 class PatientDetails(Screen):
     def generate_BP(self):
@@ -91,6 +94,10 @@ class PatientDetails(Screen):
                     self.manager.get_screen("Patient_Details").ids["recommend"].opacity = 1
 
                 m = False
+
+    def enter(self):
+        self.manager.get_screen("Patient_Details").ids["recommend"].opacity = 0
+        self.manager.get_screen("Patient_Details").ids["bpValue"].text = "Waiting for BP vitals..."
 
 
 class ResponseWindow(Screen):
@@ -195,6 +202,7 @@ class MyApp(App):
     def build(self):
         Window.clearcolor = (248 / 255, 247 / 255, 255 / 255, 1)
         # Window.borderless = True
+        # Window.fullscreen = 'auto'
         # Window.custom_titlebar = True
 
         return Manager()
