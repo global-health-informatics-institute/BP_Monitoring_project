@@ -1,3 +1,4 @@
+from gpiozero import LED
 from kivy.app import App
 import mysql.connector as mysql
 from kivy.uix.screenmanager import Screen, ScreenManager
@@ -18,7 +19,9 @@ cur = db.cursor()
 
 
 class MainWindow(Screen):
-    pass
+    def On_LED(self):
+        led = LED(6)
+        led.on()
 
 
 class ScanWindow(Screen):
@@ -68,6 +71,10 @@ class ScanWindow(Screen):
         self.manager.get_screen("Scan").ids["textFocus"].text = " "
         self.manager.get_screen("Scan").ids["textFocus"].focus = True
 
+    def Off_LED(self):
+        led = LED(6)
+        led.off()
+
 
 class PatientDetails(Screen):
     def generate_BP(self):
@@ -93,13 +100,16 @@ class PatientDetails(Screen):
                     db.commit()
                     bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                     self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
-                    self.manager.get_screen("Patient_Details").ids["recommend"].opacity = 1
+                    self.parent.current = "Response"
 
                 m = False
 
     def enter(self):
-        # self.manager.get_screen("Patient_Details").ids["recommend"].opacity = 0
         self.manager.get_screen("Patient_Details").ids["bpValue"].text = "Waiting for BP vitals..."
+
+    def On_LED(self):
+        led = LED(6)
+        led.on()
 
 
 class ResponseWindow(Screen):
