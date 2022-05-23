@@ -19,9 +19,7 @@ cur = db.cursor()
 
 
 class MainWindow(Screen):
-    def On_LED(self):
-        led = LED(6)
-        led.on()
+    pass
 
 
 class ScanWindow(Screen):
@@ -71,6 +69,10 @@ class ScanWindow(Screen):
         self.manager.get_screen("Scan").ids["textFocus"].text = " "
         self.manager.get_screen("Scan").ids["textFocus"].focus = True
 
+    def On_LED(self):
+        led = LED(6)
+        led.on()
+
     def Off_LED(self):
         led = LED(6)
         led.off()
@@ -116,6 +118,9 @@ class ResponseWindow(Screen):
     def callback(self):
         App.stop(self)
         Window.close()
+
+    def enter(self):
+        self.manager.get_screen("Patient_Details").ids["bpValue"].text = "Waiting for BP vitals..."
 
     def compose_response(self):
         cur.execute("SELECT id FROM vitals LIMIT 0,1")

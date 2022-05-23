@@ -40,7 +40,6 @@
             background_normal: ""
             height:100
             on_press:
-                root.On_LED()
                 app.root.current = "Scan"
                 root.manager.transition.direction = "left"
                 root.manager.get_screen("Scan").ids["textFocus"].focus = True
@@ -53,6 +52,10 @@
     spacing: 20
     on_enter:
         root.enter()
+        root.On_LED()
+
+    on_leave:
+        root.Off_LED()
     BoxLayout:
         orientation: "vertical"
         spacing: 10
@@ -112,7 +115,6 @@
             pos_hint: {"center_x": 0.5, "centre_y":0.7}
             on_text_validate:
                 root.callback()
-                root.Off_LED()
 
         Label:
             id: ss
@@ -261,7 +263,6 @@
                 pos_hint: {"center_x": 0.5, "center_y":0.2}
                 on_press:
                     root.enter()
-                    root.On_LED()
                     app.root.current = "Scan"
                     root.manager.transition.direction = "right"
 
@@ -300,6 +301,7 @@
         Label:
             text: "Response"
             bold: True
+            font_size: 20
             color: (0,0,0,1)
             size_hint: .2,.4
             pos_hint: {"center_x": 0.5}
@@ -316,6 +318,7 @@
         Label:
             text: "Recommendation"
             bold: True
+            font_size: 20
             size_hint: .2,.4
             color: (0,0,0,1)
             pos_hint: {"center_x":0.5}
@@ -342,6 +345,7 @@
             height: 40
             pos_hint: {"center_x": 0.5, "center_y":0.2}
             on_press:
+                root.enter()
                 app.root.current = "Main"
 
         Label:
