@@ -69,11 +69,13 @@ class ScanWindow(Screen):
         self.manager.get_screen("Scan").ids["textFocus"].text = " "
         self.manager.get_screen("Scan").ids["textFocus"].focus = True
 
-    def On_LED(self):
+    @staticmethod
+    def On_LED():
         led = LED(6)
         led.on()
 
-    def Off_LED(self):
+    @staticmethod
+    def Off_LED():
         led = LED(6)
         led.off()
 
@@ -108,10 +110,6 @@ class PatientDetails(Screen):
 
     def enter(self):
         self.manager.get_screen("Patient_Details").ids["bpValue"].text = "Waiting for BP vitals..."
-
-    def On_LED(self):
-        led = LED(6)
-        led.on()
 
 
 class ResponseWindow(Screen):
