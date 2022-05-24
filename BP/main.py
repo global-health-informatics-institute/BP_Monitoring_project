@@ -69,15 +69,18 @@ class ScanWindow(Screen):
         self.manager.get_screen("Scan").ids["textFocus"].text = " "
         self.manager.get_screen("Scan").ids["textFocus"].focus = True
 
-    @staticmethod
-    def On_LED():
+    def On_LED(self):
+        self.do_nothing()
         led = LED(6)
         led.on()
 
-    @staticmethod
-    def Off_LED():
+    def Off_LED(self):
+        self.do_nothing()
         led = LED(6)
         led.off()
+
+    def do_nothing(self):
+        pass
 
 
 class PatientDetails(Screen):
@@ -216,16 +219,8 @@ class Manager(ScreenManager):
 class MyApp(App):
     def build(self):
         Window.clearcolor = (248 / 255, 247 / 255, 255 / 255, 1)
-        # Window.borderless = True
-        # Window.fullscreen = 'auto'
-        # Window.custom_titlebar = True
-
+        Window.fullscreen = 'auto'
         return Manager()
-
-    # @staticmethod
-    # def restart():
-    #     print(f'exec: {sys.executable} {["python"] + sys.argv}')
-    #     os.execvp(sys.executable, ['python'] + sys.argv)
 
 
 if __name__ == "__main__":
