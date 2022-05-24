@@ -1,0 +1,10 @@
+[input]
+mouse = mouse
+mtdev_%(name)s = probesysfs,provider=mtdev,param=invert_y=1,param=rotation=270
+hid_%(name)s = probesysfs,provider=hidinput
+
+
+[postproc:calibration]
+(mtdev) = xoffset=1,yoffset=1,xratio=-1,yratio=-1
+
+
