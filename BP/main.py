@@ -1,4 +1,4 @@
-# import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 # from gpiozero import LED
 from kivy.app import App
 import mysql.connector as mysql
@@ -74,21 +74,21 @@ class ScanWindow(Screen):
         self.do_nothing()
         # led = LED(6)
         # led.on()
-        # LED_PIN = 6
-        # GPIO.setmode(GPIO.BCM)
-        # GPIO.setwarnings(False)
-        # GPIO.setup(LED_PIN, GPIO.OUT)
-        # GPIO.output(LED_PIN, GPIO.HIGH)
+        LED_PIN = 6
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setwarnings(False)
+        GPIO.setup(LED_PIN, GPIO.OUT)
+        GPIO.output(LED_PIN, GPIO.HIGH)
 
     def Off_LED(self):
         self.do_nothing()
         # led = LED(6)
         # led.off()
-        # LED_PIN = 6
-        # GPIO.setmode(GPIO.BCM)
-        # GPIO.setwarnings(False)
-        # GPIO.setup(LED_PIN, GPIO.OUT)
-        # GPIO.output(LED_PIN, GPIO.LOW)
+        LED_PIN = 6
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setwarnings(False)
+        GPIO.setup(LED_PIN, GPIO.OUT)
+        GPIO.output(LED_PIN, GPIO.LOW)
 
     def do_nothing(self):
         pass
@@ -158,7 +158,6 @@ class PatientDetails(Screen):
                         self.parent.current = "Response"
 
                     else:
-                        pass
                         # BP_cart = "Error"
                         # cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
                         #             (N_id, sys_mmHg, dia_mmHg, BP_cart))
