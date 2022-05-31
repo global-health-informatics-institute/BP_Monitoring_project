@@ -52,10 +52,10 @@
     spacing: 20
     on_enter:
         root.enter()
-        root.On_LED()
+#        root.On_LED()
 
     on_leave:
-        root.Off_LED()
+#        root.Off_LED()
     BoxLayout:
         orientation: "vertical"
         spacing: 10
@@ -235,6 +235,7 @@
                     font_size: "20dp"
                     valign: "middle"
                     padding_x: 20
+
                 Label:
                     id: bpValue
                     color: (0,0,0,1)
@@ -244,6 +245,18 @@
                     font_size: "20dp"
                     halign: "left"
                     valign: "middle"
+
+#                RoundedButton:
+#                    id: bpValue
+##                    color: (0,0,0,1)
+#                    text: "Take BP"
+#                    text_size: self.size
+#                    bold: True
+#                    font_size: "20dp"
+#                    halign: "left"
+#                    valign: "middle"
+#                    on_press:
+#                        root.manager.get_screen("Patient_Details").ids["bpValue"].text = "Waiting for BP Vitals...."
 
             Label:
                 text: "Press The Start Button on the Bp Machine to Start"
@@ -352,3 +365,13 @@
             id: bottom
 
 
+<RoundedButton@Button>
+    background_color: (0,0,0,0)
+    background_normal: ""
+    canvas.before:
+        Color:
+            rgba:(210/255,210/255,207/255,1)
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [50]
