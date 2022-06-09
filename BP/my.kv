@@ -143,166 +143,216 @@
     on_enter:
         root.enter()
         root.generate_BP()
-    on_leave:
+    on_pre_leave:
         root.leave()
+    BoxLayout:
+        orientation: "vertical"
+        BoxLayout:
+            size_hint_y: None
+            height: 80
+            canvas.before:
+                Color:
+                    rgba: (210/255,210/255,207/255,1)
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
 
-    GridLayout:
-        spacing: 10
-        row_force_default: True
-        row_default_height: 215
-        cols: 1
+            Button:
+                size_hint_x: .2
+                font_size: 18
+                bold:True
+                color: (0,0,0,1)
+                background_color: (210/255,210/255,207/255,1)
+                background_normal: "images/back.png"
+                on_press:
+                    app.root.current = "Scan"
+                    root.manager.transition.direction = "right"
+
+
+            Label:
+                text: "CAPTURE BP VITALS"
+                color: (0,0,0,1)
+                size_hint_x: .8
+                bold: True
+                font_size: 18
+
         GridLayout:
-            cols: 1
+            spacing: 0
             row_force_default: True
-            row_default_height: 70
-            padding: 30
-            spacing: 10
-
-            BoxLayout:
-                size_hint_y: None
-                height: 35
-                Label:
-                    size_hint_x: None
-                    width: 80
-                    text: "Full Name:"
-                    color: (0,0,0,1)
-                    bold: True
-
-                TextInput:
-                    color: (0,0,0,1)
-                    id: f_name
-                    bold: True
-
+            row_default_height: 215
+            cols: 1
+#            foo: [self.rows_minimum.update({i: x.height}) for i, x in enumerate(reversed(list(self.children)))]
+#            size_hint_y: None
+#            height: self.minimum_height
             GridLayout:
-                cols:4
+                cols: 1
+                row_force_default: True
+                row_default_height: 70
+                padding: [30,10]
                 spacing: 10
-                Label:
-                    color: (0,0,0,1)
-                    bold: True
-                    size_hint_x: None
-                    width: 50
-                    text: "ID:"
-                TextInput:
-                    color: (0,0,0,1)
-                    bold: True
-                    id: N_id
-                Label:
-                    size_hint_x: None
-                    bold: True
-                    width: 50
-                    text: "DOB:"
-                    color: (0,0,0,1)
-                TextInput:
-                    id: dob
-                    bold: True
-                    color: (0,0,0,1)
+#                foo: [self.rows_minimum.update({i: x.height}) for i, x in enumerate(reversed(list(self.children)))]
+#                size_hint_y: None
+#                height: self.minimum_height
 
-                Label:
-                    text: "Gender:"
-                    bold: True
-                    size_hint_x: None
-                    width: 70
-                    color: (0,0,0,1)
-                TextInput:
-                    id: gender
-                    bold: True
-                    color: (0,0,0,1)
-                Label:
-                    text: "Previous BP:"
-                    bold: True
-                    size_hint_x: None
-                    width: 100
-                    color: (0,0,0,1)
-                TextInput:
-                    id: pBP
-                    bold: True
-                    color: (0,0,0,1)
-            BoxLayout:
-                orientation: "vertical"
                 BoxLayout:
                     size_hint_y: None
-                    height: 70
+                    height: 35
                     Label:
                         size_hint_x: None
                         width: 100
-                        halign: "right"
-                        text: "Current BP:"
+                        font_size: "15dp"
+                        text: "Full Name:"
+                        color: (0,0,0,1)
+#                        bold: True
+
+                    TextInput:
+                        color: (0,0,0,1)
+                        id: f_name
+                        font_size: "20dp"
+                        bold: True
+
+                GridLayout:
+                    cols:4
+                    spacing: 10
+                    Label:
+                        color: (0,0,0,1)
+                        size_hint_x: None
+                        width: 50
+                        font_size: "15dp"
+                        text: "ID:"
+                    TextInput:
                         color: (0,0,0,1)
                         bold: True
+                        font_size: "15dp"
+                        id: N_id
+                    Label:
+                        size_hint_x: None
+                        font_size: "15dp"
+                        width: 50
+                        text: "DOB:"
+                        color: (0,0,0,1)
+                    TextInput:
+                        id: dob
+                        bold: True
+                        font_size: "15dp"
+                        color: (0,0,0,1)
 
                     Label:
-                        id: bpValue
+                        text: "Gender:"
+                        font_size: "15dp"
+                        size_hint_x: None
+                        width: 70
                         color: (0,0,0,1)
-                        text_size: self.size
-                        text: "Waiting for BP Vitals..."
-                        halign: "left"
-                        valign: "middle"
+                    TextInput:
+                        id: gender
                         bold: True
-
+                        font_size: "15dp"
+                        color: (0,0,0,1)
+                    Label:
+                        text: "Previous BP:"
+                        font_size: "15dp"
+                        size_hint_x: None
+                        width: 100
+                        color: (0,0,0,1)
+                    TextInput:
+                        id: pBP
+                        font_size: "15dp"
+                        bold: True
+                        color: (0,0,0,1)
                 BoxLayout:
-                    size_hint_y: None
+                    padding: [0,-30]
                     orientation: "vertical"
-                    height: 20
-                    padding: 10
-                    spacing:10
-                    Label:
-                        text: "RECOMMENDATION"
-                        color: (0,0,0,1)
-                        text_size: self.size
-                        halign: "center"
-                        valign: "top"
-                        bold: True
-                    Label:
-                        id: yy
-        BoxLayout:
-            padding: 30
-            TextInput:
-                multiline: True
-                id: comment
-                padding: [20,20]
-                font_size: 15
-                size_hint_x: .7
-                size_hint_y: None
-                height: 150
-                pos_hint: {"center_x":0.5}
+                    BoxLayout:
+                        size_hint_y: None
+                        height: 70
+                        Label:
+                            size_hint_x: None
+                            width: 100
+                            halign: "right"
+                            font_size: "15dp"
+                            text: "Current BP:"
+                            color: (0,0,0,1)
 
-        BoxLayout:
-            orientation: "vertical"
-            Label:
-                id: lblText
-                text: "Press the Blue Round Button"
-                bold: True
-                color: (0,0,0,1)
+
+                        Label:
+                            id: bpValue
+                            color: (0,0,0,1)
+                            text_size: self.size
+                            text: "Waiting for BP Vitals..."
+                            font_size: "15dp"
+                            halign: "left"
+                            valign: "middle"
+                            bold: True
+
+                    BoxLayout:
+                        size_hint_y: None
+                        orientation: "vertical"
+                        height: 20
+                        padding: [10,0]
+                        spacing:10
+                        Label:
+                            text: "RECOMMENDATION"
+                            color: (0,0,0,1)
+                            text_size: self.size
+                            halign: "center"
+                            valign: "top"
+                            bold: True
+#                        Label:
+#                            id: yy
+            BoxLayout:
+                padding: [30,0]
+                TextInput:
+                    multiline: True
+                    id: comment
+                    padding: [20,20]
+                    font_size: 15
+                    size_hint_x: .7
+                    size_hint_y: None
+                    height: 150
+                    pos_hint: {"center_x":0.5}
 
             BoxLayout:
-                padding: 30
-                spacing: 20
-                RoundedButton:
-                    id: restart
+                padding: [0,40]
+                size_hint: self.size
+                valign: "top"
+                orientation: "vertical"
+                size_hint_y: None
+                height:1
+                Label:
+                    id: lblText
+                    text: "Press the Blue Round Button"
                     bold: True
-                    text: "Finish"
-                    padding:  [20,10]
-                    size_hint_x: .2
-                    opacity: 0
-                    size_hint_y: None
-                    height: 40
-                    pos_hint: {"center_x": 0.5, "center_y":0.2}
-                    on_release:
-                        root.enter()
-                        app.root.current = "Main"
-                        root.manager.transition.direction = "right"
+                    color: (0,0,0,1)
 
-                RoundedButton:
-                    id: takeBP
-                    bold: True
-                    text: "Take BP"
-                    size_hint_x: .2
-                    size_hint_y: None
-                    opacity: 0
-                    height: 40
-                    pos_hint: {"center_x": 0.5, "center_y":0.2}
-                    on_release:
-                        root.regenerate()
+                BoxLayout:
+                    padding: 70
+                    spacing: 20
+                    RoundedButton:
+                        id: restart
+                        bold: True
+                        text: "Finish"
+                        padding:  [20,10]
+                        size_hint_x: .2
+                        opacity: 0
+                        size_hint_y: None
+                        height: 40
+                        pos_hint: {"center_x": 0.5, "center_y":0.2}
+                        on_release:
+                            root.enter()
+                            app.root.current = "Main"
+
+
+                    RoundedButton:
+                        id: takeBP
+                        bold: True
+                        text: "Take BP"
+                        size_hint_x: .2
+                        size_hint_y: None
+                        opacity: 0
+                        height: 40
+                        pos_hint: {"center_x": 0.5, "center_y":0.2}
+                        on_release:
+                            root.regenerate()
 #    BoxLayout:
 #        orientation: "vertical"
 #        BoxLayout:
@@ -565,80 +615,80 @@
 #                pos_hint: {"center_x": 0.5, "center_y":0.2}
 #                on_release:
 #                    root.regenerate()
-
-<ResponseWindow>:
-    name: "Response"
-    on_enter: root.compose_response()
-    BoxLayout:
-        orientation: "vertical"
-        BoxLayout:
-            size_hint_y: None
-            height: 80
-            canvas.before:
-                Color:
-                    rgba: (210/255,210/255,207/255,1)
-                Rectangle:
-                    size: self.size
-                    pos: self.pos
-            Label:
-                text: "RESPONSE WINDOW"
-                font_size: 18
-                size_hint_x: 1
-                bold:True
-                color: (0,0,0,1)
-
-        Label:
-            text: "Response"
-            bold: True
-            font_size: 20
-            color: (0,0,0,1)
-            size_hint: .2,.4
-            pos_hint: {"center_x": 0.5}
-
-        TextInput:
-            multiline: True
-            id: response
-            font_size: 20
-            size_hint_x: .7
-            size_hint_y: None
-            height: 150
-            pos_hint: {"center_x":0.5}
-
-        Label:
-            text: "Recommendation"
-            bold: True
-            font_size: 20
-            size_hint: .2,.4
-            color: (0,0,0,1)
-            pos_hint: {"center_x":0.5}
-
-
-        TextInput:
-            multiline: True
-            id: comment
-            font_size: 20
-            size_hint_x: .7
-            size_hint_y: None
-            height: 150
-            pos_hint: {"center_x":0.5}
-
-        Label:
-            size_hint:.2,.4
-            pos_hint:{"center_x": 0.5}
-
-        RoundedButton:
-            text: "Finish"
-            padding:  [20,10]
-            size_hint_x: .4
-            size_hint_y: None
-            height: 40
-            pos_hint: {"center_x": 0.5, "center_y":0.2}
-            on_press:
-#                root.enter()
-                app.root.current = "Main"
-
-        Label:
-            id: bottom
+#
+#<ResponseWindow>:
+#    name: "Response"
+#    on_enter: root.compose_response()
+#    BoxLayout:
+#        orientation: "vertical"
+#        BoxLayout:
+#            size_hint_y: None
+#            height: 80
+#            canvas.before:
+#                Color:
+#                    rgba: (210/255,210/255,207/255,1)
+#                Rectangle:
+#                    size: self.size
+#                    pos: self.pos
+#            Label:
+#                text: "RESPONSE WINDOW"
+#                font_size: 18
+#                size_hint_x: 1
+#                bold:True
+#                color: (0,0,0,1)
+#
+#        Label:
+#            text: "Response"
+#            bold: True
+#            font_size: 20
+#            color: (0,0,0,1)
+#            size_hint: .2,.4
+#            pos_hint: {"center_x": 0.5}
+#
+#        TextInput:
+#            multiline: True
+#            id: response
+#            font_size: 20
+#            size_hint_x: .7
+#            size_hint_y: None
+#            height: 150
+#            pos_hint: {"center_x":0.5}
+#
+#        Label:
+#            text: "Recommendation"
+#            bold: True
+#            font_size: 20
+#            size_hint: .2,.4
+#            color: (0,0,0,1)
+#            pos_hint: {"center_x":0.5}
+#
+#
+#        TextInput:
+#            multiline: True
+#            id: comment
+#            font_size: 20
+#            size_hint_x: .7
+#            size_hint_y: None
+#            height: 150
+#            pos_hint: {"center_x":0.5}
+#
+#        Label:
+#            size_hint:.2,.4
+#            pos_hint:{"center_x": 0.5}
+#
+#        RoundedButton:
+#            text: "Finish"
+#            padding:  [20,10]
+#            size_hint_x: .4
+#            size_hint_y: None
+#            height: 40
+#            pos_hint: {"center_x": 0.5, "center_y":0.2}
+#            on_press:
+##                root.enter()
+#                app.root.current = "Main"
+#
+#        Label:
+#            id: bottom
 
 
 <RoundedButton@Button>
