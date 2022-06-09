@@ -1,5 +1,5 @@
 <Manager>:
-#    PatientDetails:
+    PatientDetails:
     MainWindow:
     ScanWindow:
     ResponseWindow:
@@ -53,10 +53,10 @@
     spacing: 20
     on_enter:
         root.enter()
-        root.On_LED()
+#        root.On_LED()
 
     on_leave:
-        root.Off_LED()
+#        root.Off_LED()
     BoxLayout:
         orientation: "vertical"
         spacing: 10
@@ -200,7 +200,7 @@
                     height: 35
                     Label:
                         size_hint_x: None
-                        width: 100
+                        width: 80
                         font_size: "15dp"
                         text: "Full Name:"
                         color: (0,0,0,1)
@@ -313,12 +313,13 @@
                     pos_hint: {"center_x":0.5}
 
             BoxLayout:
-                padding: [0,40]
+                padding: [0,50]
                 size_hint: self.size
                 valign: "top"
                 orientation: "vertical"
                 size_hint_y: None
                 height:1
+                spacing: 100
                 Label:
                     id: lblText
                     text: "Press the Blue Round Button"
@@ -334,7 +335,7 @@
                         text: "Finish"
                         padding:  [20,10]
                         size_hint_x: .2
-                        opacity: 0
+                        opacity: 1
                         size_hint_y: None
                         height: 40
                         pos_hint: {"center_x": 0.5, "center_y":0.2}
@@ -349,7 +350,7 @@
                         text: "Take BP"
                         size_hint_x: .2
                         size_hint_y: None
-                        opacity: 0
+                        opacity: 1
                         height: 40
                         pos_hint: {"center_x": 0.5, "center_y":0.2}
                         on_release:

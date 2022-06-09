@@ -1,4 +1,4 @@
-import RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
 # from gpiozero import LED
 import time
 
@@ -107,21 +107,21 @@ class ScanWindow(Screen):
         self.do_nothing()
         # led = LED(6)
         # led.on()
-        LED_PIN = 6
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setwarnings(False)
-        GPIO.setup(LED_PIN, GPIO.OUT)
-        GPIO.output(LED_PIN, GPIO.HIGH)
+        # LED_PIN = 6
+        # GPIO.setmode(GPIO.BCM)
+        # GPIO.setwarnings(False)
+        # GPIO.setup(LED_PIN, GPIO.OUT)
+        # GPIO.output(LED_PIN, GPIO.HIGH)
 
     def Off_LED(self):
         self.do_nothing()
         # led = LED(6)
         # led.off()
-        LED_PIN = 6
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setwarnings(False)
-        GPIO.setup(LED_PIN, GPIO.OUT)
-        GPIO.output(LED_PIN, GPIO.LOW)
+        # LED_PIN = 6
+        # GPIO.setmode(GPIO.BCM)
+        # GPIO.setwarnings(False)
+        # GPIO.setup(LED_PIN, GPIO.OUT)
+        # GPIO.output(LED_PIN, GPIO.LOW)
 
     def do_nothing(self):
         pass
@@ -926,7 +926,7 @@ class Manager(ScreenManager):
 class MyApp(App):
     def build(self):
         Window.clearcolor = (248 / 255, 247 / 255, 255 / 255, 1)
-        Window.fullscreen = 'auto'
+        # Window.fullscreen = 'auto'
         return Manager()
 
 
