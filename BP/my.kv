@@ -144,8 +144,11 @@
         root.generate_BP()
     on_pre_leave:
         root.leave()
+
     BoxLayout:
         orientation: "vertical"
+        spacing: 10
+
         BoxLayout:
             size_hint_y: None
             height: 80
@@ -176,184 +179,404 @@
                 bold: True
                 font_size: 18
 
-        GridLayout:
-            spacing: 0
-            row_force_default: True
-            row_default_height: 215
-            cols: 1
-#            foo: [self.rows_minimum.update({i: x.height}) for i, x in enumerate(reversed(list(self.children)))]
-#            size_hint_y: None
-#            height: self.minimum_height
-            GridLayout:
-                cols: 1
-                row_force_default: True
-                row_default_height: 70
-                padding: [30,10]
-                spacing: 10
-#                foo: [self.rows_minimum.update({i: x.height}) for i, x in enumerate(reversed(list(self.children)))]
-#                size_hint_y: None
-#                height: self.minimum_height
-
-                BoxLayout:
-                    size_hint_y: None
-                    height: 35
-                    Label:
-                        size_hint_x: None
-                        width: 80
-                        font_size: "15dp"
-                        text: "Full Name:"
-                        color: (0,0,0,1)
-#                        bold: True
-
-                    TextInput:
-                        color: (0,0,0,1)
-                        id: f_name
-                        font_size: "20dp"
-                        bold: True
-
-                GridLayout:
-                    cols:4
-                    spacing: 10
-                    Label:
-                        color: (0,0,0,1)
-                        size_hint_x: None
-                        width: 50
-                        font_size: "15dp"
-                        text: "ID:"
-                    TextInput:
-                        color: (0,0,0,1)
-                        bold: True
-                        font_size: "15dp"
-                        id: N_id
-                    Label:
-                        size_hint_x: None
-                        font_size: "15dp"
-                        width: 50
-                        text: "DOB:"
-                        color: (0,0,0,1)
-                    TextInput:
-                        id: dob
-                        bold: True
-                        font_size: "15dp"
-                        color: (0,0,0,1)
-
-                    Label:
-                        text: "Gender:"
-                        font_size: "15dp"
-                        size_hint_x: None
-                        width: 70
-                        color: (0,0,0,1)
-                    TextInput:
-                        id: gender
-                        bold: True
-                        font_size: "15dp"
-                        color: (0,0,0,1)
-                    Label:
-                        text: "Previous BP:"
-                        font_size: "15dp"
-                        size_hint_x: None
-                        width: 100
-                        color: (0,0,0,1)
-                    TextInput:
-                        id: pBP
-                        font_size: "15dp"
-                        bold: True
-                        color: (0,0,0,1)
-                BoxLayout:
-                    padding: [0,-30]
-                    orientation: "vertical"
-                    BoxLayout:
-                        size_hint_y: None
-                        height: 70
-                        Label:
-                            size_hint_x: None
-                            width: 100
-                            halign: "right"
-                            font_size: "15dp"
-                            text: "Current BP:"
-                            color: (0,0,0,1)
+        BoxLayout:
+            size_hint_y: None
+            height: 50
+            padding: [30, 0]
+            Label:
+                size_hint_x: None
+                width: 100
+                text: "Full Name:"
+                font_size: 15
+                color: (0,0,0,1)
+                text_size: self.size
+                halign: "left"
+                valign: "middle"
+            TextInput:
+                color: (0,0,0,1)
+                id: f_name
+                text_size: self.size
+                halign: "left"
+                valign: "middle"
+                padding_y: [self.height / 2.0 - (self.line_height / 2.0) * len(self._lines), 0]
+                font_size: "20dp"
+                bold: True
 
 
-                        Label:
-                            id: bpValue
-                            color: (0,0,0,1)
-                            text_size: self.size
-                            text: "Waiting for BP Vitals..."
-                            font_size: "15dp"
-                            halign: "left"
-                            valign: "middle"
-                            bold: True
+        BoxLayout:
+            size_hint_y: None
+            height: 50
+            padding: [30, 0]
+            Label:
+                color: (0,0,0,1)
+                text: "ID:"
+                font_size: "15dp"
+                size_hint_x: None
+                width: 100
+            TextInput:
+                id: N_id
+                text_size: self.size
+                padding_y: [self.height / 2.0 - (self.line_height / 2.0) * len(self._lines), 0]
+                halign: "left"
+                valign: "middle"
+                color: (0,0,0,1)
+                size_hint_x: None
+                width: 120
+                bold: True
+                font_size: "20dp"
+            Label:
+                color: (0,0,0,1)
+                size_hint_x: None
+                width: 50
+                text: "DOB:"
+                font_size: "15dp"
+            TextInput:
+                id: dob
+                bold: True
+                text_size: self.size
+                padding_y: [self.height / 2.0 - (self.line_height / 2.0) * len(self._lines), 0]
+                halign: "left"
+                valign: "middle"
+                size_hint_x:
+                width: 120
+                font_size: "20dp"
+                color: (0,0,0,1)
 
-                    BoxLayout:
-                        size_hint_y: None
-                        orientation: "vertical"
-                        height: 20
-                        padding: [10,0]
-                        spacing:10
-                        Label:
-                            text: "RECOMMENDATION"
-                            color: (0,0,0,1)
-                            text_size: self.size
-                            halign: "center"
-                            valign: "top"
-                            bold: True
-#                        Label:
-#                            id: yy
-            BoxLayout:
-                padding: [30,0]
-                TextInput:
-                    multiline: True
-                    id: comment
-                    padding: [20,20]
-                    font_size: 15
-                    size_hint_x: .7
-                    size_hint_y: None
-                    height: 150
-                    pos_hint: {"center_x":0.5}
+        BoxLayout:
+            size_hint_y: None
+            height: 50
+            padding: [30,0]
+            Label:
+                color: (0,0,0,1)
+                size_hint_x: None
+                width: 100
+                text: "Gender:"
+                font_size: "15dp"
+            TextInput:
+                id: gender
+                padding_y: [self.height / 2.0 - (self.line_height / 2.0) * len(self._lines), 0]
+                bold: True
+                font_size: "20dp"
+                color: (0,0,0,1)
+                size_hint_x: None
+                width: 120
+            Label:
+                color: (0,0,0,1)
+                text: "Previous BP:"
+                font_size: "15dp"
+            TextInput:
+                id: pBP
+                font_size: "20dp"
+                padding_y: [self.height / 2.0 - (self.line_height / 2.0) * len(self._lines), 0]
+                bold: True
+                color: (0,0,0,1)
 
-            BoxLayout:
-                padding: [0,50]
-                size_hint: self.size
-                valign: "top"
-                orientation: "vertical"
+        BoxLayout:
+            size_hint_y: None
+            height: 50
+            padding: [30,0]
+            Label:
+                color: (0,0,0,1)
+                font_size: "15dp"
+                text: "Current BP:"
+                size_hint_x: None
+                width: 100
+                color: (0,0,0,1)
+                text_size: self.size
+                halign: "left"
+                valign: "middle"
+            Label:
+                id: bpValue
+                text_size: self.size
+                halign: "left"
+                valign: "middle"
+                color: (0,0,0,1)
+                text: "Waiting For BP Vitals...."
+                font_size: 20
+                bold: True
+
+        BoxLayout:
+            orientation: "vertical"
+            size_hint_y: None
+            height: 30
+            Label:
+                text: "RECOMMENDATION"
+                color: (0,0,0,1)
+                bold: True
+                font_size: 20
+
+        BoxLayout:
+            padding: [30,0]
+            size_hint_y: None
+            height: 150
+            TextInput:
+                multiline: True
+                id: comment
+                padding: [20,20]
+                font_size: 20
+                size_hint_x: .7
                 size_hint_y: None
-                height:1
-                spacing: 100
-                Label:
-                    id: lblText
-                    text: "Press the Blue Round Button"
-                    bold: True
-                    color: (0,0,0,1)
+                height: 150
+                pos_hint: {"center_x":0.5}
 
-                BoxLayout:
-                    padding: 70
-                    spacing: 20
-                    RoundedButton:
-                        id: restart
-                        bold: True
-                        text: "Finish"
-                        padding:  [20,10]
-                        size_hint_x: .2
-                        opacity: 1
-                        size_hint_y: None
-                        height: 40
-                        pos_hint: {"center_x": 0.5, "center_y":0.2}
-                        on_release:
-                            root.enter()
-                            app.root.current = "Main"
+        BoxLayout:
+            orientation: "vertical"
+            size_hint_y: None
+            height: 70
+            Label:
+                id: lblText
+                text: "Press the Blue Round Button"
+                color: (0,0,0,1)
+                font_size: 20
+                bold: True
+
+        BoxLayout:
+            padding: 70
+            size_hint_y: None
+            height: 80
+            spacing: 20
+            RoundedButton:
+                id: restart
+                bold: True
+                text: "Finish"
+                padding:  [20,10]
+                size_hint_x: .2
+                opacity: 0
+                font_size: 20
+                size_hint_y: None
+                height: 40
+                pos_hint: {"center_x": 0.5, "center_y":0.2}
+                on_release:
+                    root.enter()
+                    app.root.current = "Main"
 
 
-                    RoundedButton:
-                        id: takeBP
-                        bold: True
-                        text: "Take BP"
-                        size_hint_x: .2
-                        size_hint_y: None
-                        opacity: 1
-                        height: 40
-                        pos_hint: {"center_x": 0.5, "center_y":0.2}
-                        on_release:
-                            root.regenerate()
+            RoundedButton:
+                id: takeBP
+                bold: True
+                text: "Take BP"
+                size_hint_x: .2
+                size_hint_y: None
+                opacity: 0
+                font_size: 20
+                height: 40
+                pos_hint: {"center_x": 0.5, "center_y":0.2}
+                on_release:
+                    root.regenerate()
+        Label:
+            id: ii
+
+#-------------------------------------------------------------------------------------------------------------------
+#    BoxLayout:
+#        orientation: "vertical"
+#        BoxLayout:
+#            size_hint_y: None
+#            height: 80
+#            canvas.before:
+#                Color:
+#                    rgba: (210/255,210/255,207/255,1)
+#                Rectangle:
+#                    size: self.size
+#                    pos: self.pos
+#
+#            Button:
+#                size_hint_x: .2
+#                font_size: 18
+#                bold:True
+#                color: (0,0,0,1)
+#                background_color: (210/255,210/255,207/255,1)
+#                background_normal: "images/back.png"
+#                on_press:
+#                    app.root.current = "Scan"
+#                    root.manager.transition.direction = "right"
+#                    root.enter()
+#
+#
+#            Label:
+#                text: "CAPTURE BP VITALS"
+#                color: (0,0,0,1)
+#                size_hint_x: .8
+#                bold: True
+#                font_size: 18
+#
+#        GridLayout:
+#            spacing: 0
+#            row_force_default: True
+#            row_default_height: 215
+#            cols: 1
+##            foo: [self.rows_minimum.update({i: x.height}) for i, x in enumerate(reversed(list(self.children)))]
+##            size_hint_y: None
+##            height: self.minimum_height
+#            GridLayout:
+#                cols: 1
+#                row_force_default: True
+#                row_default_height: 70
+#                padding: [30,10]
+#                spacing: 10
+##                foo: [self.rows_minimum.update({i: x.height}) for i, x in enumerate(reversed(list(self.children)))]
+##                size_hint_y: None
+##                height: self.minimum_height
+#
+#                BoxLayout:
+#                    size_hint_y: None
+#                    height: 35
+#                    Label:
+#                        size_hint_x: None
+#                        width: 80
+#                        font_size: "15dp"
+#                        text: "Full Name:"
+#                        color: (0,0,0,1)
+##                        bold: True
+#
+#                    TextInput:
+#                        color: (0,0,0,1)
+#                        id: f_name
+#                        font_size: "20dp"
+#                        bold: True
+#
+#                GridLayout:
+#                    cols:4
+#                    spacing: 10
+#                    Label:
+#                        color: (0,0,0,1)
+#                        size_hint_x: None
+#                        width: 50
+#                        font_size: "15dp"
+#                        text: "ID:"
+#                    TextInput:
+#                        color: (0,0,0,1)
+#                        bold: True
+#                        font_size: "15dp"
+#                        id: N_id
+#                    Label:
+#                        size_hint_x: None
+#                        font_size: "15dp"
+#                        width: 50
+#                        text: "DOB:"
+#                        color: (0,0,0,1)
+#                    TextInput:
+#                        id: dob
+#                        bold: True
+#                        font_size: "15dp"
+#                        color: (0,0,0,1)
+#
+#                    Label:
+#                        text: "Gender:"
+#                        font_size: "15dp"
+#                        size_hint_x: None
+#                        width: 70
+#                        color: (0,0,0,1)
+#                    TextInput:
+#                        id: gender
+#                        bold: True
+#                        font_size: "15dp"
+#                        color: (0,0,0,1)
+#                    Label:
+#                        text: "Previous BP:"
+#                        font_size: "15dp"
+#                        size_hint_x: None
+#                        width: 100
+#                        color: (0,0,0,1)
+#                    TextInput:
+#                        id: pBP
+#                        font_size: "15dp"
+#                        bold: True
+#                        color: (0,0,0,1)
+#                BoxLayout:
+#                    padding: [0,-30]
+#                    orientation: "vertical"
+#                    BoxLayout:
+#                        size_hint_y: None
+#                        height: 70
+#                        Label:
+#                            size_hint_x: None
+#                            width: 100
+#                            halign: "right"
+#                            font_size: "15dp"
+#                            text: "Current BP:"
+#                            color: (0,0,0,1)
+#
+#
+#                        Label:
+#                            id: bpValue
+#                            color: (0,0,0,1)
+#                            text_size: self.size
+#                            text: "Waiting for BP Vitals..."
+#                            font_size: "15dp"
+#                            halign: "left"
+#                            valign: "middle"
+#                            bold: True
+#
+#                    BoxLayout:
+#                        size_hint_y: None
+#                        orientation: "vertical"
+#                        height: 20
+#                        padding: [10,0]
+#                        spacing:10
+#                        Label:
+#                            text: "RECOMMENDATION"
+#                            color: (0,0,0,1)
+#                            text_size: self.size
+#                            halign: "center"
+#                            valign: "top"
+#                            bold: True
+##                        Label:
+##                            id: yy
+#            BoxLayout:
+#                padding: [30,0]
+#                TextInput:
+#                    multiline: True
+#                    id: comment
+#                    padding: [20,20]
+#                    font_size: 15
+#                    size_hint_x: .7
+#                    size_hint_y: None
+#                    height: 150
+#                    pos_hint: {"center_x":0.5}
+#
+#            BoxLayout:
+#                padding: [0,50]
+#                size_hint: self.size
+#                valign: "top"
+#                orientation: "vertical"
+#                size_hint_y: None
+#                height:1
+#                spacing: 100
+#                Label:
+#                    id: lblText
+#                    text: "Press the Blue Round Button"
+#                    bold: True
+#                    color: (0,0,0,1)
+#
+#                BoxLayout:
+#                    padding: 70
+#                    spacing: 20
+#                    RoundedButton:
+#                        id: restart
+#                        bold: True
+#                        text: "Finish"
+#                        padding:  [20,10]
+#                        size_hint_x: .2
+#                        opacity: 1
+#                        size_hint_y: None
+#                        height: 40
+#                        pos_hint: {"center_x": 0.5, "center_y":0.2}
+#                        on_release:
+#                            root.enter()
+#                            app.root.current = "Main"
+#
+#
+#                    RoundedButton:
+#                        id: takeBP
+#                        bold: True
+#                        text: "Take BP"
+#                        size_hint_x: .2
+#                        size_hint_y: None
+#                        opacity: 1
+#                        height: 40
+#                        pos_hint: {"center_x": 0.5, "center_y":0.2}
+#                        on_release:
+#                            root.regenerate()
 #    BoxLayout:
 #        orientation: "vertical"
 #        BoxLayout:
