@@ -1,4 +1,4 @@
-import RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
 # from gpiozero import LED
 import time
 
@@ -40,6 +40,9 @@ class ScanWindow(Screen):
             fname = funame + " " + lastname
             N_id = val[5]
             pBP = ""
+            pBP2 = ""
+            pBP3 = ""
+            pBP4 = ""
 
             gender = val[8]
             DOB = val[9]
@@ -71,6 +74,66 @@ class ScanWindow(Screen):
                             self.manager.get_screen("Patient_Details").ids["pBP"].text = pBP
                             self.manager.transition.direction = "left"
                             self.parent.current = "Patient_Details"
+
+                            # @BP 2
+                            cur.execute(
+                                "SELECT sys_mmHg, dia_mmHg  FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 1,1",
+                                [N_id])
+                            rows2 = cur.fetchall()
+                            if rows2:
+                                for row2 in rows2:
+                                    previous_BPsys2 = str(row2[0])
+                                    previous_BPdia2 = str(row2[1])
+
+                                    if len(previous_BPsys2) < 1 or len(previous_BPdia2) < 1:
+                                        self.manager.get_screen("Patient_Details").ids["pBP2"].text = ""
+
+                                    else:
+                                        pBP2 = previous_BPsys2 + "/" + previous_BPdia2
+                                        self.manager.get_screen("Patient_Details").ids["pBP2"].text = pBP2
+
+                                        # @BP 3
+                                        cur.execute(
+                                            "SELECT sys_mmHg, dia_mmHg  FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 2,1",
+                                            [N_id])
+                                        rows3 = cur.fetchall()
+                                        if rows3:
+                                            for row3 in rows3:
+                                                previous_BPsys3 = str(row3[0])
+                                                previous_BPdia3 = str(row3[1])
+
+                                                if len(previous_BPsys3) < 1 or len(previous_BPdia3) < 1:
+                                                    self.manager.get_screen("Patient_Details").ids["pBP3"].text = ""
+
+                                                else:
+                                                    pBP3 = previous_BPsys3 + "/" + previous_BPdia3
+                                                    self.manager.get_screen("Patient_Details").ids["pBP3"].text = pBP3
+
+                                                    # @BP 4
+                                                    cur.execute(
+                                                        "SELECT sys_mmHg, dia_mmHg  FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 3,1",
+                                                        [N_id])
+                                                    rows4 = cur.fetchall()
+                                                    if rows4:
+                                                        for row4 in rows4:
+                                                            previous_BPsys4 = str(row4[0])
+                                                            previous_BPdia4 = str(row4[1])
+
+                                                            if len(previous_BPsys4) < 1 or len(previous_BPdia4) < 1:
+                                                                self.manager.get_screen("Patient_Details").ids[
+                                                                    "pBP4"].text = ""
+
+                                                            else:
+                                                                pBP4 = previous_BPsys4 + "/" + previous_BPdia4
+                                                                self.manager.get_screen("Patient_Details").ids[
+                                                                    "pBP4"].text = pBP4
+
+                                                    else:
+                                                        self.manager.get_screen("Patient_Details").ids["pBP4"].text = ""
+                                        else:
+                                            self.manager.get_screen("Patient_Details").ids["pBP3"].text = ""
+                            else:
+                                self.manager.get_screen("Patient_Details").ids["pBP2"].text = ""
 
                 else:
                     self.manager.get_screen("Patient_Details").ids["N_id"].text = str(N_id)
@@ -107,21 +170,21 @@ class ScanWindow(Screen):
         self.do_nothing()
         # led = LED(6)
         # led.on()
-        LED_PIN = 6
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setwarnings(False)
-        GPIO.setup(LED_PIN, GPIO.OUT)
-        GPIO.output(LED_PIN, GPIO.HIGH)
+        # LED_PIN = 6
+        # GPIO.setmode(GPIO.BCM)
+        # GPIO.setwarnings(False)
+        # GPIO.setup(LED_PIN, GPIO.OUT)
+        # GPIO.output(LED_PIN, GPIO.HIGH)
 
     def Off_LED(self):
         self.do_nothing()
         # led = LED(6)
         # led.off()
-        LED_PIN = 6
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setwarnings(False)
-        GPIO.setup(LED_PIN, GPIO.OUT)
-        GPIO.output(LED_PIN, GPIO.LOW)
+        # LED_PIN = 6
+        # GPIO.setmode(GPIO.BCM)
+        # GPIO.setwarnings(False)
+        # GPIO.setup(LED_PIN, GPIO.OUT)
+        # GPIO.output(LED_PIN, GPIO.LOW)
 
     def do_nothing(self):
         pass
@@ -145,6 +208,43 @@ class PatientDetails(Screen):
                     pBP = current_BPsys + "/" + current_BPdia
                     self.manager.get_screen("Patient_Details").ids["pBP"].text = pBP
 
+                    # @pBP 2
+                    cur.execute(
+                        "SELECT sys_mmHg, dia_mmHg  FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 1,1",
+                        [Nid])
+                    rows2 = cur.fetchall()
+                    if rows2:
+                        for row2 in rows2:
+                            previous_BPsys2 = str(row2[0])
+                            previous_BPdia2 = str(row2[1])
+                            if len(previous_BPsys2) < 1 or len(previous_BPdia2) < 1:
+                                self.manager.get_screen("Patient_Details").ids["pBP2"].text = ""
+
+                            else:
+                                pBP2 = previous_BPsys2 + "/" + previous_BPdia2
+                                self.manager.get_screen("Patient_Details").ids["pBP2"].text = pBP2
+
+                                # @pBP 3
+                                cur.execute(
+                                    "SELECT sys_mmHg, dia_mmHg  FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 2,1",
+                                    [Nid])
+                                rows3 = cur.fetchall()
+                                if rows3:
+                                    for row3 in rows3:
+                                        previous_BPsys3 = str(row3[0])
+                                        previous_BPdia3 = str(row3[1])
+                                        if len(previous_BPsys3) < 1 or len(previous_BPdia3) < 1:
+                                            self.manager.get_screen("Patient_Details").ids["pBP3"].text = ""
+
+                                        else:
+                                            pBP3 = previous_BPsys3 + "/" + previous_BPdia3
+                                            self.manager.get_screen("Patient_Details").ids["pBP2"].text = pBP3
+
+                                            # @pBP 3
+                                else:
+                                    self.manager.get_screen("Patient_Details").ids["pBP3"].text = ""
+                    else:
+                        self.manager.get_screen("Patient_Details").ids["pBP2"].text = ""
         else:
 
             self.manager.get_screen("Patient_Details").ids["pBP"].text = ""
@@ -182,7 +282,7 @@ class PatientDetails(Screen):
                     x = int(BP[2] + BP[3], 16)
                     sys_mmHg = dia_mmHg + x
 
-                    if (sys_mmHg in range(1, 120)) and (dia_mmHg in range(1, 80)):
+                    if (sys_mmHg in range(1, 119)) and (dia_mmHg in range(1, 79)):
                         BP_cart = "Normal"
                         cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
                                     (N_id, sys_mmHg, dia_mmHg, BP_cart))
@@ -194,7 +294,43 @@ class PatientDetails(Screen):
                         counter = 60
                         # break
 
-                    elif (sys_mmHg in range(121, 128)) and (dia_mmHg in range(1, 80)):
+                    elif (sys_mmHg in range(1, 119)) or (dia_mmHg in range(80, 89)):
+                        BP_cart = "Hypertension_Stage1"
+                        cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
+                                    (N_id, sys_mmHg, dia_mmHg, BP_cart))
+                        db.commit()
+                        bp = str(sys_mmHg) + "/" + str(dia_mmHg)
+                        self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
+                        # self.parent.current = "Response"
+                        self.compose_response()
+                        counter = 60
+                        # break
+
+                    elif (sys_mmHg in range(1, 119)) or (dia_mmHg in range(90, 120)):
+                        BP_cart = "Hypertension_Stage2"
+                        cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
+                                    (N_id, sys_mmHg, dia_mmHg, BP_cart))
+                        db.commit()
+                        bp = str(sys_mmHg) + "/" + str(dia_mmHg)
+                        self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
+                        # self.parent.current = "Response"
+                        self.compose_response()
+                        counter = 60
+                        # break
+
+                    elif (sys_mmHg in range(1, 119)) or dia_mmHg > 120:
+                        BP_cart = "Hypertensive_crisis"
+                        cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
+                                    (N_id, sys_mmHg, dia_mmHg, BP_cart))
+                        db.commit()
+                        bp = str(sys_mmHg) + "/" + str(dia_mmHg)
+                        self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
+                        # self.parent.current = "Response"
+                        self.compose_response()
+                        counter = 60
+                        # break
+
+                    elif (sys_mmHg in range(120, 129)) and (dia_mmHg in range(1, 79)):
                         BP_cart = "Elevated"
                         cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
                                     (N_id, sys_mmHg, dia_mmHg, BP_cart))
@@ -206,8 +342,68 @@ class PatientDetails(Screen):
                         counter = 60
                         # break
 
-                    elif (sys_mmHg in range(129, 139)) or (dia_mmHg in range(81, 89)):
+                    elif (sys_mmHg in range(120, 129)) or (dia_mmHg in range(80, 89)):
                         BP_cart = "Hypertension_Stage1"
+                        cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
+                                    (N_id, sys_mmHg, dia_mmHg, BP_cart))
+                        db.commit()
+                        bp = str(sys_mmHg) + "/" + str(dia_mmHg)
+                        self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
+                        # self.parent.current = "Response"
+                        self.compose_response()
+                        counter = 60
+                        # break
+
+                    elif (sys_mmHg in range(120, 129)) or (dia_mmHg in range(90, 119)):
+                        BP_cart = "Hypertension_Stage2"
+                        cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
+                                    (N_id, sys_mmHg, dia_mmHg, BP_cart))
+                        db.commit()
+                        bp = str(sys_mmHg) + "/" + str(dia_mmHg)
+                        self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
+                        # self.parent.current = "Response"
+                        self.compose_response()
+                        counter = 60
+                        # break
+
+                    elif (sys_mmHg in range(120, 129)) or dia_mmHg > 120:
+                        BP_cart = "Hypertensive_crisis"
+                        cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
+                                    (N_id, sys_mmHg, dia_mmHg, BP_cart))
+                        db.commit()
+                        bp = str(sys_mmHg) + "/" + str(dia_mmHg)
+                        self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
+                        # self.parent.current = "Response"
+                        self.compose_response()
+                        counter = 60
+                        # break
+
+                    elif (sys_mmHg in range(130, 139)) or (dia_mmHg in range(81, 89)):
+                        BP_cart = "Hypertension_Stage1"
+                        cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
+                                    (N_id, sys_mmHg, dia_mmHg, BP_cart))
+                        db.commit()
+                        bp = str(sys_mmHg) + "/" + str(dia_mmHg)
+                        self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
+                        # self.parent.current = "Response"
+                        self.compose_response()
+                        counter = 60
+                        # break
+
+                    elif (sys_mmHg in range(130, 139)) or (dia_mmHg in range(90, 119)):
+                        BP_cart = "Hypertension_Stage2"
+                        cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
+                                    (N_id, sys_mmHg, dia_mmHg, BP_cart))
+                        db.commit()
+                        bp = str(sys_mmHg) + "/" + str(dia_mmHg)
+                        self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
+                        # self.parent.current = "Response"
+                        self.compose_response()
+                        counter = 60
+                        # break
+
+                    elif (sys_mmHg in range(130, 139)) or dia_mmHg > 120:
+                        BP_cart = "Hypertensive_crisis"
                         cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
                                     (N_id, sys_mmHg, dia_mmHg, BP_cart))
                         db.commit()
@@ -220,6 +416,18 @@ class PatientDetails(Screen):
 
                     elif (sys_mmHg in range(140, 180)) or (dia_mmHg in range(90, 120)):
                         BP_cart = "Hypertension_Stage2"
+                        cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
+                                    (N_id, sys_mmHg, dia_mmHg, BP_cart))
+                        db.commit()
+                        bp = str(sys_mmHg) + "/" + str(dia_mmHg)
+                        self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
+                        # self.parent.current = "Response"
+                        self.compose_response()
+                        counter = 60
+                        # break
+
+                    elif (sys_mmHg in range(140, 180)) or dia_mmHg > 120:
+                        BP_cart = "Hypertensive_crisis"
                         cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
                                     (N_id, sys_mmHg, dia_mmHg, BP_cart))
                         db.commit()
@@ -334,23 +542,87 @@ class PatientDetails(Screen):
                 #     current_BPdia) + "\n\nYour Blood pressure is normal"
                 # self.manager.get_screen("Response").ids["response"].text = recommendation
                 recommendation = str(current_BPsys) + "/" + str(
-                    current_BPdia) + " [Normal]"
+                    current_BPdia) + " " + "[Normal]"
                 self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
 
-            elif (current_BPsys in range(121, 128)) and (current_BPdia < 80):
+            elif (current_BPsys < 120) or (current_BPdia in range(80, 89)):
+                # recommendation = "Your BP is: " + str(current_BPsys) + "/" + str(
+                #     current_BPdia) + "\n\nYour Blood pressure is normal"
+                # self.manager.get_screen("Response").ids["response"].text = recommendation
+                recommendation = str(current_BPsys) + "/" + str(
+                    current_BPdia) + "" + "[Hypertension(1)]"
+                self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
+
+            elif (current_BPsys < 120) or (current_BPdia in range(90, 119)):
+                # recommendation = "Your BP is: " + str(current_BPsys) + "/" + str(
+                #     current_BPdia) + "\n\nYour Blood pressure is normal"
+                # self.manager.get_screen("Response").ids["response"].text = recommendation
+                recommendation = str(current_BPsys) + "/" + str(
+                    current_BPdia) + "" + "[Hypertension(2)]"
+                self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
+
+            elif (current_BPsys < 120) or (current_BPdia > 120):
+                # recommendation = "Your BP is: " + str(current_BPsys) + "/" + str(
+                #     current_BPdia) + "\n\nYour Blood pressure is normal"
+                # self.manager.get_screen("Response").ids["response"].text = recommendation
+                recommendation = str(current_BPsys) + "/" + str(
+                    current_BPdia) + "" + "[Hypertension Crisis]"
+                self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
+
+            elif (current_BPsys in range(120, 129)) and (current_BPdia < 80):
                 # recommendation = "Your BP is: " + str(current_BPsys) + "/" + str(
                 #     current_BPdia) + " \n\nYour BP is normal. Though elevated"
                 # self.manager.get_screen("Response").ids["response"].text = recommendation
                 recommendation = str(current_BPsys) + "/" + str(
-                    current_BPdia) + " [Elevated]"
+                    current_BPdia) + "" + "[Elevated]"
                 self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
 
-            elif (current_BPsys in range(129, 139)) or (current_BPdia in range(81, 89)):
+            elif (current_BPsys in range(120, 129)) or (current_BPdia in range(80, 89)):
+                # recommendation = "Your BP is: " + str(current_BPsys) + "/" + str(
+                #     current_BPdia) + " \n\nYour BP is normal. Though elevated"
+                # self.manager.get_screen("Response").ids["response"].text = recommendation
+                recommendation = str(current_BPsys) + "/" + str(
+                    current_BPdia) + "" + "[Hypertension(1)]"
+                self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
+
+            elif (current_BPsys in range(120, 129)) or (current_BPdia in range(90, 119)):
+                # recommendation = "Your BP is: " + str(current_BPsys) + "/" + str(
+                #     current_BPdia) + " \n\nYour BP is normal. Though elevated"
+                # self.manager.get_screen("Response").ids["response"].text = recommendation
+                recommendation = str(current_BPsys) + "/" + str(
+                    current_BPdia) + "" + "[Hypertension(2)]"
+                self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
+
+            elif (current_BPsys in range(120, 129)) or (current_BPdia > 120):
+                # recommendation = "Your BP is: " + str(current_BPsys) + "/" + str(
+                #     current_BPdia) + " \n\nYour BP is normal. Though elevated"
+                # self.manager.get_screen("Response").ids["response"].text = recommendation
+                recommendation = str(current_BPsys) + "/" + str(
+                    current_BPdia) + "" + "[Hypertension Crisis]"
+                self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
+
+            elif (current_BPsys in range(130, 139)) or (current_BPdia in range(80, 89)):
                 # recommendation = "Your BP is: " + str(current_BPsys) + "/" + str(
                 #     current_BPdia) + " \n\nHigh Blood Pressure..Hypertension( Stage 1)"
                 # self.manager.get_screen("Response").ids["response"].text = recommendation
                 recommendation = str(current_BPsys) + "/" + str(
                     current_BPdia) + " [Hypertension(1)]"
+                self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
+
+            elif (current_BPsys in range(130, 139)) or (current_BPdia in range(90, 120)):
+                # recommendation = "Your BP is: " + str(current_BPsys) + "/" + str(
+                #     current_BPdia) + " \n\nHigh Blood Pressure..Hypertension( Stage 1)"
+                # self.manager.get_screen("Response").ids["response"].text = recommendation
+                recommendation = str(current_BPsys) + "/" + str(
+                    current_BPdia) + " [Hypertension(2)]"
+                self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
+
+            elif (current_BPsys in range(130, 139)) or current_BPdia > 120:
+                # recommendation = "Your BP is: " + str(current_BPsys) + "/" + str(
+                #     current_BPdia) + " \n\nHigh Blood Pressure..Hypertension( Stage 1)"
+                # self.manager.get_screen("Response").ids["response"].text = recommendation
+                recommendation = str(current_BPsys) + "/" + str(
+                    current_BPdia) + " [Hypertension Crisis]"
                 self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
 
             elif (current_BPsys in range(140, 180)) or (current_BPdia in range(90, 120)):
@@ -359,6 +631,14 @@ class PatientDetails(Screen):
                 # self.manager.get_screen("Response").ids["response"].text = recommendation
                 recommendation = str(current_BPsys) + "/" + str(
                     current_BPdia) + " [Hypertension(2)]"
+                self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
+
+            elif (current_BPsys in range(140, 180)) or current_BPdia > 120:
+                # recommendation = " Your BP is: " + str(current_BPsys) + "/" + str(
+                #     current_BPdia) + "\n\nHigh Blood Pressure..Hypertension(stage 2)"
+                # self.manager.get_screen("Response").ids["response"].text = recommendation
+                recommendation = str(current_BPsys) + "/" + str(
+                    current_BPdia) + " [Hypertension Crisis]"
                 self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
 
             elif (current_BPsys > 180) or (current_BPdia > 120):
@@ -926,7 +1206,7 @@ class Manager(ScreenManager):
 class MyApp(App):
     def build(self):
         Window.clearcolor = (248 / 255, 247 / 255, 255 / 255, 1)
-        Window.fullscreen = 'auto'
+        # Window.fullscreen = 'auto'
         return Manager()
 
 
