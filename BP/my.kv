@@ -183,65 +183,130 @@
         BoxLayout:
             size_hint_y: None
             height: 50
-            padding: [30, 0]
-            Label:
-                size_hint_x: None
-                width: 100
-                text: "Full Name:"
-                color: (0,0,0,1)
-                text_size: self.size
-                halign: "left"
-                valign: "middle"
-            TextInput:
-                color: (0,0,0,1)
-                id: f_name
-                padding_y: [self.height / 2.0 - (self.line_height / 2.0) * len(self._lines), 0]
-                font_size: "20dp"
-                bold: True
-
-
-        BoxLayout:
-            size_hint_y: None
-            height: 50
-            padding: [30, 0]
-            Label:
-                color: (0,0,0,1)
-                text: "ID:"
-                font_size: "15dp"
-                size_hint_x: None
-                width: 20
-            TextInput:
-                id: N_id
-                color: (0,0,0,1)
-                bold: True
-                padding_y: [self.height / 2.0 - (self.line_height / 2.0) * len(self._lines), 0]
-                font_size: "15dp"
-            Label:
-                color: (0,0,0,1)
-                size_hint_x: None
-                width: 65
-                text: "Gender:"
-                font_size: "15dp"
-            TextInput:
+            padding: [10, 0]
+            Image:
                 id: gender
-                bold: True
-                padding_y: [self.height / 2.0 - (self.line_height / 2.0) * len(self._lines), 0]
-                font_size: "15dp"
-                color: (0,0,0,1)
+                size_hint_x: 0.2
+                size_hint_y: 1
+                size: self.texture_size
+                allow_stretch: True
+			    keep_ratio: True
 
-            Label:
-                color: (0,0,0,1)
-                text: "DOB:"
-                font_size: "15dp"
-                size_hint_x: None
-                width: 40
-            TextInput:
-                id: dob
-                padding_y: [self.height / 2.0 - (self.line_height / 2.0) * len(self._lines), 0]
-                bold: True
-                font_size: "15dp"
-                color: (0,0,0,1)
+            BoxLayout:
+                orientation: "vertical"
+                BoxLayout:
+                    Label:
+                        color: (0,0,0,1)
+                        id: f_name
+                        text_size: self.size
+                        halign: "left"
+                        valign: "middle"
+                        font_size: "20dp"
+                        bold: True
 
+                BoxLayout:
+                    Label:
+                        id: dob
+                        text_size: self.size
+                        color: (0,0,0,1)
+
+                    Label:
+                        id: N_id
+                        text: "VJU78GY"
+                        color: (0,0,0,1)
+#        :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+#        BoxLayout:
+#            size_hint_y: None
+#            height: 80
+#            canvas.before:
+#                Color:
+#                    rgba: (210/255,210/255,207/255,1)
+#                Rectangle:
+#                    size: self.size
+#                    pos: self.pos
+#
+#            Button:
+#                size_hint_x: .2
+#                font_size: 18
+#                bold:True
+#                color: (0,0,0,1)
+#                background_color: (210/255,210/255,207/255,1)
+#                background_normal: "images/back.png"
+#                on_press:
+#                    app.root.current = "Scan"
+#                    root.manager.transition.direction = "right"
+#                    root.enter()
+#
+#
+#            Label:
+#                text: "CAPTURE BP VITALS"
+#                color: (0,0,0,1)
+#                size_hint_x: .8
+#                bold: True
+#                font_size: 18
+#
+#        BoxLayout:
+#            size_hint_y: None
+#            height: 50
+#            padding: [30, 0]
+#            Label:
+#                size_hint_x: None
+#                width: 100
+#                text: "Full Name:"
+#                color: (0,0,0,1)
+#                text_size: self.size
+#                halign: "left"
+#                valign: "middle"
+#            TextInput:
+#                color: (0,0,0,1)
+#                id: f_name
+#                padding_y: [self.height / 2.0 - (self.line_height / 2.0) * len(self._lines), 0]
+#                font_size: "20dp"
+#                bold: True
+#
+#
+#        BoxLayout:
+#            size_hint_y: None
+#            height: 50
+#            padding: [30, 0]
+#            Label:
+#                color: (0,0,0,1)
+#                text: "ID:"
+#                font_size: "15dp"
+#                size_hint_x: None
+#                width: 20
+#            TextInput:
+#                id: N_id
+#                color: (0,0,0,1)
+#                bold: True
+#                padding_y: [self.height / 2.0 - (self.line_height / 2.0) * len(self._lines), 0]
+#                font_size: "15dp"
+#            Label:
+#                color: (0,0,0,1)
+#                size_hint_x: None
+#                width: 65
+#                text: "Gender:"
+#                font_size: "15dp"
+#            TextInput:
+#                id: gender
+#                bold: True
+#                padding_y: [self.height / 2.0 - (self.line_height / 2.0) * len(self._lines), 0]
+#                font_size: "15dp"
+#                color: (0,0,0,1)
+#
+#            Label:
+#                color: (0,0,0,1)
+#                text: "DOB:"
+#                font_size: "15dp"
+#                size_hint_x: None
+#                width: 40
+#            TextInput:
+#                id: dob
+#                padding_y: [self.height / 2.0 - (self.line_height / 2.0) * len(self._lines), 0]
+#                bold: True
+#                font_size: "15dp"
+#                color: (0,0,0,1)
+#         ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 #        BoxLayout:
 #            size_hint_y: None
 #            height: 50
@@ -332,10 +397,10 @@
                         color: (0,0,0,1)
                         text: "BP"
                     Label:
+                        id: timeStamp
                         text_size: self.size
                         halign: "left"
                         valign: "middle"
-                        text: "DATE"
                         color: (0,0,0,1)
                     Label:
                         id: pBP
@@ -345,10 +410,10 @@
                         color: (0,0,0,1)
 
                     Label:
+                        id: timeStamp2
                         text_size: self.size
                         halign: "left"
                         valign: "middle"
-                        text: "DATE"
                         color: (0,0,0,1)
                     Label:
                         id: pBP2
@@ -357,10 +422,10 @@
                         valign: "middle"
                         color: (0,0,0,1)
                     Label:
+                        id: timeStamp3
                         text_size: self.size
                         halign: "left"
                         valign: "middle"
-                        text: "DATE"
                         color: (0,0,0,1)
                     Label:
                         id: pBP3
@@ -370,10 +435,10 @@
                         color: (0,0,0,1)
 
                     Label:
+                        id: timeStamp4
                         text_size: self.size
                         halign: "left"
                         valign: "middle"
-                        text: "DATE"
                         color: (0,0,0,1)
                     Label:
                         id: pBP4
