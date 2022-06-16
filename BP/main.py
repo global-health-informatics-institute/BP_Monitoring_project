@@ -1,13 +1,13 @@
-# import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 # from gpiozero import LED
 import time
-
 import mysql.connector as mysql
 import serial
 from kivy.app import App
 from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.uix.screenmanager import Screen, ScreenManager
+from datetime import date
 
 # import sys, os
 
@@ -27,8 +27,10 @@ class MainWindow(Screen):
 
 
 class ScanWindow(Screen):
+    today = date.today()
 
     def callback(self):
+
         name = self.manager.get_screen("Scan").ids["textFocus"].text
         val = name.split('~')
         print(len(val))
@@ -44,8 +46,22 @@ class ScanWindow(Screen):
             pBP3 = ""
             pBP4 = ""
 
-            gender = val[8]
+            gender = str(val[8]).upper()
             DOB = val[9]
+
+            # Calculate Age
+
+            dateOfBirth = str(DOB).split(" ")
+            day = dateOfBirth[0]
+            year = dateOfBirth[2]
+            month = dateOfBirth[1]
+
+            age = self.today.year - int(year)
+
+            # birthDate = (date(year, month, day))
+            # age = self.today.year - birthDate.year - (
+            #             (self.today.month, self.today.day) < (birthDate.month, birthDate.day))
+
             cur.execute("SELECT * FROM Demographic WHERE id=%s", [N_id])
             record = cur.fetchall()
             if record:
@@ -58,18 +74,18 @@ class ScanWindow(Screen):
                         current_BPsys = str(row[0])
                         current_BPdia = str(row[1])
                         timeStamp = str(row[2]).split(" ")
-                        date = timeStamp[0]
+                        date1 = timeStamp[0]
                         if len(current_BPsys) < 1 or len(current_BPdia) < 1:
                             self.manager.get_screen("Patient_Details").ids["N_id"].text = "ID: " + "ID: " + str(N_id)
                             self.manager.get_screen("Patient_Details").ids["f_name"].text = str(fname)
                             # self.manager.get_screen("Patient_Details").ids["gender"].text = str(gender)
-                            self.manager.get_screen("Patient_Details").ids["dob"].text = str(DOB)
+                            self.manager.get_screen("Patient_Details").ids["dob"].text = str(age) + " Years"
                             self.manager.get_screen("Patient_Details").ids["pBP"].text = ""
                             self.manager.get_screen("Patient_Details").ids["timeStamp"].text = ""
                             self.manager.transition.direction = "left"
                             self.parent.current = "Patient_Details"
 
-                            if str(gender) == "Male":
+                            if str(gender) == "MALE":
                                 self.manager.get_screen("Patient_Details").ids["gender"].source = "images/male.png"
                             else:
                                 self.manager.get_screen("Patient_Details").ids["gender"].source = "images/female.png"
@@ -78,13 +94,13 @@ class ScanWindow(Screen):
                             self.manager.get_screen("Patient_Details").ids["N_id"].text = "ID: " + str(N_id)
                             self.manager.get_screen("Patient_Details").ids["f_name"].text = str(fname)
                             # self.manager.get_screen("Patient_Details").ids["gender"].text = str(gender)
-                            self.manager.get_screen("Patient_Details").ids["dob"].text = str(DOB)
+                            self.manager.get_screen("Patient_Details").ids["dob"].text = str(age) + " Years"
                             self.manager.get_screen("Patient_Details").ids["pBP"].text = pBP
-                            self.manager.get_screen("Patient_Details").ids["timeStamp"].text = date
+                            self.manager.get_screen("Patient_Details").ids["timeStamp"].text = date1
                             self.manager.transition.direction = "left"
                             self.parent.current = "Patient_Details"
 
-                            if str(gender) == "Male":
+                            if str(gender) == "MALE":
                                 self.manager.get_screen("Patient_Details").ids["gender"].source = "images/male.png"
                             else:
                                 self.manager.get_screen("Patient_Details").ids["gender"].source = "images/female.png"
@@ -170,13 +186,13 @@ class ScanWindow(Screen):
                     self.manager.get_screen("Patient_Details").ids["N_id"].text = "ID: " + str(N_id)
                     self.manager.get_screen("Patient_Details").ids["f_name"].text = str(fname)
                     # self.manager.get_screen("Patient_Details").ids["gender"].text = str(gender)
-                    self.manager.get_screen("Patient_Details").ids["dob"].text = str(DOB)
+                    self.manager.get_screen("Patient_Details").ids["dob"].text = str(age) + " Years"
                     self.manager.get_screen("Patient_Details").ids["pBP"].text = ""
                     self.manager.get_screen("Patient_Details").ids["timeStamp"].text = ""
                     self.manager.transition.direction = "left"
                     self.parent.current = "Patient_Details"
 
-                    if str(gender) == "Male":
+                    if str(gender) == "MALE":
                         self.manager.get_screen("Patient_Details").ids["gender"].source = "images/male.png"
                     else:
                         self.manager.get_screen("Patient_Details").ids["gender"].source = "images/female.png"
@@ -188,13 +204,13 @@ class ScanWindow(Screen):
                 self.manager.get_screen("Patient_Details").ids["N_id"].text = "ID: " + str(N_id)
                 self.manager.get_screen("Patient_Details").ids["f_name"].text = str(fname)
                 # self.manager.get_screen("Patient_Details").ids["gender"].text = str(gender)
-                self.manager.get_screen("Patient_Details").ids["dob"].text = str(DOB)
+                self.manager.get_screen("Patient_Details").ids["dob"].text = str(age) + " Years"
                 self.manager.get_screen("Patient_Details").ids["pBP"].text = ""
                 self.manager.get_screen("Patient_Details").ids["timeStamp"].text = ""
                 self.manager.transition.direction = "left"
                 self.parent.current = "Patient_Details"
 
-                if str(gender) == "Male":
+                if str(gender) == "MALE":
                     self.manager.get_screen("Patient_Details").ids["gender"].source = "images/male.png"
                 else:
                     self.manager.get_screen("Patient_Details").ids["gender"].source = "images/female.png"
@@ -213,21 +229,21 @@ class ScanWindow(Screen):
         self.do_nothing()
         # led = LED(6)
         # led.on()
-        # LED_PIN = 6
-        # GPIO.setmode(GPIO.BCM)
-        # GPIO.setwarnings(False)
-        # GPIO.setup(LED_PIN, GPIO.OUT)
-        # GPIO.output(LED_PIN, GPIO.HIGH)
+        LED_PIN = 6
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setwarnings(False)
+        GPIO.setup(LED_PIN, GPIO.OUT)
+        GPIO.output(LED_PIN, GPIO.HIGH)
 
     def Off_LED(self):
         self.do_nothing()
         # led = LED(6)
         # led.off()
-        # LED_PIN = 6
-        # GPIO.setmode(GPIO.BCM)
-        # GPIO.setwarnings(False)
-        # GPIO.setup(LED_PIN, GPIO.OUT)
-        # GPIO.output(LED_PIN, GPIO.LOW)
+        LED_PIN = 6
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setwarnings(False)
+        GPIO.setup(LED_PIN, GPIO.OUT)
+        GPIO.output(LED_PIN, GPIO.LOW)
 
     def do_nothing(self):
         pass
@@ -308,7 +324,8 @@ class PatientDetails(Screen):
                                                 date4 = timeStamp4[0]
                                                 if len(previous_BPsys4) < 1 or len(previous_BPdia4) < 1:
                                                     self.manager.get_screen("Patient_Details").ids["pBP4"].text = ""
-                                                    self.manager.get_screen("Patient_Details").ids["timeStamp4"].text = ""
+                                                    self.manager.get_screen("Patient_Details").ids[
+                                                        "timeStamp4"].text = ""
 
                                                 else:
                                                     pBP4 = previous_BPsys4 + "/" + previous_BPdia4
@@ -560,7 +577,8 @@ class PatientDetails(Screen):
             print(dia_mmHg)
             self.manager.get_screen("Patient_Details").ids["restart"].opacity = 1
             self.manager.get_screen("Patient_Details").ids["takeBP"].opacity = 1
-            self.manager.get_screen("Patient_Details").ids["lblText"].text = "BP Error. Press Take BP button to capture Bp"
+            self.manager.get_screen("Patient_Details").ids[
+                "lblText"].text = "BP Error. Press Take BP button to capture Bp"
             self.manager.get_screen("Patient_Details").ids["lblText"].opacity = 1
 
         else:
@@ -1289,7 +1307,7 @@ class Manager(ScreenManager):
 class MyApp(App):
     def build(self):
         Window.clearcolor = (248 / 255, 247 / 255, 255 / 255, 1)
-        # Window.fullscreen = 'auto'
+        Window.fullscreen = 'auto'
         return Manager()
 
 
