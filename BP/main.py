@@ -1,4 +1,4 @@
-import RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
 # from gpiozero import LED
 import time
 import mysql.connector as mysql
@@ -54,13 +54,48 @@ class ScanWindow(Screen):
             dateOfBirth = str(DOB).split(" ")
             day = dateOfBirth[0]
             year = dateOfBirth[2]
-            month = dateOfBirth[1]
+            mon = dateOfBirth[1]
+            month = int()
 
-            age = self.today.year - int(year)
+            if mon.upper() == "JAN":
+                month = 1
 
-            # birthDate = (date(year, month, day))
-            # age = self.today.year - birthDate.year - (
-            #             (self.today.month, self.today.day) < (birthDate.month, birthDate.day))
+            elif mon.upper() == "FEB":
+                month = 2
+
+            elif mon.upper() == "MAR":
+                month = 3
+
+            elif mon.upper() == "APR":
+                month = 4
+
+            elif mon.upper() == "MAY":
+                month = 5
+
+            elif mon.upper() == "JUN":
+                month = 6
+
+            elif mon.upper() == "JUL":
+                month = 7
+
+            elif mon.upper() == "AUG":
+                month = 8
+
+            elif mon.upper() == "SEP":
+                month = 9
+
+            elif mon.upper() == "OCT":
+                month = 10
+
+            elif mon.upper() == "NOV":
+                month = 11
+
+            elif mon.upper() == "DEC":
+                month = 12
+
+            birthDate = date(int(year), month, int(day))
+            age = self.today.year - birthDate.year - (
+                        (self.today.month, self.today.day) < (birthDate.month, birthDate.day))
 
             cur.execute("SELECT * FROM Demographic WHERE id=%s", [N_id])
             record = cur.fetchall()
@@ -78,7 +113,6 @@ class ScanWindow(Screen):
                         if len(current_BPsys) < 1 or len(current_BPdia) < 1:
                             self.manager.get_screen("Patient_Details").ids["N_id"].text = "ID: " + "ID: " + str(N_id)
                             self.manager.get_screen("Patient_Details").ids["f_name"].text = str(fname)
-                            # self.manager.get_screen("Patient_Details").ids["gender"].text = str(gender)
                             self.manager.get_screen("Patient_Details").ids["dob"].text = str(age) + " Years"
                             self.manager.get_screen("Patient_Details").ids["pBP"].text = ""
                             self.manager.get_screen("Patient_Details").ids["timeStamp"].text = ""
@@ -93,7 +127,6 @@ class ScanWindow(Screen):
                             pBP = current_BPsys + "/" + current_BPdia
                             self.manager.get_screen("Patient_Details").ids["N_id"].text = "ID: " + str(N_id)
                             self.manager.get_screen("Patient_Details").ids["f_name"].text = str(fname)
-                            # self.manager.get_screen("Patient_Details").ids["gender"].text = str(gender)
                             self.manager.get_screen("Patient_Details").ids["dob"].text = str(age) + " Years"
                             self.manager.get_screen("Patient_Details").ids["pBP"].text = pBP
                             self.manager.get_screen("Patient_Details").ids["timeStamp"].text = date1
@@ -185,7 +218,6 @@ class ScanWindow(Screen):
                 else:
                     self.manager.get_screen("Patient_Details").ids["N_id"].text = "ID: " + str(N_id)
                     self.manager.get_screen("Patient_Details").ids["f_name"].text = str(fname)
-                    # self.manager.get_screen("Patient_Details").ids["gender"].text = str(gender)
                     self.manager.get_screen("Patient_Details").ids["dob"].text = str(age) + " Years"
                     self.manager.get_screen("Patient_Details").ids["pBP"].text = ""
                     self.manager.get_screen("Patient_Details").ids["timeStamp"].text = ""
@@ -203,7 +235,6 @@ class ScanWindow(Screen):
                 db.commit()
                 self.manager.get_screen("Patient_Details").ids["N_id"].text = "ID: " + str(N_id)
                 self.manager.get_screen("Patient_Details").ids["f_name"].text = str(fname)
-                # self.manager.get_screen("Patient_Details").ids["gender"].text = str(gender)
                 self.manager.get_screen("Patient_Details").ids["dob"].text = str(age) + " Years"
                 self.manager.get_screen("Patient_Details").ids["pBP"].text = ""
                 self.manager.get_screen("Patient_Details").ids["timeStamp"].text = ""
@@ -229,21 +260,21 @@ class ScanWindow(Screen):
         self.do_nothing()
         # led = LED(6)
         # led.on()
-        LED_PIN = 6
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setwarnings(False)
-        GPIO.setup(LED_PIN, GPIO.OUT)
-        GPIO.output(LED_PIN, GPIO.HIGH)
+        # LED_PIN = 6
+        # GPIO.setmode(GPIO.BCM)
+        # GPIO.setwarnings(False)
+        # GPIO.setup(LED_PIN, GPIO.OUT)
+        # GPIO.output(LED_PIN, GPIO.HIGH)
 
     def Off_LED(self):
         self.do_nothing()
         # led = LED(6)
         # led.off()
-        LED_PIN = 6
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setwarnings(False)
-        GPIO.setup(LED_PIN, GPIO.OUT)
-        GPIO.output(LED_PIN, GPIO.LOW)
+        # LED_PIN = 6
+        # GPIO.setmode(GPIO.BCM)
+        # GPIO.setwarnings(False)
+        # GPIO.setup(LED_PIN, GPIO.OUT)
+        # GPIO.output(LED_PIN, GPIO.LOW)
 
     def do_nothing(self):
         pass
@@ -261,7 +292,7 @@ class PatientDetails(Screen):
                 current_BPsys = str(row[0])
                 current_BPdia = str(row[1])
                 timeStamp = str(row[2]).split(" ")
-                date = timeStamp[0]
+                pdate = timeStamp[0]
                 if len(current_BPsys) < 1 or len(current_BPdia) < 1:
                     self.manager.get_screen("Patient_Details").ids["pBP"].text = ""
                     self.manager.get_screen("Patient_Details").ids["timeStamp"].text = ""
@@ -269,7 +300,7 @@ class PatientDetails(Screen):
                 else:
                     pBP = current_BPsys + "/" + current_BPdia
                     self.manager.get_screen("Patient_Details").ids["pBP"].text = pBP
-                    self.manager.get_screen("Patient_Details").ids["timeStamp"].text = date
+                    self.manager.get_screen("Patient_Details").ids["timeStamp"].text = pdate
 
                     # @pBP 2
                     cur.execute(
@@ -1307,7 +1338,7 @@ class Manager(ScreenManager):
 class MyApp(App):
     def build(self):
         Window.clearcolor = (248 / 255, 247 / 255, 255 / 255, 1)
-        Window.fullscreen = 'auto'
+        # Window.fullscreen = 'auto'
         return Manager()
 
 

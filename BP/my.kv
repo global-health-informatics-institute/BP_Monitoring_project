@@ -53,10 +53,10 @@
     spacing: 20
     on_enter:
         root.enter()
-        root.On_LED()
+#        root.On_LED()
 
     on_leave:
-        root.Off_LED()
+#        root.Off_LED()
     BoxLayout:
         orientation: "vertical"
         spacing: 10
@@ -213,6 +213,7 @@
                     Label:
                         id: N_id
                         text: "VJU78GY"
+                        font_size: "17dp"
                         color: (0,0,0,1)
 #        :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 #        BoxLayout:
@@ -340,8 +341,9 @@
                 color: (0,0,0,1)
                 font_size: "15dp"
                 text: "Current BP:"
+                font_size: "20dp"
                 size_hint_x: None
-                width: 100
+                width: 150
                 color: (0,0,0,1)
                 text_size: self.size
                 halign: "left"
@@ -352,6 +354,7 @@
                 halign: "left"
                 valign: "middle"
                 color: (0,0,0,1)
+                font_size: "20dp"
                 text: "Waiting For BP Vitals...."
                 bold: True
 
@@ -380,6 +383,7 @@
                     bold: True
                     size_hint_y: None
                     height: 30
+                    font_size: "17dp"
                 GridLayout:
                     cols: 2
                     col_force_default: True
@@ -387,6 +391,7 @@
                     Label:
                         text_size: self.size
                         halign: "left"
+                        font_size: "17dp"
                         valign: "middle"
                         text: "DATE"
                         color: (0,0,0,1)
@@ -394,18 +399,21 @@
                         text_size: self.size
                         halign: "center"
                         valign: "middle"
+                        font_size: "17dp"
                         color: (0,0,0,1)
                         text: "BP"
                     Label:
                         id: timeStamp
                         text_size: self.size
                         halign: "left"
+                        font_size: "17dp"
                         valign: "middle"
                         color: (0,0,0,1)
                     Label:
                         id: pBP
                         text_size: self.size
                         halign: "center"
+                        font_size: "17dp"
                         valign: "middle"
                         color: (0,0,0,1)
 
@@ -413,18 +421,21 @@
                         id: timeStamp2
                         text_size: self.size
                         halign: "left"
+                        font_size: "17dp"
                         valign: "middle"
                         color: (0,0,0,1)
                     Label:
                         id: pBP2
                         text_size: self.size
                         halign: "center"
+                        font_size: "17dp"
                         valign: "middle"
                         color: (0,0,0,1)
                     Label:
                         id: timeStamp3
                         text_size: self.size
                         halign: "left"
+                        font_size: "17dp"
                         valign: "middle"
                         color: (0,0,0,1)
                     Label:
@@ -432,6 +443,7 @@
                         text_size: self.size
                         halign: "center"
                         valign: "middle"
+                        font_size: "17dp"
                         color: (0,0,0,1)
 
                     Label:
@@ -439,12 +451,14 @@
                         text_size: self.size
                         halign: "left"
                         valign: "middle"
+                        font_size: "17dp"
                         color: (0,0,0,1)
                     Label:
                         id: pBP4
                         text_size: self.size
                         halign: "center"
                         valign: "middle"
+                        font_size: "17dp"
                         color: (0,0,0,1)
 
 
@@ -457,13 +471,14 @@
                     text: "RECOMMENDATION"
                     color: (0,0,0,1)
                     bold: True
+                    font_size: "17dp"
                     size_hint_y: None
                     height: 30
                 TextInput:
                     multiline: True
                     id: comment
                     padding: [20,20]
-                    font_size: 15
+                    font_size: 20
                     size_hint_x: None
                     width: 200
                     size_hint_y: None
@@ -479,6 +494,7 @@
                 text: "Press the Blue Round Button"
                 color: (0,0,0,1)
                 bold: True
+                font_size: "20dp"
 
         BoxLayout:
             padding: 70
@@ -492,6 +508,7 @@
                 padding:  [20,10]
                 size_hint_x: .2
                 opacity: 0
+                font_size: "20dp"
                 size_hint_y: None
                 height: 40
                 pos_hint: {"center_x": 0.5, "center_y":0.2}
@@ -505,6 +522,7 @@
                 bold: True
                 text: "Take BP"
                 size_hint_x: .2
+                font_size: "20dp"
                 size_hint_y: None
                 opacity: 0
                 height: 40
