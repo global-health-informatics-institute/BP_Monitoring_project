@@ -628,9 +628,11 @@ class PatientDetails(Screen):
         self.manager.get_screen("Patient_Details").ids["restart"].opacity = 0
         self.manager.get_screen("Patient_Details").ids["takeBP"].opacity = 0
         self.manager.get_screen("Patient_Details").ids["lblText"].opacity = 1
-        self.manager.get_screen("Patient_Details").ids["lblText"].opacity = 1
         self.manager.get_screen("Patient_Details").ids["lblText"].text = "Press the Blue Round Button"
-        # self.manager.get_screen("Patient_Details").ids["pBP"].text = ""
+        self.manager.get_screen("Patient_Details").ids["pBP"].text = ""
+        self.manager.get_screen("Patient_Details").ids["pBP2"].text = ""
+        self.manager.get_screen("Patient_Details").ids["pBP3"].text = ""
+        self.manager.get_screen("Patient_Details").ids["pBP4"].text = ""
 
     def leave(self):
         self.manager.get_screen("Patient_Details").ids["bpValue"].text = "Waiting for BP vitals..."
@@ -639,6 +641,9 @@ class PatientDetails(Screen):
         self.manager.get_screen("Patient_Details").ids["lblText"].opacity = 1
         self.manager.get_screen("Patient_Details").ids["comment"].text = ""
         self.manager.get_screen("Patient_Details").ids["pBP"].text = ""
+        self.manager.get_screen("Patient_Details").ids["pBP2"].text = ""
+        self.manager.get_screen("Patient_Details").ids["pBP3"].text = ""
+        self.manager.get_screen("Patient_Details").ids["pBP4"].text = ""
 
     def compose_response(self):
         cur.execute("SELECT id FROM vitals LIMIT 0,1")
