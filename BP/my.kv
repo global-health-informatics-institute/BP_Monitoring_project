@@ -53,10 +53,10 @@
     spacing: 20
     on_enter:
         root.enter()
-        root.On_LED()
+#        root.On_LED()
 
     on_leave:
-        root.Off_LED()
+#        root.Off_LED()
     BoxLayout:
         orientation: "vertical"
         spacing: 10
@@ -141,7 +141,7 @@
 <PatientDetails>:
     name: "Patient_Details"
     on_enter:
-        root.enter()
+#        root.enter()
         root.generate_BP()
     on_pre_leave:
         root.leave()
@@ -170,7 +170,7 @@
                 on_press:
                     app.root.current = "Scan"
                     root.manager.transition.direction = "right"
-                    root.enter()
+#                    root.enter()
 
 
             Label:
@@ -478,7 +478,7 @@
                     multiline: True
                     id: comment
                     padding: [10,10]
-                    font_size: 18
+                    font_size: 16
                     size_hint_x: None
                     width: 200
                     size_hint_y: None
@@ -486,15 +486,15 @@
                     pos_hint: {"center_x":0.5}
 
         BoxLayout:
-            id: lblText
             orientation: "vertical"
             size_hint_y: None
             height: 70
             Label:
+                id: lblText
                 text: "Press the Blue Round Button"
                 color: (0,0,0,1)
                 bold: True
-                font_size: "20dp"
+                font_size: "18dp"
 
         BoxLayout:
             padding: 70
@@ -513,7 +513,7 @@
                 height: 40
                 pos_hint: {"center_x": 0.5, "center_y":0.2}
                 on_press:
-                    root.enter()
+#                    root.enter()
                     app.root.current = "Main"
 
 

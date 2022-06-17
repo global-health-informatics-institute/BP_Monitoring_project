@@ -1,4 +1,4 @@
-import RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
 # from gpiozero import LED
 import time
 import mysql.connector as mysql
@@ -260,21 +260,21 @@ class ScanWindow(Screen):
         self.do_nothing()
         # led = LED(6)
         # led.on()
-        LED_PIN = 6
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setwarnings(False)
-        GPIO.setup(LED_PIN, GPIO.OUT)
-        GPIO.output(LED_PIN, GPIO.HIGH)
+        # LED_PIN = 6
+        # GPIO.setmode(GPIO.BCM)
+        # GPIO.setwarnings(False)
+        # GPIO.setup(LED_PIN, GPIO.OUT)
+        # GPIO.output(LED_PIN, GPIO.HIGH)
 
     def Off_LED(self):
         self.do_nothing()
         # led = LED(6)
         # led.off()
-        LED_PIN = 6
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setwarnings(False)
-        GPIO.setup(LED_PIN, GPIO.OUT)
-        GPIO.output(LED_PIN, GPIO.LOW)
+        # LED_PIN = 6
+        # GPIO.setmode(GPIO.BCM)
+        # GPIO.setwarnings(False)
+        # GPIO.setup(LED_PIN, GPIO.OUT)
+        # GPIO.output(LED_PIN, GPIO.LOW)
 
     def do_nothing(self):
         pass
@@ -399,7 +399,7 @@ class PatientDetails(Screen):
         BP_cart = ""
         m = True
         counter = 0
-        while counter < 60:
+        while counter < 5:
             # serialData = serialPort.readall().decode("ASCII")
             # print("wee!!")
             # if serialData == "":
@@ -600,21 +600,24 @@ class PatientDetails(Screen):
             counter = counter + 1
             time.sleep(0.5)
         if sys_mmHg > 0 or dia_mmHg > 0:
+            print("strange")
             self.manager.get_screen("Patient_Details").ids["restart"].opacity = 1
             self.manager.get_screen("Patient_Details").ids["takeBP"].opacity = 1
             self.manager.get_screen("Patient_Details").ids["lblText"].text = "Press the Blue Round Button"
             self.manager.get_screen("Patient_Details").ids["lblText"].opacity = 0
 
         elif sys_mmHg == 0 or dia_mmHg == 0:
+            print("== 0")
             print(sys_mmHg)
             print(dia_mmHg)
+            self.manager.get_screen("Patient_Details").ids[
+                "lblText"].opacity = 1
             self.manager.get_screen("Patient_Details").ids["restart"].opacity = 1
             self.manager.get_screen("Patient_Details").ids["takeBP"].opacity = 1
-            self.manager.get_screen("Patient_Details").ids[
-                "lblText"].text = "BP Error. Press Take BP button to capture Bp"
-            self.manager.get_screen("Patient_Details").ids["lblText"].opacity = 1
+            self.manager.get_screen("Patient_Details").ids["lblText"].text = "Timeout/Error!!!..Press take BP button to capture BP"
 
         else:
+            print("else")
             print(sys_mmHg)
             print(dia_mmHg)
             self.manager.get_screen("Patient_Details").ids["restart"].opacity = 1
@@ -623,16 +626,20 @@ class PatientDetails(Screen):
                 "lblText"].text = "Timeout/Error!!!..Press take BP button to capture BP"
             self.manager.get_screen("Patient_Details").ids["lblText"].opacity = 1
 
-    def enter(self):
-        self.manager.get_screen("Patient_Details").ids["bpValue"].text = "Waiting for BP vitals..."
-        self.manager.get_screen("Patient_Details").ids["restart"].opacity = 0
-        self.manager.get_screen("Patient_Details").ids["takeBP"].opacity = 0
-        self.manager.get_screen("Patient_Details").ids["lblText"].opacity = 1
-        self.manager.get_screen("Patient_Details").ids["lblText"].text = "Press the Blue Round Button"
-        self.manager.get_screen("Patient_Details").ids["pBP"].text = ""
-        self.manager.get_screen("Patient_Details").ids["pBP2"].text = ""
-        self.manager.get_screen("Patient_Details").ids["pBP3"].text = ""
-        self.manager.get_screen("Patient_Details").ids["pBP4"].text = ""
+    # def enter(self):
+    #     self.manager.get_screen("Patient_Details").ids["bpValue"].text = "Waiting for BP vitals..."
+    #     self.manager.get_screen("Patient_Details").ids["restart"].opacity = 0
+    #     self.manager.get_screen("Patient_Details").ids["takeBP"].opacity = 0
+    #     self.manager.get_screen("Patient_Details").ids["lblText"].opacity = 1
+    #     self.manager.get_screen("Patient_Details").ids["lblText"].text = "Press the Blue Round Button"
+    #     self.manager.get_screen("Patient_Details").ids["pBP"].text = ""
+    #     self.manager.get_screen("Patient_Details").ids["pBP2"].text = ""
+    #     self.manager.get_screen("Patient_Details").ids["pBP3"].text = ""
+    #     self.manager.get_screen("Patient_Details").ids["pBP4"].text = ""
+    #     self.manager.get_screen("Patient_Details").ids["timeStamp"].text = ""
+    #     self.manager.get_screen("Patient_Details").ids["timeStamp2"].text = ""
+    #     self.manager.get_screen("Patient_Details").ids["timeStamp3"].text = ""
+    #     self.manager.get_screen("Patient_Details").ids["timeStamp4"].text = ""
 
     def leave(self):
         self.manager.get_screen("Patient_Details").ids["bpValue"].text = "Waiting for BP vitals..."
@@ -644,6 +651,10 @@ class PatientDetails(Screen):
         self.manager.get_screen("Patient_Details").ids["pBP2"].text = ""
         self.manager.get_screen("Patient_Details").ids["pBP3"].text = ""
         self.manager.get_screen("Patient_Details").ids["pBP4"].text = ""
+        self.manager.get_screen("Patient_Details").ids["timeStamp"].text = ""
+        self.manager.get_screen("Patient_Details").ids["timeStamp2"].text = ""
+        self.manager.get_screen("Patient_Details").ids["timeStamp3"].text = ""
+        self.manager.get_screen("Patient_Details").ids["timeStamp4"].text = ""
 
     def compose_response(self):
         cur.execute("SELECT id FROM vitals LIMIT 0,1")
@@ -1346,7 +1357,7 @@ class Manager(ScreenManager):
 class MyApp(App):
     def build(self):
         Window.clearcolor = (248 / 255, 247 / 255, 255 / 255, 1)
-        Window.fullscreen = 'auto'
+        # Window.fullscreen = 'auto'
         return Manager()
 
 
