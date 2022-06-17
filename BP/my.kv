@@ -512,7 +512,7 @@
                 size_hint_y: None
                 height: 40
                 pos_hint: {"center_x": 0.5, "center_y":0.2}
-                on_release:
+                on_press:
                     root.enter()
                     app.root.current = "Main"
 
@@ -527,7 +527,7 @@
                 opacity: 0
                 height: 40
                 pos_hint: {"center_x": 0.5, "center_y":0.2}
-                on_release:
+                on_press:
                     root.regenerate()
         Label:
             id: ii
