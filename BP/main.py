@@ -111,7 +111,7 @@ class ScanWindow(Screen):
                         timeStamp = str(row[2]).split(" ")
                         date1 = timeStamp[0]
                         if len(current_BPsys) < 1 or len(current_BPdia) < 1:
-                            self.manager.get_screen("Patient_Details").ids["N_id"].text = "ID: " + "ID: " + str(N_id)
+                            self.manager.get_screen("Patient_Details").ids["N_id"].text = "ID: " + str(N_id)
                             self.manager.get_screen("Patient_Details").ids["f_name"].text = str(fname)
                             self.manager.get_screen("Patient_Details").ids["dob"].text = str(age) + " Years"
                             self.manager.get_screen("Patient_Details").ids["pBP"].text = ""
@@ -282,10 +282,11 @@ class ScanWindow(Screen):
 
 class PatientDetails(Screen):
     def regenerate(self):
-        Nid = self.manager.get_screen("Patient_Details").ids["N_id"].text
+        nid = str(self.manager.get_screen("Patient_Details").ids["N_id"].text).split(" ")
+        N_id = nid[1]
         cur.execute(
             "SELECT sys_mmHg, dia_mmHg, time_stamp  FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 0,1",
-            [Nid])
+            [N_id])
         rows = cur.fetchall()
         if rows:
             for row in rows:
@@ -305,7 +306,7 @@ class PatientDetails(Screen):
                     # @pBP 2
                     cur.execute(
                         "SELECT sys_mmHg, dia_mmHg, time_stamp  FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 1,1",
-                        [Nid])
+                        [N_id])
                     rows2 = cur.fetchall()
                     if rows2:
                         for row2 in rows2:
@@ -325,7 +326,7 @@ class PatientDetails(Screen):
                                 # @pBP 3
                                 cur.execute(
                                     "SELECT sys_mmHg, dia_mmHg, time_stamp  FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 2,1",
-                                    [Nid])
+                                    [N_id])
                                 rows3 = cur.fetchall()
                                 if rows3:
                                     for row3 in rows3:
@@ -345,7 +346,7 @@ class PatientDetails(Screen):
                                         # @pBP 4
                                         cur.execute(
                                             "SELECT sys_mmHg, dia_mmHg, time_stamp  FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 3,1",
-                                            [Nid])
+                                            [N_id])
                                         rows4 = cur.fetchall()
                                         if rows4:
                                             for row4 in rows4:
@@ -388,7 +389,8 @@ class PatientDetails(Screen):
         Clock.schedule_once(self.generate_BP, 5)
 
     def generate_BP(self, *args):
-        N_id = self.manager.get_screen("Patient_Details").ids["N_id"].text
+        nid = str(self.manager.get_screen("Patient_Details").ids["N_id"].text).split(" ")
+        N_id = nid[1]
         serialPort = serial.Serial("/dev/ttyUSB0", baudrate=9600, bytesize=8, timeout=1, stopbits=serial.STOPBITS_ONE)
         serialData = ""
         bp = ""
@@ -650,7 +652,8 @@ class PatientDetails(Screen):
         previous_BP_cart = ""
 
         for row in rows:
-            N_id = self.manager.get_screen("Patient_Details").ids["N_id"].text
+            nid = str(self.manager.get_screen("Patient_Details").ids["N_id"].text).split(" ")
+            N_id = nid[1]
 
         cur.execute("SELECT sys_mmHg, dia_mmHg, BP_cart  FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 0,1",
                     [N_id])
