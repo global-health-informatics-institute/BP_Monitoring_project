@@ -1,5 +1,4 @@
 import RPi.GPIO as GPIO
-# from gpiozero import LED
 import time
 import mysql.connector as mysql
 import serial
@@ -8,8 +7,6 @@ from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.uix.screenmanager import Screen, ScreenManager
 from datetime import date
-
-# import sys, os
 
 Window.size = (480, 800)
 
@@ -258,8 +255,6 @@ class ScanWindow(Screen):
 
     def On_LED(self):
         self.do_nothing()
-        # led = LED(6)
-        # led.on()
         LED_PIN = 6
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False)
@@ -268,8 +263,6 @@ class ScanWindow(Screen):
 
     def Off_LED(self):
         self.do_nothing()
-        # led = LED(6)
-        # led.off()
         LED_PIN = 6
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False)
@@ -399,12 +392,7 @@ class PatientDetails(Screen):
         BP_cart = ""
         m = True
         counter = 0
-        while counter < 5:
-            # serialData = serialPort.readall().decode("ASCII")
-            # print("wee!!")
-            # if serialData == "":
-            #     break
-
+        while counter < 80:
             if serialPort.inWaiting() > 0:
                 serialData = serialPort.readall()
                 data = str(serialData.decode('ASCII'))
@@ -421,10 +409,8 @@ class PatientDetails(Screen):
                         db.commit()
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
-                        # self.parent.current = "Response"
                         self.compose_response()
-                        counter = 60
-                        # break
+                        counter = 80
 
                     elif (sys_mmHg in range(1, 119)) or (dia_mmHg in range(80, 89)):
                         BP_cart = "Hypertension_Stage1"
@@ -433,10 +419,8 @@ class PatientDetails(Screen):
                         db.commit()
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
-                        # self.parent.current = "Response"
                         self.compose_response()
-                        counter = 60
-                        # break
+                        counter = 80
 
                     elif (sys_mmHg in range(1, 119)) or (dia_mmHg in range(90, 120)):
                         BP_cart = "Hypertension_Stage2"
@@ -445,10 +429,8 @@ class PatientDetails(Screen):
                         db.commit()
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
-                        # self.parent.current = "Response"
                         self.compose_response()
-                        counter = 60
-                        # break
+                        counter = 80
 
                     elif (sys_mmHg in range(1, 119)) or dia_mmHg > 120:
                         BP_cart = "Hypertensive_crisis"
@@ -457,10 +439,8 @@ class PatientDetails(Screen):
                         db.commit()
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
-                        # self.parent.current = "Response"
                         self.compose_response()
-                        counter = 60
-                        # break
+                        counter = 80
 
                     elif (sys_mmHg in range(120, 129)) and (dia_mmHg in range(1, 79)):
                         BP_cart = "Elevated"
@@ -469,10 +449,8 @@ class PatientDetails(Screen):
                         db.commit()
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
-                        # self.parent.current = "Response"
                         self.compose_response()
-                        counter = 60
-                        # break
+                        counter = 80
 
                     elif (sys_mmHg in range(120, 129)) or (dia_mmHg in range(80, 89)):
                         BP_cart = "Hypertension_Stage1"
@@ -481,10 +459,8 @@ class PatientDetails(Screen):
                         db.commit()
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
-                        # self.parent.current = "Response"
                         self.compose_response()
-                        counter = 60
-                        # break
+                        counter = 80
 
                     elif (sys_mmHg in range(120, 129)) or (dia_mmHg in range(90, 119)):
                         BP_cart = "Hypertension_Stage2"
@@ -493,10 +469,8 @@ class PatientDetails(Screen):
                         db.commit()
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
-                        # self.parent.current = "Response"
                         self.compose_response()
-                        counter = 60
-                        # break
+                        counter = 80
 
                     elif (sys_mmHg in range(120, 129)) or dia_mmHg > 120:
                         BP_cart = "Hypertensive_crisis"
@@ -505,10 +479,8 @@ class PatientDetails(Screen):
                         db.commit()
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
-                        # self.parent.current = "Response"
                         self.compose_response()
-                        counter = 60
-                        # break
+                        counter = 80
 
                     elif (sys_mmHg in range(130, 139)) or (dia_mmHg in range(81, 89)):
                         BP_cart = "Hypertension_Stage1"
@@ -517,10 +489,8 @@ class PatientDetails(Screen):
                         db.commit()
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
-                        # self.parent.current = "Response"
                         self.compose_response()
-                        counter = 60
-                        # break
+                        counter = 80
 
                     elif (sys_mmHg in range(130, 139)) or (dia_mmHg in range(90, 119)):
                         BP_cart = "Hypertension_Stage2"
@@ -529,10 +499,8 @@ class PatientDetails(Screen):
                         db.commit()
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
-                        # self.parent.current = "Response"
                         self.compose_response()
-                        counter = 60
-                        # break
+                        counter = 80
 
                     elif (sys_mmHg in range(130, 139)) or dia_mmHg > 120:
                         BP_cart = "Hypertensive_crisis"
@@ -541,10 +509,8 @@ class PatientDetails(Screen):
                         db.commit()
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
-                        # self.parent.current = "Response"
                         self.compose_response()
-                        counter = 60
-                        # break
+                        counter = 80
 
                     elif (sys_mmHg in range(140, 180)) or (dia_mmHg in range(90, 120)):
                         BP_cart = "Hypertension_Stage2"
@@ -553,10 +519,8 @@ class PatientDetails(Screen):
                         db.commit()
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
-                        # self.parent.current = "Response"
                         self.compose_response()
-                        counter = 60
-                        # break
+                        counter = 80
 
                     elif (sys_mmHg in range(140, 180)) or dia_mmHg > 120:
                         BP_cart = "Hypertensive_crisis"
@@ -565,10 +529,8 @@ class PatientDetails(Screen):
                         db.commit()
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
-                        # self.parent.current = "Response"
                         self.compose_response()
-                        counter = 60
-                        # break
+                        counter = 80
 
                     elif (sys_mmHg > 180) or (dia_mmHg > 120):
                         BP_cart = "Hypertensive_crisis"
@@ -577,28 +539,20 @@ class PatientDetails(Screen):
                         db.commit()
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
-                        # self.parent.current = "Response"
                         self.compose_response()
-                        counter = 60
-                        # break
+                        counter = 80
 
                     else:
-                        # BP_cart = "Error"
-                        # cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
-                        #             (N_id, sys_mmHg, dia_mmHg, BP_cart))
-                        # db.commit()
-                        # bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         bp = "Error..Try Again"
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
                         self.manager.get_screen("Patient_Details").ids["comment"].text = ""
                         self.manager.get_screen("Patient_Details").ids["lblText"].opacity = 0
-                        # self.manager.get_screen("Patient_Details").ids["bpValue"].color = (1, 0, 0, 1)
-                        # self.parent.current = "Patient_Details"
-
-                        counter = 60
+                        counter = 80
 
             counter = counter + 1
+            print(counter)
             time.sleep(0.5)
+
         if sys_mmHg > 0 or dia_mmHg > 0:
             print("strange")
             self.manager.get_screen("Patient_Details").ids["restart"].opacity = 1
@@ -626,26 +580,12 @@ class PatientDetails(Screen):
                 "lblText"].text = "Timeout/Error!!!..Press take BP button to capture BP"
             self.manager.get_screen("Patient_Details").ids["lblText"].opacity = 1
 
-    # def enter(self):
-    #     self.manager.get_screen("Patient_Details").ids["bpValue"].text = "Waiting for BP vitals..."
-    #     self.manager.get_screen("Patient_Details").ids["restart"].opacity = 0
-    #     self.manager.get_screen("Patient_Details").ids["takeBP"].opacity = 0
-    #     self.manager.get_screen("Patient_Details").ids["lblText"].opacity = 1
-    #     self.manager.get_screen("Patient_Details").ids["lblText"].text = "Press the Blue Round Button"
-    #     self.manager.get_screen("Patient_Details").ids["pBP"].text = ""
-    #     self.manager.get_screen("Patient_Details").ids["pBP2"].text = ""
-    #     self.manager.get_screen("Patient_Details").ids["pBP3"].text = ""
-    #     self.manager.get_screen("Patient_Details").ids["pBP4"].text = ""
-    #     self.manager.get_screen("Patient_Details").ids["timeStamp"].text = ""
-    #     self.manager.get_screen("Patient_Details").ids["timeStamp2"].text = ""
-    #     self.manager.get_screen("Patient_Details").ids["timeStamp3"].text = ""
-    #     self.manager.get_screen("Patient_Details").ids["timeStamp4"].text = ""
-
     def leave(self):
         self.manager.get_screen("Patient_Details").ids["bpValue"].text = "Waiting for BP vitals..."
         self.manager.get_screen("Patient_Details").ids["restart"].opacity = 0
         self.manager.get_screen("Patient_Details").ids["takeBP"].opacity = 0
         self.manager.get_screen("Patient_Details").ids["lblText"].opacity = 1
+        self.manager.get_screen("Patient_Details").ids["lblText"].text = "Press the Blue Round Button"
         self.manager.get_screen("Patient_Details").ids["comment"].text = ""
         self.manager.get_screen("Patient_Details").ids["pBP"].text = ""
         self.manager.get_screen("Patient_Details").ids["pBP2"].text = ""
@@ -689,113 +629,71 @@ class PatientDetails(Screen):
         if current_BPsys > 1 and current_BPdia > 1:
 
             if (current_BPsys < 120) and (current_BPdia < 80):
-                # recommendation = "Your BP is: " + str(current_BPsys) + "/" + str(
-                #     current_BPdia) + "\n\nYour Blood pressure is normal"
-                # self.manager.get_screen("Response").ids["response"].text = recommendation
                 recommendation = str(current_BPsys) + "/" + str(
                     current_BPdia) + " " + "[Normal]"
                 self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
 
             elif (current_BPsys < 120) or (current_BPdia in range(80, 89)):
-                # recommendation = "Your BP is: " + str(current_BPsys) + "/" + str(
-                #     current_BPdia) + "\n\nYour Blood pressure is normal"
-                # self.manager.get_screen("Response").ids["response"].text = recommendation
                 recommendation = str(current_BPsys) + "/" + str(
                     current_BPdia) + "" + "[Hypertension(1)]"
                 self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
 
             elif (current_BPsys < 120) or (current_BPdia in range(90, 119)):
-                # recommendation = "Your BP is: " + str(current_BPsys) + "/" + str(
-                #     current_BPdia) + "\n\nYour Blood pressure is normal"
-                # self.manager.get_screen("Response").ids["response"].text = recommendation
                 recommendation = str(current_BPsys) + "/" + str(
                     current_BPdia) + "" + "[Hypertension(2)]"
                 self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
 
             elif (current_BPsys < 120) or (current_BPdia > 120):
-                # recommendation = "Your BP is: " + str(current_BPsys) + "/" + str(
-                #     current_BPdia) + "\n\nYour Blood pressure is normal"
-                # self.manager.get_screen("Response").ids["response"].text = recommendation
                 recommendation = str(current_BPsys) + "/" + str(
                     current_BPdia) + "" + "[Hypertension Crisis]"
                 self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
 
             elif (current_BPsys in range(120, 129)) and (current_BPdia < 80):
-                # recommendation = "Your BP is: " + str(current_BPsys) + "/" + str(
-                #     current_BPdia) + " \n\nYour BP is normal. Though elevated"
-                # self.manager.get_screen("Response").ids["response"].text = recommendation
                 recommendation = str(current_BPsys) + "/" + str(
                     current_BPdia) + "" + "[Elevated]"
                 self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
 
             elif (current_BPsys in range(120, 129)) or (current_BPdia in range(80, 89)):
-                # recommendation = "Your BP is: " + str(current_BPsys) + "/" + str(
-                #     current_BPdia) + " \n\nYour BP is normal. Though elevated"
-                # self.manager.get_screen("Response").ids["response"].text = recommendation
                 recommendation = str(current_BPsys) + "/" + str(
                     current_BPdia) + "" + "[Hypertension(1)]"
                 self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
 
             elif (current_BPsys in range(120, 129)) or (current_BPdia in range(90, 119)):
-                # recommendation = "Your BP is: " + str(current_BPsys) + "/" + str(
-                #     current_BPdia) + " \n\nYour BP is normal. Though elevated"
-                # self.manager.get_screen("Response").ids["response"].text = recommendation
                 recommendation = str(current_BPsys) + "/" + str(
                     current_BPdia) + "" + "[Hypertension(2)]"
                 self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
 
             elif (current_BPsys in range(120, 129)) or (current_BPdia > 120):
-                # recommendation = "Your BP is: " + str(current_BPsys) + "/" + str(
-                #     current_BPdia) + " \n\nYour BP is normal. Though elevated"
-                # self.manager.get_screen("Response").ids["response"].text = recommendation
                 recommendation = str(current_BPsys) + "/" + str(
                     current_BPdia) + "" + "[Hypertension Crisis]"
                 self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
 
             elif (current_BPsys in range(130, 139)) or (current_BPdia in range(80, 89)):
-                # recommendation = "Your BP is: " + str(current_BPsys) + "/" + str(
-                #     current_BPdia) + " \n\nHigh Blood Pressure..Hypertension( Stage 1)"
-                # self.manager.get_screen("Response").ids["response"].text = recommendation
                 recommendation = str(current_BPsys) + "/" + str(
                     current_BPdia) + " [Hypertension(1)]"
                 self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
 
             elif (current_BPsys in range(130, 139)) or (current_BPdia in range(90, 120)):
-                # recommendation = "Your BP is: " + str(current_BPsys) + "/" + str(
-                #     current_BPdia) + " \n\nHigh Blood Pressure..Hypertension( Stage 1)"
-                # self.manager.get_screen("Response").ids["response"].text = recommendation
                 recommendation = str(current_BPsys) + "/" + str(
                     current_BPdia) + " [Hypertension(2)]"
                 self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
 
             elif (current_BPsys in range(130, 139)) or current_BPdia > 120:
-                # recommendation = "Your BP is: " + str(current_BPsys) + "/" + str(
-                #     current_BPdia) + " \n\nHigh Blood Pressure..Hypertension( Stage 1)"
-                # self.manager.get_screen("Response").ids["response"].text = recommendation
                 recommendation = str(current_BPsys) + "/" + str(
                     current_BPdia) + " [Hypertension Crisis]"
                 self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
 
             elif (current_BPsys in range(140, 180)) or (current_BPdia in range(90, 120)):
-                # recommendation = " Your BP is: " + str(current_BPsys) + "/" + str(
-                #     current_BPdia) + "\n\nHigh Blood Pressure..Hypertension(stage 2)"
-                # self.manager.get_screen("Response").ids["response"].text = recommendation
                 recommendation = str(current_BPsys) + "/" + str(
                     current_BPdia) + " [Hypertension(2)]"
                 self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
 
             elif (current_BPsys in range(140, 180)) or current_BPdia > 120:
-                # recommendation = " Your BP is: " + str(current_BPsys) + "/" + str(
-                #     current_BPdia) + "\n\nHigh Blood Pressure..Hypertension(stage 2)"
-                # self.manager.get_screen("Response").ids["response"].text = recommendation
                 recommendation = str(current_BPsys) + "/" + str(
                     current_BPdia) + " [Hypertension Crisis]"
                 self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
 
             elif (current_BPsys > 180) or (current_BPdia > 120):
-                # recommendation = " Your BP is: " + str(current_BPsys) + "/" + str(
-                #     current_BPdia) + "\n\nHypertension crisis..seek emergency care"
-                # self.manager.get_screen("Response").ids["response"].text = recommendation
                 recommendation = str(current_BPsys) + "/" + str(
                     current_BPdia) + " [Hypertension Crisis]"
                 self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
@@ -804,7 +702,6 @@ class PatientDetails(Screen):
 
         else:
             recommendation = "Error!!!! Please start again the process!!!"
-            # self.manager.get_screen("Response").ids["response"].text = recommendation
             self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
             self.manager.get_screen("Response").ids["response"].font_size = 27
             self.manager.get_screen("Response").ids["response"].bold = True
@@ -834,520 +731,122 @@ class PatientDetails(Screen):
 
                         if (current_BP_cart == "Normal") and (previous_BP_cart == "Normal"):
                             comment = " After comparing current with previous BP," + "  " + "your BP is ok "
-                            # pBP = str(previous_BPsys) + "/" + str(
-                            #     previous_BPdia)
-                            # self.manager.get_screen("Patient_Details").ids["pBP"].text = pBP
-                            # self.manager.get_screen("Response").ids["comment"].text = comment
                             self.manager.get_screen("Patient_Details").ids["comment"].text = comment
 
                         elif (current_BP_cart == "Normal") and (previous_BP_cart == "Elevated"):
                             comment = " After comparing current with previous BP," + " " + "your BP has improved"
-                            # pBP = str(previous_BPsys) + "/" + str(
-                            #     previous_BPdia)
-                            # self.manager.get_screen("Patient_Details").ids["pBP"].text = pBP
-                            # self.manager.get_screen("Response").ids["comment"].text = comment
                             self.manager.get_screen("Patient_Details").ids["comment"].text = comment
 
                         elif (current_BP_cart == "Normal") and (previous_BP_cart == "Hypertension_Stage1"):
                             comment = " After comparing current with previous BP," + " " + " your BP has improved"
-                            # pBP = str(previous_BPsys) + "/" + str(
-                            #     previous_BPdia)
-                            # self.manager.get_screen("Patient_Details").ids["pBP"].text = pBP
-                            # self.manager.get_screen("Response").ids["comment"].text = comment
                             self.manager.get_screen("Patient_Details").ids["comment"].text = comment
 
                         elif (current_BP_cart == "Normal") and (previous_BP_cart == "Hypertension_Stage2"):
                             comment = " After comparing current with previous BP," + " " + " your BP has improved"
-                            # pBP = str(previous_BPsys) + "/" + str(
-                            #     previous_BPdia)
-                            # self.manager.get_screen("Patient_Details").ids["pBP"].text = pBP
-                            # self.manager.get_screen("Response").ids["comment"].text = comment
                             self.manager.get_screen("Patient_Details").ids["comment"].text = comment
 
                         elif (current_BP_cart == "Normal") and (previous_BP_cart == "Hypertensive_crisis"):
                             comment = " After comparing current with previous BP," + " " + " your BP has improved"
-                            # pBP = str(previous_BPsys) + "/" + str(
-                            #     previous_BPdia)
-                            # self.manager.get_screen("Patient_Details").ids["pBP"].text = pBP
-                            # self.manager.get_screen("Response").ids["comment"].text = comment
                             self.manager.get_screen("Patient_Details").ids["comment"].text = comment
 
                         # 1
 
                         elif (current_BP_cart == "Elevated") and (previous_BP_cart == "Normal"):
                             comment = " After comparing current with previous BP," + " " + " your BP is slightly elevated but normal"
-                            # pBP = str(previous_BPsys) + "/" + str(
-                            #     previous_BPdia)
-                            # self.manager.get_screen("Patient_Details").ids["pBP"].text = pBP
-                            # self.manager.get_screen("Response").ids["comment"].text = comment
                             self.manager.get_screen("Patient_Details").ids["comment"].text = comment
 
                         elif (current_BP_cart == "Elevated") and (previous_BP_cart == "Elevated"):
                             comment = " After comparing current with previous BP," + " " + " has not changed"
-                            # pBP = str(previous_BPsys) + "/" + str(
-                            #     previous_BPdia)
-                            # self.manager.get_screen("Patient_Details").ids["pBP"].text = pBP
-                            # self.manager.get_screen("Response").ids["comment"].text = comment
                             self.manager.get_screen("Patient_Details").ids["comment"].text = comment
 
                         elif (current_BP_cart == "Elevated") and (previous_BP_cart == "Hypertension_Stage1"):
                             comment = " After comparing current with previous BP," + " " + " your BP has improved"
-                            # pBP = str(previous_BPsys) + "/" + str(
-                            #     previous_BPdia)
-                            # self.manager.get_screen("Patient_Details").ids["pBP"].text = pBP
-                            # self.manager.get_screen("Response").ids["comment"].text = comment
                             self.manager.get_screen("Patient_Details").ids["comment"].text = comment
 
                         elif (current_BP_cart == "Elevated") and (previous_BP_cart == "Hypertension_Stage2"):
                             comment = " After comparing current with previous BP," + " " + " your BP has improved"
-                            # pBP = str(previous_BPsys) + "/" + str(
-                            #     previous_BPdia)
-                            # self.manager.get_screen("Patient_Details").ids["pBP"].text = pBP
-                            # self.manager.get_screen("Response").ids["comment"].text = comment
                             self.manager.get_screen("Patient_Details").ids["comment"].text = comment
 
                         elif (current_BP_cart == "Elevated") and (previous_BP_cart == "Hypertensive_crisis"):
                             comment = " After comparing current with previous BP," + " " + " your BP has improved"
-                            # pBP = str(previous_BPsys) + "/" + str(
-                            #     previous_BPdia)
-                            # self.manager.get_screen("Patient_Details").ids["pBP"].text = pBP
-                            # self.manager.get_screen("Response").ids["comment"].text = comment
                             self.manager.get_screen("Patient_Details").ids["comment"].text = comment
 
                         # 2
 
                         elif (current_BP_cart == "Hypertension_Stage1") and (previous_BP_cart == "Normal"):
                             comment = " After comparing current with previous BP," + " " + " you have high blood pressure (Hypertension_Stage1). You need to visit a doctor"
-                            # pBP = str(previous_BPsys) + "/" + str(
-                            #     previous_BPdia)
-                            # self.manager.get_screen("Patient_Details").ids["pBP"].text = pBP
-                            # self.manager.get_screen("Response").ids["comment"].text = comment
                             self.manager.get_screen("Patient_Details").ids["comment"].text = comment
 
                         elif (current_BP_cart == "Hypertension_Stage1") and (previous_BP_cart == "Elevated"):
                             comment = " After comparing current with previous BP," + " " + " your BP is now High (Hypertension_Stage1). You need to visit a doctor"
-                            # pBP = str(previous_BPsys) + "/" + str(
-                            #     previous_BPdia)
-                            # self.manager.get_screen("Patient_Details").ids["pBP"].text = pBP
-                            # self.manager.get_screen("Response").ids["comment"].text = comment
                             self.manager.get_screen("Patient_Details").ids["comment"].text = comment
 
                         elif (current_BP_cart == "Hypertension_Stage1") and (previous_BP_cart == "Hypertension_Stage1"):
                             comment = " After comparing current with previous BP," + " " + " your BP has not improved." + " " + " Visit a doctor for further clarifications"
-                            # pBP = str(previous_BPsys) + "/" + str(
-                            #     previous_BPdia)
-                            # self.manager.get_screen("Patient_Details").ids["pBP"].text = pBP
-                            # self.manager.get_screen("Response").ids["comment"].text = comment
                             self.manager.get_screen("Patient_Details").ids["comment"].text = comment
 
                         elif (current_BP_cart == "Hypertension_Stage1") and (previous_BP_cart == "Hypertension_Stage2"):
                             comment = " After comparing current with previous BP," + " " + " your BP has improved but continue the procedures the doctor advised you"
-                            # pBP = str(previous_BPsys) + "/" + str(
-                            #     previous_BPdia)
-                            # self.manager.get_screen("Patient_Details").ids["pBP"].text = pBP
-                            # self.manager.get_screen("Response").ids["comment"].text = comment
                             self.manager.get_screen("Patient_Details").ids["comment"].text = comment
 
                         elif (current_BP_cart == "Hypertension_Stage1") and (previous_BP_cart == "Hypertensive_crisis"):
                             comment = " After comparing current with previous BP," + " " + " your BP has greatly improved." + " " + " Continue the procedures the doctors advised you"
-                            # pBP = str(previous_BPsys) + "/" + str(
-                            #     previous_BPdia)
-                            # self.manager.get_screen("Patient_Details").ids["pBP"].text = pBP
-                            # self.manager.get_screen("Response").ids["comment"].text = comment
                             self.manager.get_screen("Patient_Details").ids["comment"].text = comment
 
                         # 3
 
                         elif (current_BP_cart == "Hypertension_Stage2") and (previous_BP_cart == "Normal"):
                             comment = " After comparing current with previous BP," + " " + " you have high blood pressure (Hypertension_Stage2). " + " " + "You need to visit a doctor soon"
-                            # pBP = str(previous_BPsys) + "/" + str(
-                            #     previous_BPdia)
-                            # self.manager.get_screen("Patient_Details").ids["pBP"].text = pBP
-                            # self.manager.get_screen("Response").ids["comment"].text = comment
                             self.manager.get_screen("Patient_Details").ids["comment"].text = comment
 
                         elif (current_BP_cart == "Hypertension_Stage2") and (previous_BP_cart == "Elevated"):
                             comment = " After comparing current with previous BP," + " " + " your BP is now High (Hypertension_Stage2)." + " " + " You need to visit a doctor soon"
-                            # pBP = str(previous_BPsys) + "/" + str(
-                            #     previous_BPdia)
-                            # self.manager.get_screen("Patient_Details").ids["pBP"].text = pBP
-                            # self.manager.get_screen("Response").ids["comment"].text = comment
                             self.manager.get_screen("Patient_Details").ids["comment"].text = comment
 
                         elif (current_BP_cart == "Hypertension_Stage2") and (previous_BP_cart == "Hypertension_Stage1"):
                             comment = " After comparing current with previous BP, " + " " + "your BP is now High (Hypertension_Stage1)." + " " + " you need to visit a doctor soon"
-                            # pBP = str(previous_BPsys) + "/" + str(
-                            #     previous_BPdia)
-                            # self.manager.get_screen("Patient_Details").ids["pBP"].text = pBP
-                            # self.manager.get_screen("Response").ids["comment"].text = comment
                             self.manager.get_screen("Patient_Details").ids["comment"].text = comment
 
                         elif (current_BP_cart == "Hypertension_Stage2") and (previous_BP_cart == "Hypertension_Stage2"):
                             comment = " After comparing current with previous BP," + " " + " your BP has not improved." + " " + " Visit a doctor soon for further clarifications"
-                            # pBP = str(previous_BPsys) + "/" + str(
-                            #     previous_BPdia)
-                            # self.manager.get_screen("Patient_Details").ids["pBP"].text = pBP
-                            # self.manager.get_screen("Response").ids["comment"].text = comment
                             self.manager.get_screen("Patient_Details").ids["comment"].text = comment
 
                         elif (current_BP_cart == "Hypertension_Stage2") and (previous_BP_cart == "Hypertensive_crisis"):
                             comment = " After comparing current with previous BP," + " " + " your BP has improved." + " " + " Continue the procedures the doctors advised you"
-                            # pBP = str(previous_BPsys) + "/" + str(
-                            #     previous_BPdia)
-                            # self.manager.get_screen("Patient_Details").ids["pBP"].text = pBP
-                            # self.manager.get_screen("Response").ids["comment"].text = comment
                             self.manager.get_screen("Patient_Details").ids["comment"].text = comment
 
                         # 4
 
                         elif (current_BP_cart == "Hypertensive_crisis") and (previous_BP_cart == "Normal"):
                             comment = " Visit a doctor now"
-                            # pBP = str(previous_BPsys) + "/" + str(
-                            #     previous_BPdia)
-                            # self.manager.get_screen("Patient_Details").ids["pBP"].text = pBP
-                            # self.manager.get_screen("Response").ids["comment"].text = comment
                             self.manager.get_screen("Patient_Details").ids["comment"].text = comment
 
                         elif (current_BP_cart == "Hypertensive_crisis") and (previous_BP_cart == "Elevated"):
                             comment = " Visit a doctor now"
-                            # pBP = str(previous_BPsys) + "/" + str(
-                            #     previous_BPdia)
-                            # self.manager.get_screen("Patient_Details").ids["pBP"].text = pBP
-                            # self.manager.get_screen("Response").ids["comment"].text = comment
                             self.manager.get_screen("Patient_Details").ids["comment"].text = comment
 
                         elif (current_BP_cart == "Hypertensive_crisis") and (previous_BP_cart == "Hypertension_Stage1"):
                             comment = "Visit a doctor now"
-                            # pBP = str(previous_BPsys) + "/" + str(
-                            #     previous_BPdia)
-                            # self.manager.get_screen("Patient_Details").ids["pBP"].text = pBP
-                            # self.manager.get_screen("Response").ids["comment"].text = comment
                             self.manager.get_screen("Patient_Details").ids["comment"].text = comment
 
                         elif (current_BP_cart == "Hypertensive_crisis") and (previous_BP_cart == "Hypertension_Stage2"):
                             comment = "Visit a doctor now"
-                            # pBP = str(previous_BPsys) + "/" + str(
-                            #     previous_BPdia)
-                            # self.manager.get_screen("Patient_Details").ids["pBP"].text = pBP
-                            # self.manager.get_screen("Response").ids["comment"].text = comment
                             self.manager.get_screen("Patient_Details").ids["comment"].text = comment
 
                         elif (current_BP_cart == "Hypertensive_crisis") and (previous_BP_cart == "Hypertensive_crisis"):
                             comment = " After comparing current with previous BP," + " " + " your BP is not improving. Visit a doctor now"
-                            # pBP = str(previous_BPsys) + "/" + str(
-                            #     previous_BPdia)
-                            # self.manager.get_screen("Patient_Details").ids["pBP"].text = pBP
-                            # self.manager.get_screen("Response").ids["comment"].text = comment
                             self.manager.get_screen("Patient_Details").ids["comment"].text = comment
 
                         else:
                             comment = ""
-                            # pBP = str(previous_BPsys) + "/" + str(
-                            #     previous_BPdia)
-                            # self.manager.get_screen("Patient_Details").ids["pBP"].text = pBP
-                            # self.manager.get_screen("Response").ids["comment"].text = comment
                             self.manager.get_screen("Patient_Details").ids["comment"].text = comment
 
                     else:
                         comment = ""
-                        # pBP = str(current_BPsys) + "/" + str(
-                        #     current_BPdia) + " [Hypertension Crisis]"
-                        # self.manager.get_screen("Response").ids["comment"].text = comment
                         self.manager.get_screen("Patient_Details").ids["comment"].text = comment
         else:
             comment = "Data recorded"
-            # self.manager.get_screen("Response").ids["comment"].text = comment
             self.manager.get_screen("Patient_Details").ids["comment"].text = comment
-
-
-class ResponseWindow(Screen):
-    def callback(self):
-        App.stop(self)
-        Window.close()
-
-    def enter(self):
-        self.manager.get_screen("Patient_Details").ids["bpValue"].text = ""
-        self.manager.get_screen("Patient_Details").ids["restart"].opacity = 0
-        self.manager.get_screen("Patient_Details").ids["takeBP"].opacity = 0
-
-    def compose_response(self):
-        cur.execute("SELECT id FROM vitals LIMIT 0,1")
-        rows = cur.fetchall()
-        N_id = ""
-        current_BPsys = int()
-        current_BPdia = int()
-        current_BP_cart = ""
-        previous_BPsys = int()
-        previous_BPdia = int()
-        previous_BP_cart = ""
-
-        for row in rows:
-            N_id = self.manager.get_screen("Patient_Details").ids["N_id"].text
-
-        cur.execute("SELECT sys_mmHg, dia_mmHg, BP_cart  FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 0,1",
-                    [N_id])
-        rows = cur.fetchall()
-
-        recommendation = ""
-        comment = ""
-        bp = ""
-
-        for row in rows:
-            current_BPsys = int(row[0])
-            current_BPdia = int(row[1])
-            current_BP_cart = row[2]
-
-        # Response
-        if current_BPsys > 1 and current_BPdia > 1:
-
-            if (current_BPsys < 120) and (current_BPdia < 80):
-                recommendation = "Your BP is: " + str(current_BPsys) + "/" + str(
-                    current_BPdia) + "\n\nYour Blood pressure is normal"
-                self.manager.get_screen("Response").ids["response"].text = recommendation
-
-            elif (current_BPsys in range(121, 128)) and (current_BPdia < 80):
-                recommendation = "Your BP is: " + str(current_BPsys) + "/" + str(
-                    current_BPdia) + " \n\nYour BP is normal. Though elevated"
-                self.manager.get_screen("Response").ids["response"].text = recommendation
-
-            elif (current_BPsys in range(129, 139)) or (current_BPdia in range(81, 89)):
-                recommendation = "Your BP is: " + str(current_BPsys) + "/" + str(
-                    current_BPdia) + " \n\nHigh Blood Pressure..Hypertension( Stage 1)"
-                self.manager.get_screen("Response").ids["response"].text = recommendation
-
-            elif (current_BPsys in range(140, 180)) or (current_BPdia in range(90, 120)):
-                recommendation = " Your BP is: " + str(current_BPsys) + "/" + str(
-                    current_BPdia) + "\n\nHigh Blood Pressure..Hypertension(stage 2)"
-                self.manager.get_screen("Response").ids["response"].text = recommendation
-
-            elif (current_BPsys > 180) or (current_BPdia > 120):
-                recommendation = " Your BP is: " + str(current_BPsys) + "/" + str(
-                    current_BPdia) + "\n\nHypertension crisis..seek emergency care"
-                self.manager.get_screen("Response").ids["response"].text = recommendation
-            else:
-                pass
-
-        else:
-            recommendation = "Error!!!! Please start again the process!!!"
-            self.manager.get_screen("Response").ids["response"].text = recommendation
-            self.manager.get_screen("Response").ids["response"].font_size = 27
-            self.manager.get_screen("Response").ids["response"].bold = True
-            return 0
-
-        # Comparison
-
-        cur.execute("SELECT sys_mmHg, dia_mmHg, BP_cart FROM vitals WHERE id = %s ORDER BY time_stamp DESC LIMIT 1,1",
-                    [N_id])
-        rows = cur.fetchall()
-        if rows:
-            for row in rows:
-                if len(str(row[0])) < 1 or len(str(row[1])) < 1:
-                    pass
-                else:
-                    previous_BPsys = int(row[0])
-                    previous_BPdia = int(row[1])
-                    previous_BP_cart = row[2]
-
-                    print(previous_BPsys)
-                    print(previous_BPdia)
-                    print(previous_BP_cart)
-                    print(current_BPsys)
-                    print(current_BPdia)
-                    print(current_BP_cart)
-                    if previous_BPsys > 1 and previous_BPdia > 1:
-
-                        if (current_BP_cart == "Normal") and (previous_BP_cart == "Normal"):
-                            comment = " After comparing current with previous BP, your BP is ok "
-                            self.manager.get_screen("Response").ids["comment"].text = comment
-
-                        elif (current_BP_cart == "Normal") and (previous_BP_cart == "Elevated"):
-                            comment = " After comparing current with previous BP, your BP has improved"
-                            self.manager.get_screen("Response").ids["comment"].text = comment
-
-                        elif (current_BP_cart == "Normal") and (previous_BP_cart == "Hypertension_Stage1"):
-                            comment = " After comparing current with previous BP, your BP has improved"
-                            self.manager.get_screen("Response").ids["comment"].text = comment
-
-                        elif (current_BP_cart == "Normal") and (previous_BP_cart == "Hypertension_Stage2"):
-                            comment = " After comparing current with previous BP, your BP has improved"
-                            self.manager.get_screen("Response").ids["comment"].text = comment
-
-                        elif (current_BP_cart == "Normal") and (previous_BP_cart == "Hypertensive_crisis"):
-                            comment = " After comparing current with previous BP, your BP has improved"
-                            self.manager.get_screen("Response").ids["comment"].text = comment
-
-                        # 1
-
-                        elif (current_BP_cart == "Elevated") and (previous_BP_cart == "Normal"):
-                            comment = " After comparing current with previous BP, your BP is slightly elevated but normal"
-                            self.manager.get_screen("Response").ids["comment"].text = comment
-
-                        elif (current_BP_cart == "Elevated") and (previous_BP_cart == "Elevated"):
-                            comment = " After comparing current with previous BP, has not changed"
-                            self.manager.get_screen("Response").ids["comment"].text = comment
-
-                        elif (current_BP_cart == "Elevated") and (previous_BP_cart == "Hypertension_Stage1"):
-                            comment = " After comparing current with previous BP, your BP has improved"
-                            self.manager.get_screen("Response").ids["comment"].text = comment
-
-                        elif (current_BP_cart == "Elevated") and (previous_BP_cart == "Hypertension_Stage2"):
-                            comment = " After comparing current with previous BP, your BP has improved"
-                            self.manager.get_screen("Response").ids["comment"].text = comment
-
-                        elif (current_BP_cart == "Elevated") and (previous_BP_cart == "Hypertensive_crisis"):
-                            comment = " After comparing current with previous BP, your BP has improved"
-                            self.manager.get_screen("Response").ids["comment"].text = comment
-
-                        # 2
-
-                        elif (current_BP_cart == "Hypertension_Stage1") and (previous_BP_cart == "Normal"):
-                            comment = " After comparing current with previous BP, you have high blood pressure (Hypertension_Stage1). You need to visit a doctor"
-                            self.manager.get_screen("Response").ids["comment"].text = comment
-
-                        elif (current_BP_cart == "Hypertension_Stage1") and (previous_BP_cart == "Elevated"):
-                            comment = " After comparing current with previous BP, your BP is now High (Hypertension_Stage1). You need to visit a doctor"
-                            self.manager.get_screen("Response").ids["comment"].text = comment
-
-                        elif (current_BP_cart == "Hypertension_Stage1") and (previous_BP_cart == "Hypertension_Stage1"):
-                            comment = " After comparing current with previous BP, your BP has not improved. visit a doctor for further clarifications"
-                            self.manager.get_screen("Response").ids["comment"].text = comment
-
-                        elif (current_BP_cart == "Hypertension_Stage1") and (previous_BP_cart == "Hypertension_Stage2"):
-                            comment = " After comparing current with previous BP, your BP has improved but continue the procedures the doctor advised you"
-                            self.manager.get_screen("Response").ids["comment"].text = comment
-
-                        elif (current_BP_cart == "Hypertension_Stage1") and (previous_BP_cart == "Hypertensive_crisis"):
-                            comment = " After comparing current with previous BP, your BP has greatly improved. Continue the procedures the doctors advised you"
-                            self.manager.get_screen("Response").ids["comment"].text = comment
-
-                        # 3
-
-                        elif (current_BP_cart == "Hypertension_Stage2") and (previous_BP_cart == "Normal"):
-                            comment = " After comparing current with previous BP, you have high blood pressure (Hypertension_Stage2). You need to visit a doctor soon"
-                            self.manager.get_screen("Response").ids["comment"].text = comment
-
-                        elif (current_BP_cart == "Hypertension_Stage2") and (previous_BP_cart == "Elevated"):
-                            comment = " After comparing current with previous BP, your BP is now High (Hypertension_Stage2). You need to visit a doctor soon"
-                            self.manager.get_screen("Response").ids["comment"].text = comment
-
-                        elif (current_BP_cart == "Hypertension_Stage2") and (previous_BP_cart == "Hypertension_Stage1"):
-                            comment = " After comparing current with previous BP, your BP is now High (Hypertension_Stage1). you need to visit a doctor soon"
-                            self.manager.get_screen("Response").ids["comment"].text = comment
-
-                        elif (current_BP_cart == "Hypertension_Stage2") and (previous_BP_cart == "Hypertension_Stage2"):
-                            comment = " After comparing current with previous BP, your BP has not improved. Visit a doctor soon for further clarifications"
-                            self.manager.get_screen("Response").ids["comment"].text = comment
-
-                        elif (current_BP_cart == "Hypertension_Stage2") and (previous_BP_cart == "Hypertensive_crisis"):
-                            comment = " After comparing current with previous BP, your BP has improved. Continue the procedures the doctors advised you"
-                            self.manager.get_screen("Response").ids["comment"].text = comment
-
-                        # 4
-
-                        elif (current_BP_cart == "Hypertensive_crisis") and (previous_BP_cart == "Normal"):
-                            comment = " Visit a doctor now"
-                            self.manager.get_screen("Response").ids["comment"].text = comment
-
-                        elif (current_BP_cart == "Hypertensive_crisis") and (previous_BP_cart == "Elevated"):
-                            comment = " Visit a doctor now"
-                            self.manager.get_screen("Response").ids["comment"].text = comment
-
-                        elif (current_BP_cart == "Hypertensive_crisis") and (previous_BP_cart == "Hypertension_Stage1"):
-                            comment = "Visit a doctor now"
-                            self.manager.get_screen("Response").ids["comment"].text = comment
-
-                        elif (current_BP_cart == "Hypertensive_crisis") and (previous_BP_cart == "Hypertension_Stage2"):
-                            comment = "Visit a doctor now"
-                            self.manager.get_screen("Response").ids["comment"].text = comment
-
-                        elif (current_BP_cart == "Hypertensive_crisis") and (previous_BP_cart == "Hypertensive_crisis"):
-                            comment = " After comparing current with previous BP, your BP is not improving. Visit a doctor now"
-                            self.manager.get_screen("Response").ids["comment"].text = comment
-
-                        else:
-                            comment = ""
-                            self.manager.get_screen("Response").ids["comment"].text = comment
-
-                    else:
-                        comment = ""
-                        self.manager.get_screen("Response").ids["comment"].text = comment
-        else:
-            comment = "Data recorded"
-            self.manager.get_screen("Response").ids["comment"].text = comment
-
-        # for row in rows:
-        #     current_BPsys = int(row[0])
-        #     current_BPdia = int(row[1])
-        #
-        # # Response
-        # if current_BPsys > 1 and current_BPdia > 1:
-        #
-        #     if (current_BPsys < 120) and (current_BPdia < 80):
-        #         recommendation = "Your BP is: " + str(current_BPsys) + "/" + str(
-        #             current_BPdia) + "\n\nYour Blood pressure is normal"
-        #         self.manager.get_screen("Response").ids["response"].text = recommendation
-        #
-        #     elif (current_BPsys in range(121, 128)) and (current_BPdia < 80):
-        #         recommendation = "Your BP is: " + str(current_BPsys) + "/" + str(
-        #             current_BPdia) + " \n\nYour BP is normal. Though elevated"
-        #         self.manager.get_screen("Response").ids["response"].text = recommendation
-        #
-        #     elif (current_BPsys in range(129, 139)) or (current_BPdia in range(81, 89)):
-        #         recommendation = "Your BP is: " + str(current_BPsys) + "/" + str(
-        #             current_BPdia) + " \n\nHigh Blood Pressure..Hypertension( Stage 1)"
-        #         self.manager.get_screen("Response").ids["response"].text = recommendation
-        #
-        #     elif (current_BPsys >= 140) or (current_BPdia > 90):
-        #         recommendation = " Your BP is: " + str(current_BPsys) + "/" + str(
-        #             current_BPdia) + "\n\nHigh Blood Pressure..Hypertension(stage 2)"
-        #         self.manager.get_screen("Response").ids["response"].text = recommendation
-        #
-        #     elif (current_BPsys > 180) or (current_BPdia > 120):
-        #         recommendation = " Your BP is: " + str(current_BPsys) + "/" + str(
-        #             current_BPdia) + "\n\nHypertension crisis..seek emergency care"
-        #         self.manager.get_screen("Response").ids["response"].text = recommendation
-        #     else:
-        #         pass
-        #
-        # else:
-        #     recommendation = "Error!!!! Please start again the process!!!"
-        #     self.manager.get_screen("Response").ids["response"].text = recommendation
-        #     self.manager.get_screen("Response").ids["response"].font_size = 27
-        #     self.manager.get_screen("Response").ids["response"].bold = True
-        #
-        # # Comparison
-        #
-        # cur.execute("SELECT sys_mmHg, dia_mmHg FROM vitals WHERE id = %s ORDER BY time_stamp DESC LIMIT 1,1", [N_id])
-        # rows = cur.fetchall()
-        # for row in rows:
-        #     if len(str(row[0])) < 1 or len(str(row[1])) < 1:
-        #         comment = "BP recorded"
-        #         self.manager.get_screen("Response").ids["comment"].text = comment
-        #
-        #     else:
-        #         previous_BPsys = int(row[0])
-        #         previous_BPdia = int(row[1])
-        #
-        #         print(previous_BPsys)
-        #         print(previous_BPdia)
-        #         print(current_BPsys)
-        #         print(current_BPdia)
-        #         if previous_BPsys > 1 and previous_BPdia > 1:
-        #
-        #             if (previous_BPsys > current_BPsys) and (previous_BPdia > current_BPdia):
-        #                 comment = " After comparing current with previous BP your BP has improved "
-        #                 self.manager.get_screen("Response").ids["comment"].text = comment
-        #
-        #             elif (previous_BPsys < current_BPsys) and (previous_BPdia < current_BPdia):
-        #                 comment = " After comparing with current and previous BP your BP has not improved "
-        #                 self.manager.get_screen("Response").ids["comment"].text = comment
-        #
-        #             else:
-        #                 pass
-        #
-        #         else:
-        #             comment = ""
-        #             self.manager.get_screen("Response").ids["comment"].text = comment
 
 
 class Manager(ScreenManager):
