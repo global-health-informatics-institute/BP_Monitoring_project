@@ -1,0 +1,71 @@
+--
+-- Table structure for table `Demographic`
+--
+
+CREATE TABLE `Demographic` (
+  `id` int(255) NOT NULL,
+  `national_id` varchar(255) NOT NULL,
+  `Full_name` varchar(255) NOT NULL,
+  `Gender` int(5) NOT NULL,
+  `DOB` date NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `vitals`
+--
+
+CREATE TABLE `vitals` (
+  `v_id` int(255) NOT NULL,
+  `id` int(255) NOT NULL,
+  `sys_mmHg` int(255) NOT NULL,
+  `dia_mmHg` int(255) NOT NULL,
+  `BP_cart` varchar(255) NOT NULL,
+  `time_stamp` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `Demographic`
+--
+ALTER TABLE `Demographic`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `vitals`
+--
+ALTER TABLE `vitals`
+  ADD PRIMARY KEY (`v_id`),
+  ADD KEY `Foreign_Key` (`id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `Demographic`
+--
+ALTER TABLE `Demographic`
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `vitals`
+--
+ALTER TABLE `vitals`
+  MODIFY `v_id` int(255) NOT NULL AUTO_INCREMENT;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `vitals`
+--
+ALTER TABLE `vitals`
+  ADD CONSTRAINT `Foreign_Key` FOREIGN KEY (`id`) REFERENCES `Demographic` (`id`);
+COMMIT;
+

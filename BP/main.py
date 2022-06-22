@@ -1,7 +1,8 @@
-import RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
 import time
 import mysql.connector as mysql
 import serial
+import hashlib
 from kivy.app import App
 from kivy.clock import Clock
 from kivy.core.window import Window
@@ -38,20 +39,34 @@ class ScanWindow(Screen):
             lastname = val[4]
             fname = funame + " " + lastname
             N_id = val[5]
+
             pBP = ""
             pBP2 = ""
             pBP3 = ""
             pBP4 = ""
 
             gender = str(val[8]).upper()
+
+            gen = int()
+            if str(gender) == "MALE":
+                gen = 1
+            else:
+                gen = 0
+
             DOB = val[9]
 
+            # Hash National id
+            National_id = str(N_id).encode("ASCII")
+            d = hashlib.sha3_256(National_id)
+            N_idHash = d.hexdigest()
+            N_idHash2 = ""
             # Calculate Age
 
             dateOfBirth = str(DOB).split(" ")
             day = dateOfBirth[0]
             year = dateOfBirth[2]
             mon = dateOfBirth[1]
+
             month = int()
 
             if mon.upper() == "JAN":
@@ -94,12 +109,16 @@ class ScanWindow(Screen):
             age = self.today.year - birthDate.year - (
                         (self.today.month, self.today.day) < (birthDate.month, birthDate.day))
 
-            cur.execute("SELECT * FROM Demographic WHERE id=%s", [N_id])
+            dob = year + "-" + str(month) + "-" + day
+
+            cur.execute("SELECT * FROM Demographic WHERE national_id=%s", [N_idHash])
             record = cur.fetchall()
             if record:
+                for rec in record:
+                    N_idHash2 = rec[0]
                 cur.execute(
                     "SELECT sys_mmHg, dia_mmHg, time_stamp  FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 0,1",
-                    [N_id])
+                    [N_idHash2])
                 rows = cur.fetchall()
                 if rows:
                     for row in rows:
@@ -109,6 +128,7 @@ class ScanWindow(Screen):
                         date1 = timeStamp[0]
                         if len(current_BPsys) < 1 or len(current_BPdia) < 1:
                             self.manager.get_screen("Patient_Details").ids["N_id"].text = "ID: " + str(N_id)
+                            self.manager.get_screen("Patient_Details").ids["N_id"].opacity = 0
                             self.manager.get_screen("Patient_Details").ids["f_name"].text = str(fname)
                             self.manager.get_screen("Patient_Details").ids["dob"].text = str(age) + " Years"
                             self.manager.get_screen("Patient_Details").ids["pBP"].text = ""
@@ -123,6 +143,7 @@ class ScanWindow(Screen):
                         else:
                             pBP = current_BPsys + "/" + current_BPdia
                             self.manager.get_screen("Patient_Details").ids["N_id"].text = "ID: " + str(N_id)
+                            self.manager.get_screen("Patient_Details").ids["N_id"].opacity = 0
                             self.manager.get_screen("Patient_Details").ids["f_name"].text = str(fname)
                             self.manager.get_screen("Patient_Details").ids["dob"].text = str(age) + " Years"
                             self.manager.get_screen("Patient_Details").ids["pBP"].text = pBP
@@ -138,7 +159,7 @@ class ScanWindow(Screen):
                             # @BP 2
                             cur.execute(
                                 "SELECT sys_mmHg, dia_mmHg, time_stamp  FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 1,1",
-                                [N_id])
+                                [N_idHash2])
                             rows2 = cur.fetchall()
                             if rows2:
                                 for row2 in rows2:
@@ -158,7 +179,7 @@ class ScanWindow(Screen):
                                         # @BP 3
                                         cur.execute(
                                             "SELECT sys_mmHg, dia_mmHg, time_stamp  FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 2,1",
-                                            [N_id])
+                                            [N_idHash2])
                                         rows3 = cur.fetchall()
                                         if rows3:
                                             for row3 in rows3:
@@ -180,7 +201,7 @@ class ScanWindow(Screen):
                                                     # @BP 4
                                                     cur.execute(
                                                         "SELECT sys_mmHg, dia_mmHg, time_stamp  FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 3,1",
-                                                        [N_id])
+                                                        [N_idHash2])
                                                     rows4 = cur.fetchall()
                                                     if rows4:
                                                         for row4 in rows4:
@@ -214,6 +235,7 @@ class ScanWindow(Screen):
 
                 else:
                     self.manager.get_screen("Patient_Details").ids["N_id"].text = "ID: " + str(N_id)
+                    self.manager.get_screen("Patient_Details").ids["N_id"].opacity = 0
                     self.manager.get_screen("Patient_Details").ids["f_name"].text = str(fname)
                     self.manager.get_screen("Patient_Details").ids["dob"].text = str(age) + " Years"
                     self.manager.get_screen("Patient_Details").ids["pBP"].text = ""
@@ -227,10 +249,11 @@ class ScanWindow(Screen):
                         self.manager.get_screen("Patient_Details").ids["gender"].source = "images/female.png"
 
             else:
-                cur.execute("INSERT INTO Demographic (id, Full_name, Gender, DOB) VALUES (%s, %s, %s, %s) ",
-                            (N_id, fname, gender, DOB))
+                cur.execute("INSERT INTO Demographic (national_id, Full_name, Gender, DOB) VALUES (%s, %s, %s, %s) ",
+                            (N_idHash, fname, gen, dob))
                 db.commit()
                 self.manager.get_screen("Patient_Details").ids["N_id"].text = "ID: " + str(N_id)
+                self.manager.get_screen("Patient_Details").ids["N_id"].opacity = 0
                 self.manager.get_screen("Patient_Details").ids["f_name"].text = str(fname)
                 self.manager.get_screen("Patient_Details").ids["dob"].text = str(age) + " Years"
                 self.manager.get_screen("Patient_Details").ids["pBP"].text = ""
@@ -255,19 +278,19 @@ class ScanWindow(Screen):
 
     def On_LED(self):
         self.do_nothing()
-        LED_PIN = 6
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setwarnings(False)
-        GPIO.setup(LED_PIN, GPIO.OUT)
-        GPIO.output(LED_PIN, GPIO.HIGH)
+        # LED_PIN = 6
+        # GPIO.setmode(GPIO.BCM)
+        # GPIO.setwarnings(False)
+        # GPIO.setup(LED_PIN, GPIO.OUT)
+        # GPIO.output(LED_PIN, GPIO.HIGH)
 
     def Off_LED(self):
         self.do_nothing()
-        LED_PIN = 6
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setwarnings(False)
-        GPIO.setup(LED_PIN, GPIO.OUT)
-        GPIO.output(LED_PIN, GPIO.LOW)
+        # LED_PIN = 6
+        # GPIO.setmode(GPIO.BCM)
+        # GPIO.setwarnings(False)
+        # GPIO.setup(LED_PIN, GPIO.OUT)
+        # GPIO.output(LED_PIN, GPIO.LOW)
 
     def do_nothing(self):
         pass
@@ -275,11 +298,21 @@ class ScanWindow(Screen):
 
 class PatientDetails(Screen):
     def regenerate(self):
+        N_id2 = ""
         nid = str(self.manager.get_screen("Patient_Details").ids["N_id"].text).split(" ")
-        N_id = nid[1]
+        N_idHash = nid[1]
+
+        National_id = str(N_idHash).encode("ASCII")
+        d = hashlib.sha3_256(National_id)
+        N_id = d.hexdigest()
+
+        cur.execute("SELECT id FROM Demographic WHERE national_id= %s ", [N_id])
+        recs = cur.fetchall()
+        for rec in recs:
+            N_id2 = rec[0]
         cur.execute(
             "SELECT sys_mmHg, dia_mmHg, time_stamp  FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 0,1",
-            [N_id])
+            [N_id2])
         rows = cur.fetchall()
         if rows:
             for row in rows:
@@ -299,7 +332,7 @@ class PatientDetails(Screen):
                     # @pBP 2
                     cur.execute(
                         "SELECT sys_mmHg, dia_mmHg, time_stamp  FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 1,1",
-                        [N_id])
+                        [N_id2])
                     rows2 = cur.fetchall()
                     if rows2:
                         for row2 in rows2:
@@ -319,7 +352,7 @@ class PatientDetails(Screen):
                                 # @pBP 3
                                 cur.execute(
                                     "SELECT sys_mmHg, dia_mmHg, time_stamp  FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 2,1",
-                                    [N_id])
+                                    [N_id2])
                                 rows3 = cur.fetchall()
                                 if rows3:
                                     for row3 in rows3:
@@ -339,7 +372,7 @@ class PatientDetails(Screen):
                                         # @pBP 4
                                         cur.execute(
                                             "SELECT sys_mmHg, dia_mmHg, time_stamp  FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 3,1",
-                                            [N_id])
+                                            [N_id2])
                                         rows4 = cur.fetchall()
                                         if rows4:
                                             for row4 in rows4:
@@ -383,8 +416,17 @@ class PatientDetails(Screen):
 
     def generate_BP(self, *args):
         nid = str(self.manager.get_screen("Patient_Details").ids["N_id"].text).split(" ")
-        N_id = nid[1]
-        serialPort = serial.Serial("/dev/ttyUSB0", baudrate=9600, bytesize=8, timeout=1, stopbits=serial.STOPBITS_ONE)
+        N_idHash = nid[1]
+        N_id2 = ""
+        National_id = str(N_idHash).encode("ASCII")
+        d = hashlib.sha3_256(National_id)
+        N_id = d.hexdigest()
+        cur.execute("SELECT id FROM Demographic WHERE national_id= %s ", [N_id])
+        recs = cur.fetchall()
+        for rec in recs:
+            N_id2 = rec[0]
+
+        serialPort = serial.Serial("/dev/serial/by-id/usb-Prolific_Technology_Inc._USB_2.0_To_COM_Device-if00-port0", baudrate=9600, bytesize=8, timeout=1, stopbits=serial.STOPBITS_ONE)
         serialData = ""
         bp = ""
         dia_mmHg = int()
@@ -405,7 +447,7 @@ class PatientDetails(Screen):
                     if (sys_mmHg in range(1, 119)) and (dia_mmHg in range(1, 79)):
                         BP_cart = "Normal"
                         cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
-                                    (N_id, sys_mmHg, dia_mmHg, BP_cart))
+                                    (N_id2, sys_mmHg, dia_mmHg, BP_cart))
                         db.commit()
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
@@ -415,7 +457,7 @@ class PatientDetails(Screen):
                     elif (sys_mmHg in range(1, 119)) or (dia_mmHg in range(80, 89)):
                         BP_cart = "Hypertension_Stage1"
                         cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
-                                    (N_id, sys_mmHg, dia_mmHg, BP_cart))
+                                    (N_id2, sys_mmHg, dia_mmHg, BP_cart))
                         db.commit()
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
@@ -425,7 +467,7 @@ class PatientDetails(Screen):
                     elif (sys_mmHg in range(1, 119)) or (dia_mmHg in range(90, 120)):
                         BP_cart = "Hypertension_Stage2"
                         cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
-                                    (N_id, sys_mmHg, dia_mmHg, BP_cart))
+                                    (N_id2, sys_mmHg, dia_mmHg, BP_cart))
                         db.commit()
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
@@ -435,7 +477,7 @@ class PatientDetails(Screen):
                     elif (sys_mmHg in range(1, 119)) or dia_mmHg > 120:
                         BP_cart = "Hypertensive_crisis"
                         cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
-                                    (N_id, sys_mmHg, dia_mmHg, BP_cart))
+                                    (N_id2, sys_mmHg, dia_mmHg, BP_cart))
                         db.commit()
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
@@ -445,7 +487,7 @@ class PatientDetails(Screen):
                     elif (sys_mmHg in range(120, 129)) and (dia_mmHg in range(1, 79)):
                         BP_cart = "Elevated"
                         cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
-                                    (N_id, sys_mmHg, dia_mmHg, BP_cart))
+                                    (N_id2, sys_mmHg, dia_mmHg, BP_cart))
                         db.commit()
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
@@ -455,7 +497,7 @@ class PatientDetails(Screen):
                     elif (sys_mmHg in range(120, 129)) or (dia_mmHg in range(80, 89)):
                         BP_cart = "Hypertension_Stage1"
                         cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
-                                    (N_id, sys_mmHg, dia_mmHg, BP_cart))
+                                    (N_id2, sys_mmHg, dia_mmHg, BP_cart))
                         db.commit()
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
@@ -465,7 +507,7 @@ class PatientDetails(Screen):
                     elif (sys_mmHg in range(120, 129)) or (dia_mmHg in range(90, 119)):
                         BP_cart = "Hypertension_Stage2"
                         cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
-                                    (N_id, sys_mmHg, dia_mmHg, BP_cart))
+                                    (N_id2, sys_mmHg, dia_mmHg, BP_cart))
                         db.commit()
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
@@ -475,7 +517,7 @@ class PatientDetails(Screen):
                     elif (sys_mmHg in range(120, 129)) or dia_mmHg > 120:
                         BP_cart = "Hypertensive_crisis"
                         cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
-                                    (N_id, sys_mmHg, dia_mmHg, BP_cart))
+                                    (N_id2, sys_mmHg, dia_mmHg, BP_cart))
                         db.commit()
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
@@ -485,7 +527,7 @@ class PatientDetails(Screen):
                     elif (sys_mmHg in range(130, 139)) or (dia_mmHg in range(81, 89)):
                         BP_cart = "Hypertension_Stage1"
                         cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
-                                    (N_id, sys_mmHg, dia_mmHg, BP_cart))
+                                    (N_id2, sys_mmHg, dia_mmHg, BP_cart))
                         db.commit()
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
@@ -495,7 +537,7 @@ class PatientDetails(Screen):
                     elif (sys_mmHg in range(130, 139)) or (dia_mmHg in range(90, 119)):
                         BP_cart = "Hypertension_Stage2"
                         cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
-                                    (N_id, sys_mmHg, dia_mmHg, BP_cart))
+                                    (N_id2, sys_mmHg, dia_mmHg, BP_cart))
                         db.commit()
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
@@ -505,7 +547,7 @@ class PatientDetails(Screen):
                     elif (sys_mmHg in range(130, 139)) or dia_mmHg > 120:
                         BP_cart = "Hypertensive_crisis"
                         cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
-                                    (N_id, sys_mmHg, dia_mmHg, BP_cart))
+                                    (N_id2, sys_mmHg, dia_mmHg, BP_cart))
                         db.commit()
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
@@ -515,7 +557,7 @@ class PatientDetails(Screen):
                     elif (sys_mmHg in range(140, 180)) or (dia_mmHg in range(90, 120)):
                         BP_cart = "Hypertension_Stage2"
                         cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
-                                    (N_id, sys_mmHg, dia_mmHg, BP_cart))
+                                    (N_id2, sys_mmHg, dia_mmHg, BP_cart))
                         db.commit()
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
@@ -525,7 +567,7 @@ class PatientDetails(Screen):
                     elif (sys_mmHg in range(140, 180)) or dia_mmHg > 120:
                         BP_cart = "Hypertensive_crisis"
                         cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
-                                    (N_id, sys_mmHg, dia_mmHg, BP_cart))
+                                    (N_id2, sys_mmHg, dia_mmHg, BP_cart))
                         db.commit()
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
@@ -535,7 +577,7 @@ class PatientDetails(Screen):
                     elif (sys_mmHg > 180) or (dia_mmHg > 120):
                         BP_cart = "Hypertensive_crisis"
                         cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
-                                    (N_id, sys_mmHg, dia_mmHg, BP_cart))
+                                    (N_id2, sys_mmHg, dia_mmHg, BP_cart))
                         db.commit()
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
@@ -600,6 +642,7 @@ class PatientDetails(Screen):
         cur.execute("SELECT id FROM vitals LIMIT 0,1")
         rows = cur.fetchall()
         N_id = ""
+        N_id2 = ""
         current_BPsys = int()
         current_BPdia = int()
         current_BP_cart = ""
@@ -609,10 +652,19 @@ class PatientDetails(Screen):
 
         for row in rows:
             nid = str(self.manager.get_screen("Patient_Details").ids["N_id"].text).split(" ")
-            N_id = nid[1]
+            N_idHash = nid[1]
+
+            National_id = str(N_idHash).encode("ASCII")
+            d = hashlib.sha3_256(National_id)
+            N_id = d.hexdigest()
+
+            cur.execute("SELECT id FROM Demographic WHERE national_id= %s", [N_id])
+            recs = cur.fetchall()
+            for rec in recs:
+                N_id2 = rec[0]
 
         cur.execute("SELECT sys_mmHg, dia_mmHg, BP_cart  FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 0,1",
-                    [N_id])
+                    [N_id2])
         rows = cur.fetchall()
 
         recommendation = ""
@@ -701,16 +753,17 @@ class PatientDetails(Screen):
                 pass
 
         else:
-            recommendation = "Error!!!! Please start again the process!!!"
-            self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
-            self.manager.get_screen("Response").ids["response"].font_size = 27
-            self.manager.get_screen("Response").ids["response"].bold = True
-            return 0
+            pass
+            # recommendation = "Error!!!! Please start again the process!!!"
+            # self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
+            # self.manager.get_screen("Response").ids["response"].font_size = 27
+            # self.manager.get_screen("Response").ids["response"].bold = True
+            # return 0
 
         # Comparison
 
         cur.execute("SELECT sys_mmHg, dia_mmHg, BP_cart FROM vitals WHERE id = %s ORDER BY time_stamp DESC LIMIT 1,1",
-                    [N_id])
+                    [N_id2])
         rows = cur.fetchall()
         if rows:
             for row in rows:
@@ -856,7 +909,7 @@ class Manager(ScreenManager):
 class MyApp(App):
     def build(self):
         Window.clearcolor = (248 / 255, 247 / 255, 255 / 255, 1)
-        Window.fullscreen = 'auto'
+        # Window.fullscreen = 'auto'
         return Manager()
 
 
