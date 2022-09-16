@@ -341,16 +341,15 @@
                     font_size: "17dp"
                     size_hint_y: None
                     height: 30
-                TextInput:
-                    multiline: True
-                    id: comment
-                    padding: [10,10]
-                    font_size: 16
-                    size_hint_x: None
-                    width: 200
-                    size_hint_y: None
-                    height: 150
-                    pos_hint: {"center_x":0.5}
+
+                Label:
+	                id: comment
+	                text_size: self.size
+	                halign: "right"
+	                valign: "middle"
+	                color: (0,0,0,1)
+	                font_size: "20dp"
+                	bold: True
 
         BoxLayout:
             orientation: "vertical"
