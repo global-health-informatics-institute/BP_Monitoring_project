@@ -137,8 +137,7 @@
     name: "Patient_Details"
     on_enter:
         root.generate_BP()
-    on_pre_leave:
-        root.leave()
+    
 
     BoxLayout:
         orientation: "vertical"
@@ -345,7 +344,7 @@
                 Label:
 	                id: comment
 	                text_size: self.size
-	                halign: "right"
+	                halign: "center"
 	                valign: "middle"
 	                color: (0,0,0,1)
 	                font_size: "20dp"
