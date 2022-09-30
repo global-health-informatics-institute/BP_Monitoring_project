@@ -1,4 +1,4 @@
-# import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 import sys
 import time
 import mysql.connector as mysql
@@ -275,21 +275,21 @@ class ScanWindow(Screen):
         self.manager.get_screen("Scan").ids["textFocus"].text = " "
         self.manager.get_screen("Scan").ids["textFocus"].focus = True
 
-    # def On_LED(self):
-    #     self.do_nothing()
-    #     LED_PIN = 6
-    #     GPIO.setmode(GPIO.BCM)
-    #     GPIO.setwarnings(False)
-    #     GPIO.setup(LED_PIN, GPIO.OUT)
-    #     GPIO.output(LED_PIN, GPIO.HIGH)
+    def On_LED(self):
+        self.do_nothing()
+        LED_PIN = 6
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setwarnings(False)
+        GPIO.setup(LED_PIN, GPIO.OUT)
+        GPIO.output(LED_PIN, GPIO.HIGH)
 
-    # def Off_LED(self):
-    #     self.do_nothing()
-    #     LED_PIN = 6
-    #     GPIO.setmode(GPIO.BCM)
-    #     GPIO.setwarnings(False)
-    #     GPIO.setup(LED_PIN, GPIO.OUT)
-    #     GPIO.output(LED_PIN, GPIO.LOW)
+    def Off_LED(self):
+        self.do_nothing()
+        LED_PIN = 6
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setwarnings(False)
+        GPIO.setup(LED_PIN, GPIO.OUT)
+        GPIO.output(LED_PIN, GPIO.LOW)
 
     def do_nothing(self):
         pass
@@ -922,7 +922,7 @@ class Manager(ScreenManager):
 class MyApp(App):
     def build(self):
         Window.clearcolor = (248 / 255, 247 / 255, 255 / 255, 1)
-        # Window.fullscreen = 'auto'
+        Window.fullscreen = 'auto'
         return Manager()
 
 
