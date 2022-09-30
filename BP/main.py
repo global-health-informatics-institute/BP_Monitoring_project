@@ -428,7 +428,7 @@ class PatientDetails(Screen):
         for rec in recs:
             N_id2 = rec[0]
 
-        serialPort = serial.Serial("/dev/serial/by-id/usb-Prolific_Technology_Inc._USB-Serial_Controller_D-if00-port0",
+        serialPort = serial.Serial("/dev/serial/by-id/usb-Prolific_Technology_Inc._USB_2.0_To_COM_Device-if00-port0",
                                    baudrate=9600, bytesize=8, timeout=1, stopbits=serial.STOPBITS_ONE)
         serialData = ""
         bp = ""
