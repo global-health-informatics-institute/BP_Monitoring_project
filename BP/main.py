@@ -275,6 +275,21 @@ class ScanWindow(Screen):
         self.manager.get_screen("Scan").ids["textFocus"].text = " "
         self.manager.get_screen("Scan").ids["textFocus"].focus = True
 
+    # def On_LED(self):
+    #     self.do_nothing()
+    #     LED_PIN = 6
+    #     GPIO.setmode(GPIO.BCM)
+    #     GPIO.setwarnings(False)
+    #     GPIO.setup(LED_PIN, GPIO.OUT)
+    #     GPIO.output(LED_PIN, GPIO.HIGH)
+
+    # def Off_LED(self):
+    #     self.do_nothing()
+    #     LED_PIN = 6
+    #     GPIO.setmode(GPIO.BCM)
+    #     GPIO.setwarnings(False)
+    #     GPIO.setup(LED_PIN, GPIO.OUT)
+    #     GPIO.output(LED_PIN, GPIO.LOW)
 
     def do_nothing(self):
         pass
