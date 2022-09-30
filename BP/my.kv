@@ -48,6 +48,10 @@
     spacing: 20
     on_enter:
         root.enter()
+        root.On_LED()
+    
+    on_leave:
+        root.Off_LED()
 
     BoxLayout:
         orientation: "vertical"
@@ -134,10 +138,7 @@
     name: "Patient_Details"
     on_enter:
         root.generate_BP()
-        root.On_LED()
-    
-    on_leave:
-        root.Off_LED()
+
 
     BoxLayout:
         orientation: "vertical"
