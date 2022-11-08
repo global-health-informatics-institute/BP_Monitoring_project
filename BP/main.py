@@ -1,4 +1,4 @@
-import RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
 import sys
 import time
 import mysql.connector as mysql
@@ -12,18 +12,38 @@ from kivy.uix.screenmanager import Screen, ScreenManager
 from kivy.uix.button import Button
 from datetime import date
 from _thread import interrupt_main
+import json
+import pycurl
+from io import BytesIO
+from configparser import ConfigParser
+
+from urllib.parse import urlencode, unquote
+import pycurl
+from io import BytesIO
 
 Window.size = (480, 800)
 
-db = mysql.connect(
-    host="127.0.0.1",
-    user="ghii",
-    passwd="",
-    database="Hypertension"
-)
-cur = db.cursor()
 flag = 1
 flag2 = 0
+config = ConfigParser()
+
+def initialize_settings():
+    settings = {}
+    with open("conn.config") as json_file:
+        settings = json.load(json_file)
+    return settings
+
+settings = initialize_settings()
+URL = settings["url"]
+
+db = mysql.connect(
+    host=settings["database"]["host"],
+    # user="ghii",
+    user = settings["database"]["user"],
+    passwd= settings["database"]["passwd"],
+    database= settings["database"]["database"]
+)
+cur = db.cursor()
 
 class MainWindow(Screen):
     pass
@@ -49,7 +69,6 @@ class ScanWindow(Screen):
             pBP2 = ""
             pBP3 = ""
             pBP4 = ""
-
             gender = str(val[8]).upper()                            
 
             DOB = val[9]
@@ -275,21 +294,21 @@ class ScanWindow(Screen):
         self.manager.get_screen("Scan").ids["textFocus"].text = " "
         self.manager.get_screen("Scan").ids["textFocus"].focus = True
 
-    def On_LED(self):
-        self.do_nothing()
-        LED_PIN = 6
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setwarnings(False)
-        GPIO.setup(LED_PIN, GPIO.OUT)
-        GPIO.output(LED_PIN, GPIO.HIGH)
+    # def On_LED(self):
+    #     self.do_nothing()
+    #     LED_PIN = 6
+    #     GPIO.setmode(GPIO.BCM)
+    #     GPIO.setwarnings(False)
+    #     GPIO.setup(LED_PIN, GPIO.OUT)
+    #     GPIO.output(LED_PIN, GPIO.HIGH)
 
-    def Off_LED(self):
-        self.do_nothing()
-        LED_PIN = 6
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setwarnings(False)
-        GPIO.setup(LED_PIN, GPIO.OUT)
-        GPIO.output(LED_PIN, GPIO.LOW)
+    # def Off_LED(self):
+    #     self.do_nothing()
+    #     LED_PIN = 6
+    #     GPIO.setmode(GPIO.BCM)
+    #     GPIO.setwarnings(False)
+    #     GPIO.setup(LED_PIN, GPIO.OUT)
+    #     GPIO.output(LED_PIN, GPIO.LOW)
 
     def do_nothing(self):
         pass
@@ -419,6 +438,7 @@ class PatientDetails(Screen):
         global timer
         nid = str(self.manager.get_screen("Patient_Details").ids["N_id"].text).split(" ")
         N_idHash = nid[1]
+        global N_id2
         N_id2 = ""
         National_id = str(N_idHash).encode("ASCII")
         d = hashlib.sha3_256(National_id)
@@ -428,15 +448,22 @@ class PatientDetails(Screen):
         for rec in recs:
             N_id2 = rec[0]
 
-        serialPort = serial.Serial("/dev/serial/by-id/usb-Prolific_Technology_Inc._USB_2.0_To_COM_Device-if00-port0",
-                                   baudrate=9600, bytesize=8, timeout=1, stopbits=serial.STOPBITS_ONE)
+        serialPort = serial.Serial(settings["BP"]["bp_port"],
+                                    settings["BP"]["baudrate"],
+                                    settings["BP"]["bytesize"],
+                                    timeout= 1,
+                                    stopbits= serial.STOPBITS_ONE
+                                   )
+        
+        # ser_port = serial.Serial("/dev/ttyUSB1", 9600, timeout=0.5)
+        
         serialData = ""
         bp = ""
         dia_mmHg = int()
         sys_mmHg = int()
         BP_cart = ""
         m = True
-        
+
         def check_port():
         #    start threading timer
             global timer
@@ -455,14 +482,19 @@ class PatientDetails(Screen):
                     sys_mmHg = dia_mmHg + x
 
                     if (sys_mmHg in range(1, 119)) and (dia_mmHg in range(1, 79)):
-                        BP_cart = "Normal"
+                        global BP_cart
+                        BP_cart = 'Normal'
                         cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
                                     (N_id2, sys_mmHg, dia_mmHg, BP_cart))
                         db.commit()
+                        global bp
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
-                        self.compose_response()
-
+                        # bp = [""]
+                        self.compose_response() 
+                        self.sendSms()                       
+                        # gsm()
+                        
                     elif (sys_mmHg in range(1, 119)) or (dia_mmHg in range(80, 89)):
                         BP_cart = "Hypertension_Stage1"
                         cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
@@ -471,6 +503,7 @@ class PatientDetails(Screen):
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
                         self.compose_response()
+                        self.sendSms()
 
                     elif (sys_mmHg in range(1, 119)) or (dia_mmHg in range(90, 120)):
                         BP_cart = "Hypertension_Stage2"
@@ -480,6 +513,7 @@ class PatientDetails(Screen):
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
                         self.compose_response()
+                        self.sendSms()
 
                     elif (sys_mmHg in range(1, 119)) or dia_mmHg > 120:
                         BP_cart = "Hypertensive_crisis"
@@ -489,6 +523,7 @@ class PatientDetails(Screen):
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
                         self.compose_response()
+                        self.sendSms()
                         
                     elif (sys_mmHg in range(120, 129)) and (dia_mmHg in range(1, 79)):
                         BP_cart = "Elevated"
@@ -498,6 +533,7 @@ class PatientDetails(Screen):
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
                         self.compose_response()
+                        self.sendSms()
 
                     elif (sys_mmHg in range(120, 129)) or (dia_mmHg in range(80, 89)):
                         BP_cart = "Hypertension_Stage1"
@@ -507,6 +543,7 @@ class PatientDetails(Screen):
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
                         self.compose_response()
+                        self.sendSms()
                         
                     elif (sys_mmHg in range(120, 129)) or (dia_mmHg in range(90, 119)):
                         BP_cart = "Hypertension_Stage2"
@@ -516,6 +553,7 @@ class PatientDetails(Screen):
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
                         self.compose_response()
+                        self.sendSms()
                         
                     elif (sys_mmHg in range(120, 129)) or dia_mmHg > 120:
                         BP_cart = "Hypertensive_crisis"
@@ -525,6 +563,7 @@ class PatientDetails(Screen):
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
                         self.compose_response()
+                        self.sendSms()
                         
                     elif (sys_mmHg in range(130, 139)) or (dia_mmHg in range(81, 89)):
                         BP_cart = "Hypertension_Stage1"
@@ -534,6 +573,7 @@ class PatientDetails(Screen):
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
                         self.compose_response()
+                        self.sendSms()
                         
                     elif (sys_mmHg in range(130, 139)) or (dia_mmHg in range(90, 119)):
                         BP_cart = "Hypertension_Stage2"
@@ -543,6 +583,7 @@ class PatientDetails(Screen):
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
                         self.compose_response()
+                        self.sendSms()
                         
                     elif (sys_mmHg in range(130, 139)) or dia_mmHg > 120:
                         BP_cart = "Hypertensive_crisis"
@@ -552,6 +593,7 @@ class PatientDetails(Screen):
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
                         self.compose_response()
+                        self.sendSms()
                         
                     elif (sys_mmHg in range(140, 180)) or (dia_mmHg in range(90, 120)):
                         BP_cart = "Hypertension_Stage2"
@@ -561,6 +603,7 @@ class PatientDetails(Screen):
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
                         self.compose_response()
+                        self.sendSms()
                         
                     elif (sys_mmHg in range(140, 180)) or dia_mmHg > 120:
                         BP_cart = "Hypertensive_crisis"
@@ -570,6 +613,7 @@ class PatientDetails(Screen):
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
                         self.compose_response()
+                        self.sendSms()
                         
                     elif (sys_mmHg > 180) or (dia_mmHg > 120):
                         BP_cart = "Hypertensive_crisis"
@@ -579,25 +623,175 @@ class PatientDetails(Screen):
                         bp = str(sys_mmHg) + "/" + str(dia_mmHg)
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
                         self.compose_response()
+                        self.sendSms()
                         
                     else:
                         timer.cancel()
                         timer.join()
                         bp = "Error..Try Again"
+                        BP_cart = "No feedback; an error occured"
                         self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
                         self.manager.get_screen("Patient_Details").ids["comment"].text = ""
                         self.manager.get_screen("Patient_Details").ids["lblText"].opacity = 1
                         self.buttons()
+                        self.sendSms()
                 
         check_port()
     
     # tracing back to main thread
-    #this was set for all major graphical changes
+    #this is set for all major graphical changes
     @mainthread
     def buttons(self):
         self.manager.get_screen("Patient_Details").ids["takeBP"].opacity = 1
         self.manager.get_screen("Patient_Details").ids["restart"].opacity = 1
         self.manager.get_screen("Patient_Details").ids["lblText"].opacity = 0
+
+    def sendSms(self):
+        today = date.today()
+        name = self.manager.get_screen("Scan").ids["textFocus"].text
+        val = name.split('~')
+        print(len(val))
+        print(val)
+        if len(val) == 12:
+            firstname = val[6]
+            funame = firstname.replace(',', ' ')
+            lastname = val[4]
+            fname = funame + "%20" + lastname
+            N_id = val[5]
+
+            pBP = ""
+            pBP2 = ""
+            pBP3 = ""
+            pBP4 = ""
+
+            gender = str(val[8]).upper()                            
+
+            DOB = val[9]
+
+            # Hash National id
+            National_id = str(N_id).encode("ASCII")
+            d = hashlib.sha3_256(National_id)
+            N_idHash = d.hexdigest()
+            N_idHash2 = ""
+            # Calculate Age
+
+            dateOfBirth = str(DOB).split(" ")
+            day = dateOfBirth[0] 
+            year = dateOfBirth[2]
+            mon = dateOfBirth[1]
+
+            month = int()
+
+            if mon.upper() == "JAN":
+                month = 1
+
+            elif mon.upper() == "FEB":
+                month = 2
+
+            elif mon.upper() == "MAR":
+                month = 3
+
+            elif mon.upper() == "APR":
+                month = 4
+
+            elif mon.upper() == "MAY":
+                month = 5
+
+            elif mon.upper() == "JUN":
+                month = 6
+
+            elif mon.upper() == "JUL":
+                month = 7
+
+            elif mon.upper() == "AUG":
+                month = 8
+
+            elif mon.upper() == "SEP":
+                month = 9
+
+            elif mon.upper() == "OCT":
+                month = 10
+
+            elif mon.upper() == "NOV":
+                month = 11
+
+            elif mon.upper() == "DEC":
+                month = 12
+
+            birthDate = date(int(year), month, int(day))
+            age = today.year - birthDate.year - (
+                    (today.month, today.day) < (birthDate.month, birthDate.day))
+
+            dob = year + "-" + str(month) + "-" + day
+
+            ser_port = serial.Serial(settings["gsm"]["id"],
+                                    settings["gsm"]["baudrate"],
+                                    timeout= 0.5)
+
+            def smsmode():
+                checkAT = 'AT\r'
+                ser_port.write(checkAT.encode())
+                mes = ser_port.read(64)
+                time.sleep(5)
+                print(mes)
+
+                stres = 'AT+CMGF=1\r'
+                ser_port.write(stres.encode())
+                # msg = ser_port.read(64)
+                time.sleep(0.1)
+
+                # cmd3 = 'AT+CMGF=1\r'
+                # ser_port.write(cmd3.encode())
+                # msg = ser_port.read(64)
+                # time.sleep(0.1)
+                
+                cmd1 = 'AT+CMGS="+265888540489"\r'
+                ser_port.write(cmd1.encode())
+                msg = ser_port.read(64)
+                time.sleep(5)
+                # print(msg)
+
+                # response = 'faking it\r'
+                response = str(N_id2) + "|" + str(bp) + "|" + BP_cart + "|" + fname + "|" + gender + "|" + dob + '\r'
+                ser_port.write(str.encode(response))
+                msgout = ser_port.read(1000)
+                time.sleep(0.1)
+                print(msgout)
+
+                ser_port.write(str.encode("\x1A"))
+                read_port = ser_port.read(5)
+
+                print("response sent")
+
+            def wifimode():
+                try:
+                    b_obj_ = BytesIO()
+                    crl_ = pycurl.Curl()
+                    vital = str(N_id2) + "|" + str(bp) + "|" + BP_cart + "|" + fname + "|" + gender + "|" + dob
+                    # vital = '68|88/58|Normal|SITHEMBINKOSI%20PHOMBEYA|FEMALE|1998-2-08'
+                    # crl_.setopt(crl_.URL,'https://wiki.python.org/moin/BeginnersGuide')
+                    # crl_.setopt(crl_.URL,'http://192.168.218.33:5000/BPserver?vitals='+ curlRes)
+                    crl_.setopt(crl_.URL, URL + vital)
+                    crl_.setopt(crl_.WRITEDATA, b_obj_)
+                    crl_.perform()
+                    crl_.close()
+                    get_body_ = b_obj_.getvalue()
+
+                    print('Output of GET request:\n%s'%get_body_.decode('utf8'))
+                    checkpoint = '|'
+                    checkpoint2 = '!DOCTYPE'
+                    cp = checkpoint.encode()
+                    cp2 = checkpoint2.encode()
+                    if cp in get_body_ or cp2 in get_body_:
+                        print("all good")
+                    else:
+                        print("didnt get return \n sending over sms")
+                        smsmode()
+                except pycurl.error:
+                    print("we couldnt get through")
+                    smsmode()
+
+            wifimode()
 
     def compose_response(self):
         cur.execute("SELECT id FROM vitals LIMIT 0,1")
@@ -913,7 +1107,6 @@ class PatientDetails(Screen):
         else:
             comment = "Data recorded"
             self.manager.get_screen("Patient_Details").ids["comment"].text = comment
-            
         
 class Manager(ScreenManager):
     pass
@@ -922,7 +1115,7 @@ class Manager(ScreenManager):
 class MyApp(App):
     def build(self):
         Window.clearcolor = (248 / 255, 247 / 255, 255 / 255, 1)
-        Window.fullscreen = 'auto'
+        # Window.fullscreen = 'auto'
         return Manager()
 
 
