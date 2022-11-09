@@ -62,7 +62,8 @@ def textmode():
             msg = ser_port.read(64)
             time.sleep(0.1)
     
-            cmd = 'AT+CMGS="+265881262001"\r'
+            # cmd = 'AT+CMGS=\r'
+            cmd1 = 'AT+CMGS="'+settings["client_number"]+'"\r'
             ser_port.write(cmd.encode())
             msg = ser_port.read(64)
             time.sleep(0.1)

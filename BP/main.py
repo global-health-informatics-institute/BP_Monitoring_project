@@ -744,13 +744,13 @@ class PatientDetails(Screen):
                 # msg = ser_port.read(64)
                 # time.sleep(0.1)
                 
-                cmd1 = 'AT+CMGS="+265888540489"\r'
+                # cmd1 = 'AT+CMGS=\r'
+                cmd1 = 'AT+CMGS="'+settings["server_number"]+'"\r'
                 ser_port.write(cmd1.encode())
                 msg = ser_port.read(64)
                 time.sleep(5)
                 # print(msg)
 
-                # response = 'faking it\r'
                 response = str(N_id2) + "|" + str(bp) + "|" + BP_cart + "|" + fname + "|" + gender + "|" + dob + '\r'
                 ser_port.write(str.encode(response))
                 msgout = ser_port.read(1000)
@@ -767,9 +767,6 @@ class PatientDetails(Screen):
                     b_obj_ = BytesIO()
                     crl_ = pycurl.Curl()
                     vital = str(N_id2) + "|" + str(bp) + "|" + BP_cart + "|" + fname + "|" + gender + "|" + dob
-                    # vital = '68|88/58|Normal|SITHEMBINKOSI%20PHOMBEYA|FEMALE|1998-2-08'
-                    # crl_.setopt(crl_.URL,'https://wiki.python.org/moin/BeginnersGuide')
-                    # crl_.setopt(crl_.URL,'http://192.168.218.33:5000/BPserver?vitals='+ curlRes)
                     crl_.setopt(crl_.URL, URL + vital)
                     crl_.setopt(crl_.WRITEDATA, b_obj_)
                     crl_.perform()

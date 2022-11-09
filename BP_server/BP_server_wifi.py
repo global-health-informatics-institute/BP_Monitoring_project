@@ -44,5 +44,6 @@ def parseSms(ele):
     
 if __name__ == '__main__':
     app.run(
-        host="192.168.0.126",
-        port=5000)
+        settings["flask_app"]["host"],
+        settings["flask_app"]["port"]
+        )
