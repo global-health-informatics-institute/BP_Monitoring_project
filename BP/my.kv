@@ -48,10 +48,10 @@
     spacing: 20
     on_enter:
         root.enter()
-        root.On_LED()
+    #     root.On_LED()
     
-    on_leave:
-        root.Off_LED()
+    # on_leave:
+    #     root.Off_LED()
 
     BoxLayout:
         orientation: "vertical"
@@ -394,6 +394,7 @@
                 pos_hint: {"center_x": 0.5, "center_y":0.2}
                 on_press:
                     root.regenerate()
+           
         Label:
             id: ii
 

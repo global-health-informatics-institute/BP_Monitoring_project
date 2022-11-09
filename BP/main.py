@@ -38,7 +38,6 @@ URL = settings["url"]
 
 db = mysql.connect(
     host=settings["database"]["host"],
-    # user="ghii",
     user = settings["database"]["user"],
     passwd= settings["database"]["passwd"],
     database= settings["database"]["database"]
