@@ -4,7 +4,7 @@ import mysql.connector as mysql
 from configparser import ConfigParser
 import json
 
-ser_port = serial.Serial("/dev/ttyUSB0", 9600, timeout=0.5)
+
 
 def initialize_settings():
     settings = {}
@@ -13,6 +13,9 @@ def initialize_settings():
     return settings
 
 settings = initialize_settings()
+
+ser_port = serial.Serial(settings["server_gsm"]["id"],
+                        settings["server_gsm"]["baudrate"], timeout=0.5)
 
 db = mysql.connect(
     host=settings["database"]["host"],
