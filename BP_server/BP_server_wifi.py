@@ -16,10 +16,10 @@ def initialize_settings():
 settings = initialize_settings()
 
 db = mysql.connect(
-    host=settings["database"]["host"],
-    user = settings["database"]["user"],
-    passwd= settings["database"]["passwd"],
-    database= settings["database"]["database"]
+    host=settings["server_db"]["host"],
+    user = settings["server_db"]["user"],
+    passwd= settings["server_db"]["passwd"],
+    database= settings["server_db"]["database"]
     )
 cur = db.cursor()
 
