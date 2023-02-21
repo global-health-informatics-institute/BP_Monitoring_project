@@ -29,7 +29,7 @@ config = ConfigParser()
 
 def initialize_settings():
     settings = {}
-    with open("conn.config") as json_file:
+    with open("/home/pi/BP_Monitoring_project/BP/conn.config") as json_file:
         settings = json.load(json_file)
     return settings
 
@@ -59,7 +59,7 @@ class ScanWindow(Screen):
         print(val)
         if len(val) == 12:
             firstname = val[6]
-            funame = firstname.replace(',', ' ')
+            funame = firstname.replace(',', '')
             lastname = val[4]
             fname = funame + " " + lastname
             N_id = val[5]
@@ -68,7 +68,13 @@ class ScanWindow(Screen):
             pBP2 = ""
             pBP3 = ""
             pBP4 = ""
-            gender = str(val[8]).upper()                            
+            gender = str(val[8]).upper()
+            
+            if(gender == "MALE"):
+                n_gender = 1
+            else:
+                n_gender = 0
+                
 
             DOB = val[9]
 
@@ -128,7 +134,7 @@ class ScanWindow(Screen):
 
             dob = year + "-" + str(month) + "-" + day
 
-            cur.execute("SELECT * FROM Demographic WHERE national_id=%s", [N_idHash])
+            cur.execute("SELECT * FROM Demographic WHERE Full_name=%s", [fname])
             record = cur.fetchall()
             if record:
                 for rec in record:
@@ -267,7 +273,7 @@ class ScanWindow(Screen):
 
             else:
                 cur.execute("INSERT INTO Demographic (national_id, Full_name, Gender, DOB) VALUES (%s, %s, %s, %s) ",
-                            (N_idHash, fname, gender, dob))
+                            (N_idHash, fname, n_gender, dob))
                 db.commit()
                 self.manager.get_screen("Patient_Details").ids["N_id"].text = "ID: " + str(N_id)
                 self.manager.get_screen("Patient_Details").ids["N_id"].opacity = 0
@@ -480,7 +486,7 @@ class PatientDetails(Screen):
                     x = int(BP[2] + BP[3], 16)
                     sys_mmHg = dia_mmHg + x
 
-                    if (sys_mmHg in range(1, 119)) and (dia_mmHg in range(1, 79)):
+                    if (sys_mmHg in range(90, 120)) and (dia_mmHg in range(60, 80)):
                         global BP_cart
                         BP_cart = 'Normal'
                         cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
@@ -494,28 +500,8 @@ class PatientDetails(Screen):
                         self.sendSms()                       
                         # gsm()
                         
-                    elif (sys_mmHg in range(1, 119)) or (dia_mmHg in range(80, 89)):
-                        BP_cart = "Hypertension_Stage1"
-                        cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
-                                    (N_id2, sys_mmHg, dia_mmHg, BP_cart))
-                        db.commit()
-                        bp = str(sys_mmHg) + "/" + str(dia_mmHg)
-                        self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
-                        self.compose_response()
-                        self.sendSms()
-
-                    elif (sys_mmHg in range(1, 119)) or (dia_mmHg in range(90, 120)):
-                        BP_cart = "Hypertension_Stage2"
-                        cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
-                                    (N_id2, sys_mmHg, dia_mmHg, BP_cart))
-                        db.commit()
-                        bp = str(sys_mmHg) + "/" + str(dia_mmHg)
-                        self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
-                        self.compose_response()
-                        self.sendSms()
-
-                    elif (sys_mmHg in range(1, 119)) or dia_mmHg > 120:
-                        BP_cart = "Hypertensive_crisis"
+                    elif (sys_mmHg in range(1, 89)) or (dia_mmHg in range(1, 59)):
+                        BP_cart = "Low"
                         cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
                                     (N_id2, sys_mmHg, dia_mmHg, BP_cart))
                         db.commit()
@@ -524,38 +510,8 @@ class PatientDetails(Screen):
                         self.compose_response()
                         self.sendSms()
                         
-                    elif (sys_mmHg in range(120, 129)) and (dia_mmHg in range(1, 79)):
+                    elif (sys_mmHg in range(121, 129)) or (dia_mmHg in range(1, 79)):
                         BP_cart = "Elevated"
-                        cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
-                                    (N_id2, sys_mmHg, dia_mmHg, BP_cart))
-                        db.commit()
-                        bp = str(sys_mmHg) + "/" + str(dia_mmHg)
-                        self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
-                        self.compose_response()
-                        self.sendSms()
-
-                    elif (sys_mmHg in range(120, 129)) or (dia_mmHg in range(80, 89)):
-                        BP_cart = "Hypertension_Stage1"
-                        cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
-                                    (N_id2, sys_mmHg, dia_mmHg, BP_cart))
-                        db.commit()
-                        bp = str(sys_mmHg) + "/" + str(dia_mmHg)
-                        self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
-                        self.compose_response()
-                        self.sendSms()
-                        
-                    elif (sys_mmHg in range(120, 129)) or (dia_mmHg in range(90, 119)):
-                        BP_cart = "Hypertension_Stage2"
-                        cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
-                                    (N_id2, sys_mmHg, dia_mmHg, BP_cart))
-                        db.commit()
-                        bp = str(sys_mmHg) + "/" + str(dia_mmHg)
-                        self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
-                        self.compose_response()
-                        self.sendSms()
-                        
-                    elif (sys_mmHg in range(120, 129)) or dia_mmHg > 120:
-                        BP_cart = "Hypertensive_crisis"
                         cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
                                     (N_id2, sys_mmHg, dia_mmHg, BP_cart))
                         db.commit()
@@ -574,38 +530,8 @@ class PatientDetails(Screen):
                         self.compose_response()
                         self.sendSms()
                         
-                    elif (sys_mmHg in range(130, 139)) or (dia_mmHg in range(90, 119)):
-                        BP_cart = "Hypertension_Stage2"
-                        cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
-                                    (N_id2, sys_mmHg, dia_mmHg, BP_cart))
-                        db.commit()
-                        bp = str(sys_mmHg) + "/" + str(dia_mmHg)
-                        self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
-                        self.compose_response()
-                        self.sendSms()
-                        
-                    elif (sys_mmHg in range(130, 139)) or dia_mmHg > 120:
-                        BP_cart = "Hypertensive_crisis"
-                        cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
-                                    (N_id2, sys_mmHg, dia_mmHg, BP_cart))
-                        db.commit()
-                        bp = str(sys_mmHg) + "/" + str(dia_mmHg)
-                        self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
-                        self.compose_response()
-                        self.sendSms()
-                        
                     elif (sys_mmHg in range(140, 180)) or (dia_mmHg in range(90, 120)):
                         BP_cart = "Hypertension_Stage2"
-                        cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
-                                    (N_id2, sys_mmHg, dia_mmHg, BP_cart))
-                        db.commit()
-                        bp = str(sys_mmHg) + "/" + str(dia_mmHg)
-                        self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
-                        self.compose_response()
-                        self.sendSms()
-                        
-                    elif (sys_mmHg in range(140, 180)) or dia_mmHg > 120:
-                        BP_cart = "Hypertensive_crisis"
                         cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
                                     (N_id2, sys_mmHg, dia_mmHg, BP_cart))
                         db.commit()
