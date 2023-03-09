@@ -1,4 +1,4 @@
-import RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
 import sys
 import time
 import mysql.connector as mysql
@@ -21,19 +21,27 @@ from urllib.parse import urlencode, unquote
 import pycurl
 from io import BytesIO
 
+from nat_id import Parse_NID
+# from db_actions import data_control
+# from BP.pers_data import sendSms
+import setts as settings
+from bp_checker import Check_BP
+from db_actions import data_control
+from pers_data import Pers_data
+
 Window.size = (480, 800)
 
 flag = 1
 flag2 = 0
 config = ConfigParser()
 
-def initialize_settings():
-    settings = {}
-    with open("/home/pi/BP_Monitoring_project/BP/conn.config") as json_file:
-        settings = json.load(json_file)
-    return settings
+# def initialize_settings():
+#     settings = {}
+#     with open("conn.config") as json_file:
+#         settings = json.load(json_file)
+#     return settings
 
-settings = initialize_settings()
+settings = settings.initialize_settings()
 URL = settings["url"]
 
 db = mysql.connect(
@@ -52,93 +60,47 @@ class ScanWindow(Screen):
     today = date.today()
 
     def callback(self):
-
+        pID = Parse_NID()
+        global val
         name = self.manager.get_screen("Scan").ids["textFocus"].text
-        val = name.split('~')
+        val = pID.parse_national_id(name)
+        # val = name.split('~')
         print(len(val))
         print(val)
-        if len(val) == 12:
-            firstname = val[6]
-            funame = firstname.replace(',', '')
-            lastname = val[4]
-            fname = funame + " " + lastname
-            N_id = val[5]
-
+        if len(val) == 7:
+            global fname
+            fname = val["first_name"] + " " + val["middle_name"] + " " + val["last_name"]
             pBP = ""
             pBP2 = ""
             pBP3 = ""
             pBP4 = ""
-            gender = str(val[8]).upper()
             
-            if(gender == "MALE"):
+            if(val["gender"] == "MALE"):
                 n_gender = 1
             else:
                 n_gender = 0
                 
 
-            DOB = val[9]
+            # DOB = val["dob"]
 
             # Hash National id
-            National_id = str(N_id).encode("ASCII")
+            National_id = str(val["nation_id"]).encode("ASCII")
             d = hashlib.sha3_256(National_id)
             N_idHash = d.hexdigest()
             N_idHash2 = ""
-            # Calculate Age
+        
+            age = self.today.year - val["dob"].year - (
+                    (self.today.month, self.today.day) < (val["dob"].month, val["dob"].day))
 
-            dateOfBirth = str(DOB).split(" ")
-            day = dateOfBirth[0] 
-            year = dateOfBirth[2]
-            mon = dateOfBirth[1]
+            dob = val["dob"]
 
-            month = int()
-
-            if mon.upper() == "JAN":
-                month = 1
-
-            elif mon.upper() == "FEB":
-                month = 2
-
-            elif mon.upper() == "MAR":
-                month = 3
-
-            elif mon.upper() == "APR":
-                month = 4
-
-            elif mon.upper() == "MAY":
-                month = 5
-
-            elif mon.upper() == "JUN":
-                month = 6
-
-            elif mon.upper() == "JUL":
-                month = 7
-
-            elif mon.upper() == "AUG":
-                month = 8
-
-            elif mon.upper() == "SEP":
-                month = 9
-
-            elif mon.upper() == "OCT":
-                month = 10
-
-            elif mon.upper() == "NOV":
-                month = 11
-
-            elif mon.upper() == "DEC":
-                month = 12
-
-            birthDate = date(int(year), month, int(day))
-            age = self.today.year - birthDate.year - (
-                    (self.today.month, self.today.day) < (birthDate.month, birthDate.day))
-
-            dob = year + "-" + str(month) + "-" + day
-
-            cur.execute("SELECT * FROM Demographic WHERE Full_name=%s", [fname])
+            cur.execute("SELECT * FROM Demographic WHERE Full_name=%s", [val["first_name"]+val["middle_name"]+val["last_name"]])
             record = cur.fetchall()
             if record:
                 for rec in record:
                     N_idHash2 = rec[0]
+                
+                # @BP 1
                 cur.execute(
                     "SELECT sys_mmHg, dia_mmHg, time_stamp  FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 0,1",
                     [N_idHash2])
@@ -150,7 +112,7 @@ class ScanWindow(Screen):
                         timeStamp = str(row[2]).split(" ")
                         date1 = timeStamp[0]
                         if len(current_BPsys) < 1 or len(current_BPdia) < 1:
-                            self.manager.get_screen("Patient_Details").ids["N_id"].text = "ID: " + str(N_id)
+                            self.manager.get_screen("Patient_Details").ids["N_id"].text = "ID: " + str(val["nation_id"])
                             self.manager.get_screen("Patient_Details").ids["N_id"].opacity = 0
                             self.manager.get_screen("Patient_Details").ids["f_name"].text = str(fname)
                             self.manager.get_screen("Patient_Details").ids["dob"].text = str(age) + " Years"
@@ -159,13 +121,13 @@ class ScanWindow(Screen):
                             self.manager.transition.direction = "left"
                             self.parent.current = "Patient_Details"
 
-                            if str(gender) == "MALE":
+                            if str(val["gender"]) == "MALE":
                                 self.manager.get_screen("Patient_Details").ids["gender"].source = "images/male.png"
                             else:
                                 self.manager.get_screen("Patient_Details").ids["gender"].source = "images/female.png"
                         else:
                             pBP = current_BPsys + "/" + current_BPdia
-                            self.manager.get_screen("Patient_Details").ids["N_id"].text = "ID: " + str(N_id)
+                            self.manager.get_screen("Patient_Details").ids["N_id"].text = "ID: " + str(val["nation_id"])
                             self.manager.get_screen("Patient_Details").ids["N_id"].opacity = 0
                             self.manager.get_screen("Patient_Details").ids["f_name"].text = str(fname)
                             self.manager.get_screen("Patient_Details").ids["dob"].text = str(age) + " Years"
@@ -174,7 +136,7 @@ class ScanWindow(Screen):
                             self.manager.transition.direction = "left"
                             self.parent.current = "Patient_Details"
 
-                            if str(gender) == "MALE":
+                            if str(val["gender"]) == "MALE":
                                 self.manager.get_screen("Patient_Details").ids["gender"].source = "images/male.png"
                             else:
                                 self.manager.get_screen("Patient_Details").ids["gender"].source = "images/female.png"
@@ -257,7 +219,7 @@ class ScanWindow(Screen):
                                 self.manager.get_screen("Patient_Details").ids["timeStamp2"].text = ""
 
                 else:
-                    self.manager.get_screen("Patient_Details").ids["N_id"].text = "ID: " + str(N_id)
+                    self.manager.get_screen("Patient_Details").ids["N_id"].text = "ID: " + str(val["nation_id"])
                     self.manager.get_screen("Patient_Details").ids["N_id"].opacity = 0
                     self.manager.get_screen("Patient_Details").ids["f_name"].text = str(fname)
                     self.manager.get_screen("Patient_Details").ids["dob"].text = str(age) + " Years"
@@ -266,7 +228,7 @@ class ScanWindow(Screen):
                     self.manager.transition.direction = "left"
                     self.parent.current = "Patient_Details"
 
-                    if str(gender) == "MALE":
+                    if str(val["gender"]) == "MALE":
                         self.manager.get_screen("Patient_Details").ids["gender"].source = "images/male.png"
                     else:
                         self.manager.get_screen("Patient_Details").ids["gender"].source = "images/female.png"
@@ -275,7 +237,7 @@ class ScanWindow(Screen):
                 cur.execute("INSERT INTO Demographic (national_id, Full_name, Gender, DOB) VALUES (%s, %s, %s, %s) ",
                             (N_idHash, fname, n_gender, dob))
                 db.commit()
-                self.manager.get_screen("Patient_Details").ids["N_id"].text = "ID: " + str(N_id)
+                self.manager.get_screen("Patient_Details").ids["N_id"].text = "ID: " + str(val["nation_id"])
                 self.manager.get_screen("Patient_Details").ids["N_id"].opacity = 0
                 self.manager.get_screen("Patient_Details").ids["f_name"].text = str(fname)
                 self.manager.get_screen("Patient_Details").ids["dob"].text = str(age) + " Years"
@@ -284,7 +246,7 @@ class ScanWindow(Screen):
                 self.manager.transition.direction = "left"
                 self.parent.current = "Patient_Details"
 
-                if str(gender) == "MALE":
+                if str(val["gender"]) == "MALE":
                     self.manager.get_screen("Patient_Details").ids["gender"].source = "images/male.png"
                 else:
                     self.manager.get_screen("Patient_Details").ids["gender"].source = "images/female.png"
@@ -299,21 +261,21 @@ class ScanWindow(Screen):
         self.manager.get_screen("Scan").ids["textFocus"].text = " "
         self.manager.get_screen("Scan").ids["textFocus"].focus = True
 
-    def On_LED(self):
-        self.do_nothing()
-        LED_PIN = 6
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setwarnings(False)
-        GPIO.setup(LED_PIN, GPIO.OUT)
-        GPIO.output(LED_PIN, GPIO.HIGH)
+    # def On_LED(self):
+    #     self.do_nothing()
+    #     LED_PIN = 6
+    #     GPIO.setmode(GPIO.BCM)
+    #     GPIO.setwarnings(False)
+    #     GPIO.setup(LED_PIN, GPIO.OUT)
+    #     GPIO.output(LED_PIN, GPIO.HIGH)
 
-    def Off_LED(self):
-        self.do_nothing()
-        LED_PIN = 6
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setwarnings(False)
-        GPIO.setup(LED_PIN, GPIO.OUT)
-        GPIO.output(LED_PIN, GPIO.LOW)
+    # def Off_LED(self):
+    #     self.do_nothing()
+    #     LED_PIN = 6
+    #     GPIO.setmode(GPIO.BCM)
+    #     GPIO.setwarnings(False)
+    #     GPIO.setup(LED_PIN, GPIO.OUT)
+    #     GPIO.output(LED_PIN, GPIO.LOW)
 
     def do_nothing(self):
         pass
@@ -437,131 +399,43 @@ class PatientDetails(Screen):
         self.manager.get_screen("Patient_Details").ids["comment"].text = ""
         Clock.schedule_once(self.generate_BP, 1)
 
-    
-
     def generate_BP(self, *args):
         global timer
+        actions = data_control()
         nid = str(self.manager.get_screen("Patient_Details").ids["N_id"].text).split(" ")
-        N_idHash = nid[1]
-        global N_id2
-        N_id2 = ""
-        National_id = str(N_idHash).encode("ASCII")
-        d = hashlib.sha3_256(National_id)
-        N_id = d.hexdigest()
-        cur.execute("SELECT id FROM Demographic WHERE national_id= %s ", [N_id])
-        recs = cur.fetchall()
-        for rec in recs:
-            N_id2 = rec[0]
+        act = actions.BP1(nid)
 
         serialPort = serial.Serial(settings["BP"]["bp_port"],
                                     settings["BP"]["baudrate"],
                                     settings["BP"]["bytesize"],
                                     timeout= 1,
                                     stopbits= serial.STOPBITS_ONE
-                                   )
-        
-        # ser_port = serial.Serial("/dev/ttyUSB1", 9600, timeout=0.5)
-        
-        serialData = ""
-        bp = ""
-        dia_mmHg = int()
-        sys_mmHg = int()
-        BP_cart = ""
-        m = True
+               )
 
-        def check_port():
-        #    start threading timer
+        def check_data():
             global timer
-            timer = threading.Timer(5, check_port)
+            timer = threading.Timer(5, check_data)
             timer.start()
-            
             if serialPort.inWaiting() > 0:
                 serialData = serialPort.readall()
                 print(serialData)
                 timer.cancel()
                 data = str(serialData.decode('ASCII'))
-                BP = list(data)
-                if len(data) == 10:
-                    dia_mmHg = int(BP[4] + BP[5], 16)
-                    x = int(BP[2] + BP[3], 16)
-                    sys_mmHg = dia_mmHg + x
+                check = Check_BP()
+                c_BP = check.check_port(data)
 
-                    if (sys_mmHg in range(90, 120)) and (dia_mmHg in range(60, 80)):
-                        global BP_cart
-                        BP_cart = 'Normal'
-                        cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
-                                    (N_id2, sys_mmHg, dia_mmHg, BP_cart))
-                        db.commit()
-                        global bp
-                        bp = str(sys_mmHg) + "/" + str(dia_mmHg)
-                        self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
-                        # bp = [""]
-                        self.compose_response() 
-                        self.sendSms()                       
-                        # gsm()
-                        
-                    elif (sys_mmHg in range(1, 89)) or (dia_mmHg in range(1, 59)):
-                        BP_cart = "Low"
-                        cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
-                                    (N_id2, sys_mmHg, dia_mmHg, BP_cart))
-                        db.commit()
-                        bp = str(sys_mmHg) + "/" + str(dia_mmHg)
-                        self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
-                        self.compose_response()
-                        self.sendSms()
-                        
-                    elif (sys_mmHg in range(121, 129)) or (dia_mmHg in range(1, 79)):
-                        BP_cart = "Elevated"
-                        cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
-                                    (N_id2, sys_mmHg, dia_mmHg, BP_cart))
-                        db.commit()
-                        bp = str(sys_mmHg) + "/" + str(dia_mmHg)
-                        self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
-                        self.compose_response()
-                        self.sendSms()
-                        
-                    elif (sys_mmHg in range(130, 139)) or (dia_mmHg in range(81, 89)):
-                        BP_cart = "Hypertension_Stage1"
-                        cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
-                                    (N_id2, sys_mmHg, dia_mmHg, BP_cart))
-                        db.commit()
-                        bp = str(sys_mmHg) + "/" + str(dia_mmHg)
-                        self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
-                        self.compose_response()
-                        self.sendSms()
-                        
-                    elif (sys_mmHg in range(140, 180)) or (dia_mmHg in range(90, 120)):
-                        BP_cart = "Hypertension_Stage2"
-                        cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
-                                    (N_id2, sys_mmHg, dia_mmHg, BP_cart))
-                        db.commit()
-                        bp = str(sys_mmHg) + "/" + str(dia_mmHg)
-                        self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
-                        self.compose_response()
-                        self.sendSms()
-                        
-                    elif (sys_mmHg > 180) or (dia_mmHg > 120):
-                        BP_cart = "Hypertensive_crisis"
-                        cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
-                                    (N_id2, sys_mmHg, dia_mmHg, BP_cart))
-                        db.commit()
-                        bp = str(sys_mmHg) + "/" + str(dia_mmHg)
-                        self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
-                        self.compose_response()
-                        self.sendSms()
-                        
-                    else:
-                        timer.cancel()
-                        timer.join()
-                        bp = "Error..Try Again"
-                        BP_cart = "No feedback; an error occured"
-                        self.manager.get_screen("Patient_Details").ids["bpValue"].text = bp
-                        self.manager.get_screen("Patient_Details").ids["comment"].text = ""
-                        self.manager.get_screen("Patient_Details").ids["lblText"].opacity = 1
-                        self.buttons()
-                        self.sendSms()
-                
-        check_port()
+                cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
+                                            (act["N_id2"], c_BP["sys_mmHg"], c_BP["dia_mmHg"], c_BP["BP_cart"]))
+                db.commit()
+                self.manager.get_screen("Patient_Details").ids["bpValue"].text = c_BP["bp"]
+                self.manager.get_screen("Patient_Details").ids["bpValue"].text = c_BP["recommendation"]
+                self.manager.get_screen("Patient_Details").ids["comment"].text = act["comment"]
+                # self.compose_response()
+                Pers_data().smsmode(act["N_id2"], c_BP["bp"], c_BP["BP_cart"],
+                                    fname, val["gender"], val["printable_dob"])
+                self.buttons()
+
+        check_data()
     
     # tracing back to main thread
     #this is set for all major graphical changes
@@ -571,465 +445,6 @@ class PatientDetails(Screen):
         self.manager.get_screen("Patient_Details").ids["restart"].opacity = 1
         self.manager.get_screen("Patient_Details").ids["lblText"].opacity = 0
 
-    def sendSms(self):
-        today = date.today()
-        name = self.manager.get_screen("Scan").ids["textFocus"].text
-        val = name.split('~')
-        print(len(val))
-        print(val)
-        if len(val) == 12:
-            firstname = val[6]
-            funame = firstname.replace(',', ' ')
-            lastname = val[4]
-            fname = funame + "%20" + lastname
-            N_id = val[5]
-
-            pBP = ""
-            pBP2 = ""
-            pBP3 = ""
-            pBP4 = ""
-
-            gender = str(val[8]).upper()                            
-
-            DOB = val[9]
-
-            # Hash National id
-            National_id = str(N_id).encode("ASCII")
-            d = hashlib.sha3_256(National_id)
-            N_idHash = d.hexdigest()
-            N_idHash2 = ""
-            # Calculate Age
-
-            dateOfBirth = str(DOB).split(" ")
-            day = dateOfBirth[0] 
-            year = dateOfBirth[2]
-            mon = dateOfBirth[1]
-
-            month = int()
-
-            if mon.upper() == "JAN":
-                month = 1
-
-            elif mon.upper() == "FEB":
-                month = 2
-
-            elif mon.upper() == "MAR":
-                month = 3
-
-            elif mon.upper() == "APR":
-                month = 4
-
-            elif mon.upper() == "MAY":
-                month = 5
-
-            elif mon.upper() == "JUN":
-                month = 6
-
-            elif mon.upper() == "JUL":
-                month = 7
-
-            elif mon.upper() == "AUG":
-                month = 8
-
-            elif mon.upper() == "SEP":
-                month = 9
-
-            elif mon.upper() == "OCT":
-                month = 10
-
-            elif mon.upper() == "NOV":
-                month = 11
-
-            elif mon.upper() == "DEC":
-                month = 12
-
-            birthDate = date(int(year), month, int(day))
-            age = today.year - birthDate.year - (
-                    (today.month, today.day) < (birthDate.month, birthDate.day))
-
-            dob = year + "-" + str(month) + "-" + day
-
-            ser_port = serial.Serial(settings["gsm"]["id"],
-                                    settings["gsm"]["baudrate"],
-                                    timeout= 0.5)
-
-            def smsmode():
-                checkAT = 'AT\r'
-                ser_port.write(checkAT.encode())
-                mes = ser_port.read(64)
-                time.sleep(5)
-                print(mes)
-
-                stres = 'AT+CMGF=1\r'
-                ser_port.write(stres.encode())
-                # msg = ser_port.read(64)
-                time.sleep(0.1)
-
-                # cmd3 = 'AT+CMGF=1\r'
-                # ser_port.write(cmd3.encode())
-                # msg = ser_port.read(64)
-                # time.sleep(0.1)
-                
-                # cmd1 = 'AT+CMGS=\r'
-                cmd1 = 'AT+CMGS="'+settings["server_number"]+'"\r'
-                ser_port.write(cmd1.encode())
-                msg = ser_port.read(64)
-                time.sleep(5)
-                # print(msg)
-
-                response = str(N_id2) + "|" + str(bp) + "|" + BP_cart + "|" + fname + "|" + gender + "|" + dob + '\r'
-                ser_port.write(str.encode(response))
-                msgout = ser_port.read(1000)
-                time.sleep(0.1)
-                print(msgout)
-
-                ser_port.write(str.encode("\x1A"))
-                read_port = ser_port.read(5)
-
-                print("response sent")
-
-            def wifimode():
-                try:
-                    b_obj_ = BytesIO()
-                    crl_ = pycurl.Curl()
-                    vital = str(N_id2) + "|" + str(bp) + "|" + BP_cart + "|" + fname + "|" + gender + "|" + dob
-                    crl_.setopt(crl_.URL, URL + vital)
-                    crl_.setopt(crl_.WRITEDATA, b_obj_)
-                    crl_.perform()
-                    crl_.close()
-                    get_body_ = b_obj_.getvalue()
-
-                    print('Output of GET request:\n%s'%get_body_.decode('utf8'))
-                    checkpoint = '|'
-                    checkpoint2 = '!DOCTYPE'
-                    cp = checkpoint.encode()
-                    cp2 = checkpoint2.encode()
-                    if cp in get_body_ or cp2 in get_body_:
-                        print("all good")
-                    else:
-                        print("didnt get return \n sending over sms")
-                        smsmode()
-                except pycurl.error:
-                    print("we couldnt get through")
-                    smsmode()
-
-            wifimode()
-
-    def compose_response(self):
-        cur.execute("SELECT id FROM vitals LIMIT 0,1")
-        rows = cur.fetchall()
-        N_id = ""
-        N_id2 = ""
-        current_BPsys = int()
-        current_BPdia = int()
-        current_BP_cart = ""
-        previous_BPsys = int()
-        previous_BPdia = int()
-        previous_BP_cart = ""
-
-        for row in rows:
-            nid = str(self.manager.get_screen("Patient_Details").ids["N_id"].text).split(" ")
-            N_idHash = nid[1]
-
-            National_id = str(N_idHash).encode("ASCII")
-            d = hashlib.sha3_256(National_id)
-            N_id = d.hexdigest()
-
-            cur.execute("SELECT id FROM Demographic WHERE national_id= %s", [N_id])
-            recs = cur.fetchall()
-            for rec in recs:
-                N_id2 = rec[0]
-
-        cur.execute("SELECT sys_mmHg, dia_mmHg, BP_cart  FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 0,1",
-                    [N_id2])
-        rows = cur.fetchall()
-
-        recommendation = ""
-        comment = ""
-        bp = ""
-        pBP = ""
-
-        for row in rows:
-            current_BPsys = int(row[0])
-            current_BPdia = int(row[1])
-            current_BP_cart = row[2]
-
-        # Response
-        if current_BPsys > 1 and current_BPdia > 1:
-
-            if (current_BPsys < 120) and (current_BPdia < 80):
-                recommendation = str(current_BPsys) + "/" + str(
-                    current_BPdia) + " " + "[Normal]"
-                self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
-
-            elif (current_BPsys < 120) or (current_BPdia in range(80, 89)):
-                recommendation = str(current_BPsys) + "/" + str(
-                    current_BPdia) + "" + "[Hypertension(1)]"
-                self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
-
-            elif (current_BPsys < 120) or (current_BPdia in range(90, 119)):
-                recommendation = str(current_BPsys) + "/" + str(
-                    current_BPdia) + "" + "[Hypertension(2)]"
-                self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
-
-            elif (current_BPsys < 120) or (current_BPdia > 120):
-                recommendation = str(current_BPsys) + "/" + str(
-                    current_BPdia) + "" + "[Hypertension Crisis]"
-                self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
-
-            elif (current_BPsys in range(120, 129)) and (current_BPdia < 80):
-                recommendation = str(current_BPsys) + "/" + str(
-                    current_BPdia) + "" + "[Elevated]"
-                self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
-
-            elif (current_BPsys in range(120, 129)) or (current_BPdia in range(80, 89)):
-                recommendation = str(current_BPsys) + "/" + str(
-                    current_BPdia) + "" + "[Hypertension(1)]"
-                self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
-
-            elif (current_BPsys in range(120, 129)) or (current_BPdia in range(90, 119)):
-                recommendation = str(current_BPsys) + "/" + str(
-                    current_BPdia) + "" + "[Hypertension(2)]"
-                self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
-
-            elif (current_BPsys in range(120, 129)) or (current_BPdia > 120):
-                recommendation = str(current_BPsys) + "/" + str(
-                    current_BPdia) + "" + "[Hypertension Crisis]"
-                self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
-
-            elif (current_BPsys in range(130, 139)) or (current_BPdia in range(80, 89)):
-                recommendation = str(current_BPsys) + "/" + str(
-                    current_BPdia) + " [Hypertension(1)]"
-                self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
-
-            elif (current_BPsys in range(130, 139)) or (current_BPdia in range(90, 120)):
-                recommendation = str(current_BPsys) + "/" + str(
-                    current_BPdia) + " [Hypertension(2)]"
-                self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
-
-            elif (current_BPsys in range(130, 139)) or current_BPdia > 120:
-                recommendation = str(current_BPsys) + "/" + str(
-                    current_BPdia) + " [Hypertension Crisis]"
-                self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
-
-            elif (current_BPsys in range(140, 180)) or (current_BPdia in range(90, 120)):
-                recommendation = str(current_BPsys) + "/" + str(
-                    current_BPdia) + " [Hypertension(2)]"
-                self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
-
-            elif (current_BPsys in range(140, 180)) or current_BPdia > 120:
-                recommendation = str(current_BPsys) + "/" + str(
-                    current_BPdia) + " [Hypertension Crisis]"
-                self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
-                self.manager.get_screen("Patient_Details").ids["bpValue"].color = (1, 0, 0, 1)
-
-            elif (current_BPsys > 180) or (current_BPdia > 120):
-                recommendation = str(current_BPsys) + "/" + str(
-                    current_BPdia) + " [Hypertension Crisis]"
-                self.manager.get_screen("Patient_Details").ids["bpValue"].text = recommendation
-                self.manager.get_screen("Patient_Details").ids["bpValue"].color = (1, 0, 0, 1)
-            else:
-                pass
-
-        else:
-            pass
-
-        # Comparison
-        
-        cur.execute("SELECT sys_mmHg, dia_mmHg, BP_cart FROM vitals WHERE id = %s ORDER BY time_stamp DESC LIMIT 1,1",
-                    [N_id2])
-        rows = cur.fetchall()
-        if rows:
-            for row in rows:
-                if len(str(row[0])) < 1 or len(str(row[1])) < 1:
-                    pass
-                else:
-                    previous_BPsys = int(row[0])
-                    previous_BPdia = int(row[1])
-                    previous_BP_cart = row[2]
-
-                    print(previous_BPsys)
-                    print(previous_BPdia)
-                    print(previous_BP_cart)
-                    print(current_BPsys)
-                    print(current_BPdia)
-                    print(current_BP_cart)
-                    if previous_BPsys > 1 and previous_BPdia > 1:
-
-                        if (current_BP_cart == "Normal") and (previous_BP_cart == "Normal"):
-                            comment = " After comparing current with previous BP," + "  " + "your BP is ok "
-                            self.manager.get_screen("Patient_Details").ids["comment"].text = comment
-                            self.manager.get_screen("Patient_Details").ids["lblText"].text = "Press the Blue Round Button"
-                            self.buttons()
-
-                        elif (current_BP_cart == "Normal") and (previous_BP_cart == "Elevated"):
-                            comment = " After comparing current with previous BP," + " " + "your BP has improved"
-                            self.manager.get_screen("Patient_Details").ids["comment"].text = comment
-                            self.manager.get_screen("Patient_Details").ids["lblText"].text = "Press the Blue Round Button"
-                            self.buttons()
-
-                        elif (current_BP_cart == "Normal") and (previous_BP_cart == "Hypertension_Stage1"):
-                            comment = " After comparing current with previous BP," + " " + " your BP has improved"
-                            self.manager.get_screen("Patient_Details").ids["comment"].text = comment
-                            self.manager.get_screen("Patient_Details").ids["lblText"].text = "Press the Blue Round Button"
-                            self.buttons()
-
-                        elif (current_BP_cart == "Normal") and (previous_BP_cart == "Hypertension_Stage2"):
-                            comment = " After comparing current with previous BP," + " " + " your BP has improved"
-                            self.manager.get_screen("Patient_Details").ids["comment"].text = comment
-                            self.manager.get_screen("Patient_Details").ids["lblText"].text = "Press the Blue Round Button"
-                            self.buttons()
-
-                        elif (current_BP_cart == "Normal") and (previous_BP_cart == "Hypertensive_crisis"):
-                            comment = " After comparing current with previous BP," + " " + " your BP has improved"
-                            self.manager.get_screen("Patient_Details").ids["takeBP"].opacity = 1
-                            self.manager.get_screen("Patient_Details").ids["lblText"].text = "Press the Blue Round Button"
-                            self.buttons()
-
-                        # 1
-
-                        elif (current_BP_cart == "Elevated") and (previous_BP_cart == "Normal"):
-                            comment = " After comparing current with previous BP," + " " + " your BP is slightly elevated"
-                            self.manager.get_screen("Patient_Details").ids["comment"].text = comment
-                            self.manager.get_screen("Patient_Details").ids["lblText"].text = "Press the Blue Round Button"
-                            self.buttons()
-
-                        elif (current_BP_cart == "Elevated") and (previous_BP_cart == "Elevated"):
-                            comment = " After comparing current with previous BP," + " " + " has not changed"
-                            self.manager.get_screen("Patient_Details").ids["comment"].text = comment
-                            self.manager.get_screen("Patient_Details").ids["lblText"].text = "Press the Blue Round Button"
-                            self.buttons()
-
-                        elif (current_BP_cart == "Elevated") and (previous_BP_cart == "Hypertension_Stage1"):
-                            comment = " After comparing current with previous BP," + " " + " your BP has improved"
-                            self.manager.get_screen("Patient_Details").ids["comment"].text = comment
-                            self.manager.get_screen("Patient_Details").ids["lblText"].text = "Press the Blue Round Button"
-                            self.buttons()
-
-                        elif (current_BP_cart == "Elevated") and (previous_BP_cart == "Hypertension_Stage2"):
-                            comment = " After comparing current with previous BP," + " " + " your BP has improved"
-                            self.manager.get_screen("Patient_Details").ids["comment"].text = comment
-                            self.manager.get_screen("Patient_Details").ids["lblText"].text = "Press the Blue Round Button"
-                            self.buttons()
-
-                        elif (current_BP_cart == "Elevated") and (previous_BP_cart == "Hypertensive_crisis"):
-                            comment = " After comparing current with previous BP," + " " + " your BP has improved"
-                            self.manager.get_screen("Patient_Details").ids["comment"].text = comment
-                            self.manager.get_screen("Patient_Details").ids["lblText"].text = "Press the Blue Round Button"
-                            self.buttons()
-
-                        # 2
-
-                        elif (current_BP_cart == "Hypertension_Stage1") and (previous_BP_cart == "Normal"):
-                            comment = " After comparing current with previous BP," + " " + " you have high blood pressure (Hypertension_Stage1)"
-                            self.manager.get_screen("Patient_Details").ids["comment"].text = comment
-                            self.manager.get_screen("Patient_Details").ids["lblText"].text = "Press the Blue Round Button"
-                            self.buttons()
-
-                        elif (current_BP_cart == "Hypertension_Stage1") and (previous_BP_cart == "Elevated"):
-                            comment = " After comparing current with previous BP," + " " + " your BP is now High (Hypertension_Stage1)."
-                            self.manager.get_screen("Patient_Details").ids["comment"].text = comment
-                            self.manager.get_screen("Patient_Details").ids["lblText"].text = "Press the Blue Round Button"
-                            self.buttons()
-
-                        elif (current_BP_cart == "Hypertension_Stage1") and (previous_BP_cart == "Hypertension_Stage1"):
-                            comment = " After comparing current with previous BP," + " " + " your BP has not improved."
-                            self.manager.get_screen("Patient_Details").ids["comment"].text = comment
-                            self.manager.get_screen("Patient_Details").ids["lblText"].text = "Press the Blue Round Button"
-                            self.buttons()
-
-                        elif (current_BP_cart == "Hypertension_Stage1") and (previous_BP_cart == "Hypertension_Stage2"):
-                            comment = " After comparing current with previous BP," + " " + " your BP has improved but continue the procedures the doctor advised you"
-                            self.manager.get_screen("Patient_Details").ids["comment"].text = comment
-                            self.manager.get_screen("Patient_Details").ids["lblText"].text = "Press the Blue Round Button"
-                            self.buttons()
-
-                        elif (current_BP_cart == "Hypertension_Stage1") and (previous_BP_cart == "Hypertensive_crisis"):
-                            comment = " After comparing current with previous BP," + " " + " your BP has greatly improved." + " " + " Continue the procedures the doctors advised you"
-                            self.manager.get_screen("Patient_Details").ids["comment"].text = comment
-                            self.manager.get_screen("Patient_Details").ids["lblText"].text = "Press the Blue Round Button"
-                            self.buttons()
-
-                        # 3
-
-                        elif (current_BP_cart == "Hypertension_Stage2") and (previous_BP_cart == "Normal"):
-                            comment = " After comparing current with previous BP," + " " + " you have high blood pressure (Hypertension_Stage2). "
-                            self.manager.get_screen("Patient_Details").ids["comment"].text = comment
-                            self.manager.get_screen("Patient_Details").ids["lblText"].text = "Press the Blue Round Button"
-                            self.buttons()
-
-                        elif (current_BP_cart == "Hypertension_Stage2") and (previous_BP_cart == "Elevated"):
-                            comment = " After comparing current with previous BP," + " " + " your BP is now High (Hypertension_Stage2)."
-                            self.manager.get_screen("Patient_Details").ids["comment"].text = comment
-                            self.manager.get_screen("Patient_Details").ids["lblText"].text = "Press the Blue Round Button"
-                            self.buttons()
-
-                        elif (current_BP_cart == "Hypertension_Stage2") and (previous_BP_cart == "Hypertension_Stage1"):
-                            comment = " After comparing current with previous BP, " + " " + "your BP is now High (Hypertension_Stage1)."
-                            self.manager.get_screen("Patient_Details").ids["comment"].text = comment
-                            self.manager.get_screen("Patient_Details").ids["lblText"].text = "Press the Blue Round Button"
-                            self.buttons()
-
-                        elif (current_BP_cart == "Hypertension_Stage2") and (previous_BP_cart == "Hypertension_Stage2"):
-                            comment = " After comparing current with previous BP," + " " + " your BP has not improved."
-                            self.manager.get_screen("Patient_Details").ids["comment"].text = comment
-                            self.manager.get_screen("Patient_Details").ids["lblText"].text = "Press the Blue Round Button"
-                            self.buttons()
-
-                        elif (current_BP_cart == "Hypertension_Stage2") and (previous_BP_cart == "Hypertensive_crisis"):
-                            comment = " After comparing current with previous BP," + " " + " your BP has improved." + " " + " Continue the procedures the doctors advised you"
-                            self.manager.get_screen("Patient_Details").ids["comment"].text = comment
-                            self.manager.get_screen("Patient_Details").ids["lblText"].text = "Press the Blue Round Button"
-                            self.buttons()
-
-                        # 4
-
-                        elif (current_BP_cart == "Hypertensive_crisis") and (previous_BP_cart == "Normal"):
-                            comment = " Visit a doctor now"
-                            self.manager.get_screen("Patient_Details").ids["comment"].text = comment
-                            self.manager.get_screen("Patient_Details").ids["comment"].color = (1, 0, 0, 1)
-                            self.manager.get_screen("Patient_Details").ids["lblText"].text = "Press the Blue Round Button"
-                            self.buttons()
-
-                        elif (current_BP_cart == "Hypertensive_crisis") and (previous_BP_cart == "Elevated"):
-                            comment = " Visit a doctor now"
-                            self.manager.get_screen("Patient_Details").ids["comment"].text = comment
-                            self.manager.get_screen("Patient_Details").ids["comment"].color = (1, 0, 0, 1)
-                            self.manager.get_screen("Patient_Details").ids["lblText"].text = "Press the Blue Round Button"
-                            self.buttons()
-
-                        elif (current_BP_cart == "Hypertensive_crisis") and (previous_BP_cart == "Hypertension_Stage1"):
-                            comment = "Visit a doctor now"
-                            self.manager.get_screen("Patient_Details").ids["comment"].text = comment
-                            self.manager.get_screen("Patient_Details").ids["comment"].color = (1, 0, 0, 1)
-                            self.manager.get_screen("Patient_Details").ids["lblText"].text = "Press the Blue Round Button"
-                            self.buttons()
-
-                        elif (current_BP_cart == "Hypertensive_crisis") and (previous_BP_cart == "Hypertension_Stage2"):
-                            comment = "Visit a doctor now"
-                            self.manager.get_screen("Patient_Details").ids["comment"].text = comment
-                            self.manager.get_screen("Patient_Details").ids["comment"].color = (1, 0, 0, 1)                               
-                            self.manager.get_screen("Patient_Details").ids["lblText"].text = "Press the Blue Round Button"
-                            self.buttons()
-
-                        elif (current_BP_cart == "Hypertensive_crisis") and (previous_BP_cart == "Hypertensive_crisis"):
-                            comment = " After comparing current with previous BP," + " " + " your BP is not improving. Visit a doctor now"
-                            self.manager.get_screen("Patient_Details").ids["comment"].text = comment
-                            self.manager.get_screen("Patient_Details").ids["comment"].color = (1, 0, 0, 1)
-                            self.manager.get_screen("Patient_Details").ids["lblText"].text = "Press the Blue Round Button"
-                            self.buttons()
-
-                        else:
-                            comment = ""
-                            self.manager.get_screen("Patient_Details").ids["comment"].text = comment
-
-                    else:
-                        comment = ""
-                        self.manager.get_screen("Patient_Details").ids["comment"].text = comment
-        else:
-            comment = "Data recorded"
-            self.manager.get_screen("Patient_Details").ids["comment"].text = comment
-        
 class Manager(ScreenManager):
     pass
 
@@ -1037,7 +452,7 @@ class Manager(ScreenManager):
 class MyApp(App):
     def build(self):
         Window.clearcolor = (248 / 255, 247 / 255, 255 / 255, 1)
-        Window.fullscreen = 'auto'
+        # Window.fullscreen = 'auto'
         return Manager()
 
 

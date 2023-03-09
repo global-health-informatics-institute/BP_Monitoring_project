@@ -48,10 +48,10 @@
     spacing: 20
     on_enter:
         root.enter()
-        root.On_LED()
+        # root.On_LED()
     
     on_leave:
-        root.Off_LED()
+        # root.Off_LED()
 
     BoxLayout:
         orientation: "vertical"
@@ -74,6 +74,7 @@
                 background_color: (210/255,210/255,207/255,1)
                 background_normal: "images/back.png"
                 on_press:
+                    root.regenerate()
                     app.root.current = "Main"
                     root.manager.transition.direction = "right"
 
