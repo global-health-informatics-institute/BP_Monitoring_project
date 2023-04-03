@@ -22,11 +22,10 @@ import pycurl
 from io import BytesIO
 
 from nat_id import Parse_NID
-# from db_actions import data_control
+from db_actions import data_control
 # from BP.pers_data import sendSms
 import setts as settings
 from bp_checker import Check_BP
-from db_actions import data_control
 from pers_data import Pers_data
 
 Window.size = (480, 800)
@@ -40,7 +39,6 @@ config = ConfigParser()
 #     with open("conn.config") as json_file:
 #         settings = json.load(json_file)
 #     return settings
-
 settings = settings.initialize_settings()
 URL = settings["url"]
 
@@ -61,9 +59,11 @@ class ScanWindow(Screen):
 
     def callback(self):
         pID = Parse_NID()
+        actions = data_control()
         global val
         name = self.manager.get_screen("Scan").ids["textFocus"].text
         val = pID.parse_national_id(name)
+        act = actions.BP1(name)
         # val = name.split('~')
         print(len(val))
         print(val)
@@ -88,11 +88,26 @@ class ScanWindow(Screen):
             d = hashlib.sha3_256(National_id)
             N_idHash = d.hexdigest()
             N_idHash2 = ""
-        
+# this can be thrown in nat_id or the db_actions file. only call N_idHash from the class
+
             age = self.today.year - val["dob"].year - (
                     (self.today.month, self.today.day) < (val["dob"].month, val["dob"].day))
 
             dob = val["dob"]
+
+            # self.manager.get_screen("Patient_Details").ids["N_id"].text = "ID: " + str(val["nation_id"])
+            # self.manager.get_screen("Patient_Details").ids["N_id"].opacity = 0
+            # self.manager.get_screen("Patient_Details").ids["f_name"].text = str(fname)
+            # self.manager.get_screen("Patient_Details").ids["dob"].text = str(age) + " Years"
+            # self.manager.get_screen("Patient_Details").ids["pBP"].text = act["text"]
+            # self.manager.get_screen("Patient_Details").ids["timeStamp"].text = act["date"]
+            # self.manager.transition.direction = "left"
+            # self.parent.current = "Patient_Details"
+
+            # if str(val["gender"]) == "MALE":
+            #     self.manager.get_screen("Patient_Details").ids["gender"].source = "images/male.png"
+            # else:
+            #     self.manager.get_screen("Patient_Details").ids["gender"].source = "images/female.png"
 
             cur.execute("SELECT * FROM Demographic WHERE Full_name=%s", [val["first_name"]+val["middle_name"]+val["last_name"]])
             record = cur.fetchall()
@@ -401,16 +416,14 @@ class PatientDetails(Screen):
 
     def generate_BP(self, *args):
         global timer
-        actions = data_control()
         nid = str(self.manager.get_screen("Patient_Details").ids["N_id"].text).split(" ")
-        act = actions.BP1(nid)
+        
 
         serialPort = serial.Serial(settings["BP"]["bp_port"],
                                     settings["BP"]["baudrate"],
                                     settings["BP"]["bytesize"],
                                     timeout= 1,
-                                    stopbits= serial.STOPBITS_ONE
-               )
+                                    stopbits= serial.STOPBITS_ONE)
 
         def check_data():
             global timer
@@ -422,16 +435,18 @@ class PatientDetails(Screen):
                 timer.cancel()
                 data = str(serialData.decode('ASCII'))
                 check = Check_BP()
-                c_BP = check.check_port(data)
+                c_BP = check.check_port(data, nid)
+                # act = actions.BP1(nid, data)
 
                 cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
-                                            (act["N_id2"], c_BP["sys_mmHg"], c_BP["dia_mmHg"], c_BP["BP_cart"]))
+                                            (c_BP["N_id2"], c_BP["sys_mmHg"], c_BP["dia_mmHg"], c_BP["BP_cart"]))
                 db.commit()
                 self.manager.get_screen("Patient_Details").ids["bpValue"].text = c_BP["bp"]
                 self.manager.get_screen("Patient_Details").ids["bpValue"].text = c_BP["recommendation"]
-                self.manager.get_screen("Patient_Details").ids["comment"].text = act["comment"]
+                self.manager.get_screen("Patient_Details").ids["bpValue"].opacity = 1
+                self.manager.get_screen("Patient_Details").ids["comment"].text = c_BP["comment"]
                 # self.compose_response()
-                Pers_data().smsmode(act["N_id2"], c_BP["bp"], c_BP["BP_cart"],
+                Pers_data().smsmode(c_BP["N_id2"], c_BP["bp"], c_BP["BP_cart"],
                                     fname, val["gender"], val["printable_dob"])
                 self.buttons()
 

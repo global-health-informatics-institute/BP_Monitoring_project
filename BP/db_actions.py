@@ -5,6 +5,8 @@ from kivy.uix.screenmanager import Screen, ScreenManager
 from kivy.app import App
 from kivy.core.window import Window
 
+
+
 from nat_id import Parse_NID
 # from main import ScanWindow
 Window.size = (480, 800)
@@ -33,133 +35,104 @@ class data_control():
 #queries in one file
 #they will be called from that as a function
 #perhaps this will need parsing of the variable 'val'
+
+    def __init__(self):
+        self.N_id2 = ""
+        self.N_id = ""
+        self.text = ""
+        self.date = ""
+
     def BP1(self, nid):
+        # BP = list(data)
+        # if len(data) == 10:
+        #     self.dia_mmHg = int(BP[4] + BP[5], 16)
+        #     x = int(BP[2] + BP[3], 16)
+        #     self.sys_mmHg = self.dia_mmHg + x
+
         N_idHash = nid[1]
         National_id = str(N_idHash).encode("ASCII")
         d = hashlib.sha3_256(National_id)
-        N_id = d.hexdigest()
-        cur.execute("SELECT id FROM Demographic WHERE national_id= %s ", [N_id])
+        self.N_id = d.hexdigest()
+        cur.execute("SELECT id FROM Demographic WHERE national_id= %s ", [self.N_id])
         recs = cur.fetchall()
         for rec in recs:
-            N_id2 = rec[0]
+            self.N_id2 = rec[0]
 
-        cur.execute("SELECT sys_mmHg, dia_mmHg, BP_cart  FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 0,1",
-                    [N_id2])
-        rows2 = cur.fetchall()
-        for row in rows2:
-            current_BPsys = int(row[0])
-            current_BPdia = int(row[1])
-            current_BP_cart = row[2]
-
-        cur.execute("SELECT sys_mmHg, dia_mmHg, BP_cart FROM vitals WHERE id = %s ORDER BY time_stamp DESC LIMIT 1,1",
-                    [N_id2])
-        rows = cur.fetchall()
-        if rows:
+            # @BP 1 
+            cur.execute("SELECT sys_mmHg, dia_mmHg, time_stamp FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 4",
+                        [self.N_id2])
+            rows = cur.fetchall()
             for row in rows:
-                if len(str(row[0])) < 1 or len(str(row[1])) < 1:
-                    pass
+                current_BPsys = int(row[0])
+                current_BPdia = int(row[1])
+                timeStamp = str(row[2]).split(" ")
+                
+                if len(current_BPsys) < 1 or len(current_BPdia) < 1:
+                    self.text = ""
+                    self.date = ""
                 else:
-                    previous_BPsys = int(row[0])
-                    previous_BPdia = int(row[1])
-                    previous_BP_cart = row[2]
-                    comment = ""
+                    pBP = current_BPsys + "/" + current_BPdia
+                    self.text = pBP
+                    self.date = timeStamp[0]
 
-                    if previous_BPsys > 1 and previous_BPdia > 1:
+                    # # @BP 2
+                    # cur.execute("SELECT sys_mmHg, dia_mmHg, time_stamp  FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 1,1",
+                    #             [self.N_id2])
+                    # rows2 = cur.fetchall()
+                    # if rows2:
+                    #     for row2 in rows2:
+                    #         previous_BPsys2 = str(row2[0])
+                    #         previous_BPdia2 = str(row2[1])
+                    #         timeStamp2 = str(row2[2]).split(" ")
 
-                        # 1
-                        if (current_BP_cart == "Low") and (previous_BP_cart == "Low"):
-                            comment = " After comparing current with previous BP," + "  " + "your BP is still low "
-                        elif (current_BP_cart == "Low") and (previous_BP_cart == "Normal"):
-                            comment = " After comparing current with previous BP," + " " + "your BP has gone low"
-                        elif (current_BP_cart == "Low") and (previous_BP_cart == "Elevated"):
-                            comment = " After comparing current with previous BP," + " " + "your BP has gone low"
-                        elif (current_BP_cart == "Low") and (previous_BP_cart == "Hypertension_Stage1"):
-                            comment = " After comparing current with previous BP," + " " + " your BP has gone low"
-                        elif (current_BP_cart == "Low") and (previous_BP_cart == "Hypertension_Stage2"):
-                            comment = " After comparing current with previous BP," + " " + " your BP has gone low"
-                        elif (current_BP_cart == "Low") and (previous_BP_cart == "Hypertensive_crisis"):
-                            comment = " After comparing current with previous BP," + " " + " your BP has gone low"
-                        
-                        # 2
-                        if (current_BP_cart == "Normal") and (previous_BP_cart == "Normal"):
-                            comment = " After comparing current with previous BP," + "  " + "your BP is ok "
-                        elif (current_BP_cart == "Normal") and (previous_BP_cart == "Low"):
-                            comment = " After comparing current with previous BP," + " " + "your BP has improved"
-                        elif (current_BP_cart == "Normal") and (previous_BP_cart == "Elevated"):
-                            comment = " After comparing current with previous BP," + " " + "your BP has improved"
-                        elif (current_BP_cart == "Normal") and (previous_BP_cart == "Hypertension_Stage1"):
-                            comment = " After comparing current with previous BP," + " " + " your BP has improved"
-                        elif (current_BP_cart == "Normal") and (previous_BP_cart == "Hypertension_Stage2"):
-                            comment = " After comparing current with previous BP," + " " + " your BP has improved"
-                        elif (current_BP_cart == "Normal") and (previous_BP_cart == "Hypertensive_crisis"):
-                            comment = " After comparing current with previous BP," + " " + " your BP has improved"
-                        
+                    #         if len(previous_BPsys2) < 1 or len(previous_BPdia2) < 1:
+                    #             self.text = ""
+                    #             self.date = ""
+                    #         else:
+                    #             pBP2 = previous_BPsys2 + "/" + previous_BPdia2
+                    #             self.text = pBP2
+                    #             self.date = timeStamp2[0]
+                            
+                    #         # @BP 3
+                    #         cur.execute(
+                    #             "SELECT sys_mmHg, dia_mmHg, time_stamp  FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 2,1",
+                    #             [self.N_id2])
+                    #         rows3 = cur.fetchall()
+                    #         if rows3:
+                    #             for row3 in rows3:
+                    #                 previous_BPsys3 = str(row3[0])
+                    #                 previous_BPdia3 = str(row3[1])
+                    #                 timeStamp3 = str(row3[2]).split(" ")
 
-                        # 3
-                        elif (current_BP_cart == "Elevated") and (previous_BP_cart == "Low"):
-                            comment = " After comparing current with previous BP," + " " + "your BP has improved but is slightly elevated"
-                        elif (current_BP_cart == "Elevated") and (previous_BP_cart == "Normal"):
-                            comment = " After comparing current with previous BP," + " " + " your BP is slightly elevated"
-                        elif (current_BP_cart == "Elevated") and (previous_BP_cart == "Elevated"):
-                            comment = " After comparing current with previous BP," + " " + " has not changed"
-                        elif (current_BP_cart == "Elevated") and (previous_BP_cart == "Hypertension_Stage1"):
-                            comment = " After comparing current with previous BP," + " " + " your BP has improved"
-                        elif (current_BP_cart == "Elevated") and (previous_BP_cart == "Hypertension_Stage2"):
-                            comment = " After comparing current with previous BP," + " " + " your BP has improved"
-                        elif (current_BP_cart == "Elevated") and (previous_BP_cart == "Hypertensive_crisis"):
-                            comment = " After comparing current with previous BP," + " " + " your BP has improved"
+                    #                 if len(previous_BPsys3) < 1 or len(previous_BPdia3) < 1:
+                    #                     self.text = ""
+                    #                     self.date = ""
+                    #                 else:
+                    #                     pBP3 = previous_BPsys3 + "/" + previous_BPdia3
+                    #                     self.text = pBP3
+                    #                     self.date = timeStamp3[0]
 
+                    #                 # @BP 4
+                    #                 cur.execute(
+                    #                     "SELECT sys_mmHg, dia_mmHg, time_stamp  FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 3,1",
+                    #                     [self.N_id2])
+                    #                 rows4 = cur.fetchall()
+                    #                 if rows4:
+                    #                     for row4 in rows4:
+                    #                         previous_BPsys4 = str(row4[0])
+                    #                         previous_BPdia4 = str(row4[1])
+                    #                         timeStamp4 = str(row4[2]).split(" ")
+                                            
+                    #                         if len(previous_BPsys4) < 1 or len(previous_BPdia4) < 1:
+                    #                             self.text = ""
+                    #                             self.date = ""
+                    #                         else:
+                    #                             pBP4 = previous_BPsys4 + "/" + previous_BPdia4
+                    #                             self.text = pBP4
+                    #                             self.date = timeStamp4[0]
+                
 
-                        # 4  
-                        elif (current_BP_cart == "Hypertension_Stage1") and (previous_BP_cart == "Normal"):
-                            comment = " After comparing current with previous BP," + " " + " you have high blood pressure (Hypertension_Stage1)"
-                        elif (current_BP_cart == "Hypertension_Stage1") and (previous_BP_cart == "Low"):
-                            comment = " After comparing current with previous BP," + " " + " your BP is now High (Hypertension_Stage1)."
-                        elif (current_BP_cart == "Hypertension_Stage1") and (previous_BP_cart == "Elevated"):
-                            comment = " After comparing current with previous BP," + " " + " your BP is now High (Hypertension_Stage1)."
-                        elif (current_BP_cart == "Hypertension_Stage1") and (previous_BP_cart == "Hypertension_Stage1"):
-                            comment = " After comparing current with previous BP," + " " + " your BP has not improved."
-                        elif (current_BP_cart == "Hypertension_Stage1") and (previous_BP_cart == "Hypertension_Stage2"):
-                            comment = " After comparing current with previous BP," + " " + " your BP has improved but continue the procedures the doctor advised you"
-                        elif (current_BP_cart == "Hypertension_Stage1") and (previous_BP_cart == "Hypertensive_crisis"):
-                            comment = " After comparing current with previous BP," + " " + " your BP has greatly improved." + " " + " Continue the procedures the doctors advised you"
-
-
-                        # 5 
-                        elif (current_BP_cart == "Hypertension_Stage2") and (previous_BP_cart == "Normal"):
-                            comment = " After comparing current with previous BP," + " " + " you have high blood pressure (Hypertension_Stage2). "
-                        elif (current_BP_cart == "Hypertension_Stage2") and (previous_BP_cart == "Low"):
-                            comment = " After comparing current with previous BP," + " " + " your BP is now High (Hypertension_Stage2)."
-                        elif (current_BP_cart == "Hypertension_Stage2") and (previous_BP_cart == "Elevated"):
-                            comment = " After comparing current with previous BP," + " " + " your BP is now High (Hypertension_Stage2)."
-                        elif (current_BP_cart == "Hypertension_Stage2") and (previous_BP_cart == "Hypertension_Stage1"):
-                            comment = " After comparing current with previous BP, " + " " + "your BP is now High (Hypertension_Stage1)."
-                        elif (current_BP_cart == "Hypertension_Stage2") and (previous_BP_cart == "Hypertension_Stage2"):
-                            comment = " After comparing current with previous BP," + " " + " your BP has not improved."
-                        elif (current_BP_cart == "Hypertension_Stage2") and (previous_BP_cart == "Hypertensive_crisis"):
-                            comment = " After comparing current with previous BP," + " " + " your BP has improved." + " " + " Continue the procedures the doctors advised you"
-
-
-                        # 6
-                        elif (current_BP_cart == "Hypertensive_crisis") and (previous_BP_cart == "Low"):
-                            comment = " Visit a doctor now"
-                        elif (current_BP_cart == "Hypertensive_crisis") and (previous_BP_cart == "Normal"):
-                            comment = " Visit a doctor now"
-                        elif (current_BP_cart == "Hypertensive_crisis") and (previous_BP_cart == "Elevated"):
-                            comment = " Visit a doctor now"
-                        elif (current_BP_cart == "Hypertensive_crisis") and (previous_BP_cart == "Hypertension_Stage1"):
-                            comment = "Visit a doctor now"
-                        elif (current_BP_cart == "Hypertensive_crisis") and (previous_BP_cart == "Hypertension_Stage2"):
-                            comment = "Visit a doctor now"
-                        elif (current_BP_cart == "Hypertensive_crisis") and (previous_BP_cart == "Hypertensive_crisis"):
-                            comment = " After comparing current with previous BP," + " " + " your BP is not improving. Visit a doctor now"
-
-                        else:
-                            comment = ""
-                        
-
-        res = {"N_id2":N_id2, "N_id":N_id, "current_BPsys":current_BPsys, "current_BPdia":current_BPdia,
-                "current_BP_cart":current_BP_cart, "comment": comment}
+        res = {"N_id2":self.N_id2, "N_id":self.N_id, "date": self.date, "text": self.text}
         return(res)
 
 
