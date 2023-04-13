@@ -1,4 +1,4 @@
-import RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
 import sys
 import time
 import mysql.connector as mysql
@@ -22,7 +22,7 @@ import pycurl
 from io import BytesIO
 
 from nat_id import Parse_NID
-from db_actions import data_control
+# from db_actions import data_control
 # from BP.pers_data import sendSms
 import setts as settings
 from bp_checker import Check_BP
@@ -59,11 +59,11 @@ class ScanWindow(Screen):
 
     def callback(self):
         pID = Parse_NID()
-        actions = data_control()
+        # actions = data_control()
         global val
         name = self.manager.get_screen("Scan").ids["textFocus"].text
         val = pID.parse_national_id(name)
-        act = actions.BP1(name)
+        # act = actions.BP1(name)
         # val = name.split('~')
         print(len(val))
         print(val)
@@ -88,6 +88,7 @@ class ScanWindow(Screen):
             d = hashlib.sha3_256(National_id)
             N_idHash = d.hexdigest()
             N_idHash2 = ""
+# this can be thrown in nat_id or the db_actions file. only call N_idHash from the class
 
             age = self.today.year - val["dob"].year - (
                     (self.today.month, self.today.day) < (val["dob"].month, val["dob"].day))
@@ -108,7 +109,7 @@ class ScanWindow(Screen):
             # else:
             #     self.manager.get_screen("Patient_Details").ids["gender"].source = "images/female.png"
 
-            cur.execute("SELECT * FROM Demographic WHERE Full_name=%s", [val["first_name"]+val["middle_name"]+val["last_name"]])
+            cur.execute("SELECT * FROM Demographic WHERE national_id = %s", [N_idHash])
             record = cur.fetchall()
             if record:
                 for rec in record:
@@ -275,21 +276,21 @@ class ScanWindow(Screen):
         self.manager.get_screen("Scan").ids["textFocus"].text = " "
         self.manager.get_screen("Scan").ids["textFocus"].focus = True
 
-    def On_LED(self):
-        self.do_nothing()
-        LED_PIN = 6
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setwarnings(False)
-        GPIO.setup(LED_PIN, GPIO.OUT)
-        GPIO.output(LED_PIN, GPIO.HIGH)
+    # def On_LED(self):
+    #     self.do_nothing()
+    #     LED_PIN = 6
+    #     GPIO.setmode(GPIO.BCM)
+    #     GPIO.setwarnings(False)
+    #     GPIO.setup(LED_PIN, GPIO.OUT)
+    #     GPIO.output(LED_PIN, GPIO.HIGH)
 
-    def Off_LED(self):
-        self.do_nothing()
-        LED_PIN = 6
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setwarnings(False)
-        GPIO.setup(LED_PIN, GPIO.OUT)
-        GPIO.output(LED_PIN, GPIO.LOW)
+    # def Off_LED(self):
+    #     self.do_nothing()
+    #     LED_PIN = 6
+    #     GPIO.setmode(GPIO.BCM)
+    #     GPIO.setwarnings(False)
+    #     GPIO.setup(LED_PIN, GPIO.OUT)
+    #     GPIO.output(LED_PIN, GPIO.LOW)
 
     def do_nothing(self):
         pass
@@ -466,7 +467,7 @@ class Manager(ScreenManager):
 class MyApp(App):
     def build(self):
         Window.clearcolor = (248 / 255, 247 / 255, 255 / 255, 1)
-        Window.fullscreen = 'auto'
+        # Window.fullscreen = 'auto'
         return Manager()
 
 
