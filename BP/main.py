@@ -1,4 +1,4 @@
-# import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 import sys
 import time
 import mysql.connector as mysql
@@ -16,17 +16,14 @@ import json
 import pycurl
 from io import BytesIO
 from configparser import ConfigParser
-
+import setts as settings
 from urllib.parse import urlencode, unquote
 import pycurl
 from io import BytesIO
 
-from nat_id import Parse_NID
-# from db_actions import data_control
-# from BP.pers_data import sendSms
-import setts as settings
-from bp_checker import Check_BP
-from pers_data import Pers_data
+from utils.nat_id import Parse_NID
+from utils.bp_checker import Check_BP
+from utils.pers_data import Pers_data
 
 Window.size = (480, 800)
 
@@ -34,12 +31,13 @@ flag = 1
 flag2 = 0
 config = ConfigParser()
 
-# def initialize_settings():
-#     settings = {}
-#     with open("conn.config") as json_file:
-#         settings = json.load(json_file)
-#     return settings
-settings = settings.initialize_settings()
+def initialize_settings():
+    settings = {}
+    with open("/home/pi/BP_Monitoring_project/BP/conn.config") as json_file:
+        settings = json.load(json_file)
+    return settings
+
+settings = initialize_settings()
 URL = settings["url"]
 
 db = mysql.connect(
@@ -59,63 +57,53 @@ class ScanWindow(Screen):
 
     def callback(self):
         pID = Parse_NID()
-        # actions = data_control()
         global val
         name = self.manager.get_screen("Scan").ids["textFocus"].text
+#        val = name.split('~')
         val = pID.parse_national_id(name)
-        # act = actions.BP1(name)
-        # val = name.split('~')
         print(len(val))
         print(val)
         if len(val) == 7:
             global fname
-            fname = val["first_name"] + " " + val["middle_name"] + " " + val["last_name"]
+            fname = val["first_name"]+ " " + val["last_name"]
+
+            N_id = val["nation_id"]
+
             pBP = ""
             pBP2 = ""
             pBP3 = ""
             pBP4 = ""
+            gender = val["gender"]
             
-            if(val["gender"] == "MALE"):
+            if(gender == "MALE"):
                 n_gender = 1
             else:
                 n_gender = 0
                 
 
-            # DOB = val["dob"]
+            DOB = val["dob"]
 
             # Hash National id
-            National_id = str(val["nation_id"]).encode("ASCII")
+            National_id = str(N_id).encode("ASCII")
             d = hashlib.sha3_256(National_id)
             N_idHash = d.hexdigest()
             N_idHash2 = ""
-# this can be thrown in nat_id or the db_actions file. only call N_idHash from the class
+            # Calculate Age
+
 
             age = self.today.year - val["dob"].year - (
                     (self.today.month, self.today.day) < (val["dob"].month, val["dob"].day))
 
+#            dob = year + "-" + str(month) + "-" + day
             dob = val["dob"]
 
-            # self.manager.get_screen("Patient_Details").ids["N_id"].text = "ID: " + str(val["nation_id"])
-            # self.manager.get_screen("Patient_Details").ids["N_id"].opacity = 0
-            # self.manager.get_screen("Patient_Details").ids["f_name"].text = str(fname)
-            # self.manager.get_screen("Patient_Details").ids["dob"].text = str(age) + " Years"
-            # self.manager.get_screen("Patient_Details").ids["pBP"].text = act["text"]
-            # self.manager.get_screen("Patient_Details").ids["timeStamp"].text = act["date"]
-            # self.manager.transition.direction = "left"
-            # self.parent.current = "Patient_Details"
-
-            # if str(val["gender"]) == "MALE":
-            #     self.manager.get_screen("Patient_Details").ids["gender"].source = "images/male.png"
-            # else:
-            #     self.manager.get_screen("Patient_Details").ids["gender"].source = "images/female.png"
-
-            cur.execute("SELECT * FROM Demographic WHERE national_id = %s", [N_idHash])
+            cur.execute("SELECT * FROM Demographic WHERE national_id=%s", [N_idHash])
             record = cur.fetchall()
             if record:
                 for rec in record:
                     N_idHash2 = rec[0]
-                
-                # @BP 1
+                    
+                # @BP_1
                 cur.execute(
                     "SELECT sys_mmHg, dia_mmHg, time_stamp  FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 0,1",
                     [N_idHash2])
@@ -136,7 +124,7 @@ class ScanWindow(Screen):
                             self.manager.transition.direction = "left"
                             self.parent.current = "Patient_Details"
 
-                            if str(val["gender"]) == "MALE":
+                            if str(gender) == "MALE":
                                 self.manager.get_screen("Patient_Details").ids["gender"].source = "images/male.png"
                             else:
                                 self.manager.get_screen("Patient_Details").ids["gender"].source = "images/female.png"
@@ -151,7 +139,7 @@ class ScanWindow(Screen):
                             self.manager.transition.direction = "left"
                             self.parent.current = "Patient_Details"
 
-                            if str(val["gender"]) == "MALE":
+                            if str(gender) == "MALE":
                                 self.manager.get_screen("Patient_Details").ids["gender"].source = "images/male.png"
                             else:
                                 self.manager.get_screen("Patient_Details").ids["gender"].source = "images/female.png"
@@ -243,7 +231,7 @@ class ScanWindow(Screen):
                     self.manager.transition.direction = "left"
                     self.parent.current = "Patient_Details"
 
-                    if str(val["gender"]) == "MALE":
+                    if str(gender) == "MALE":
                         self.manager.get_screen("Patient_Details").ids["gender"].source = "images/male.png"
                     else:
                         self.manager.get_screen("Patient_Details").ids["gender"].source = "images/female.png"
@@ -261,7 +249,7 @@ class ScanWindow(Screen):
                 self.manager.transition.direction = "left"
                 self.parent.current = "Patient_Details"
 
-                if str(val["gender"]) == "MALE":
+                if str(gender) == "MALE":
                     self.manager.get_screen("Patient_Details").ids["gender"].source = "images/male.png"
                 else:
                     self.manager.get_screen("Patient_Details").ids["gender"].source = "images/female.png"
@@ -276,21 +264,21 @@ class ScanWindow(Screen):
         self.manager.get_screen("Scan").ids["textFocus"].text = " "
         self.manager.get_screen("Scan").ids["textFocus"].focus = True
 
-    # def On_LED(self):
-    #     self.do_nothing()
-    #     LED_PIN = 6
-    #     GPIO.setmode(GPIO.BCM)
-    #     GPIO.setwarnings(False)
-    #     GPIO.setup(LED_PIN, GPIO.OUT)
-    #     GPIO.output(LED_PIN, GPIO.HIGH)
+    def On_LED(self):
+        self.do_nothing()
+        LED_PIN = 6
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setwarnings(False)
+        GPIO.setup(LED_PIN, GPIO.OUT)
+        GPIO.output(LED_PIN, GPIO.HIGH)
 
-    # def Off_LED(self):
-    #     self.do_nothing()
-    #     LED_PIN = 6
-    #     GPIO.setmode(GPIO.BCM)
-    #     GPIO.setwarnings(False)
-    #     GPIO.setup(LED_PIN, GPIO.OUT)
-    #     GPIO.output(LED_PIN, GPIO.LOW)
+    def Off_LED(self):
+        self.do_nothing()
+        LED_PIN = 6
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setwarnings(False)
+        GPIO.setup(LED_PIN, GPIO.OUT)
+        GPIO.output(LED_PIN, GPIO.LOW)
 
     def do_nothing(self):
         pass
@@ -414,16 +402,17 @@ class PatientDetails(Screen):
         self.manager.get_screen("Patient_Details").ids["comment"].text = ""
         Clock.schedule_once(self.generate_BP, 1)
 
+    
+
     def generate_BP(self, *args):
         global timer
         nid = str(self.manager.get_screen("Patient_Details").ids["N_id"].text).split(" ")
-        
-
         serialPort = serial.Serial(settings["BP"]["bp_port"],
                                     settings["BP"]["baudrate"],
                                     settings["BP"]["bytesize"],
                                     timeout= 1,
                                     stopbits= serial.STOPBITS_ONE)
+
 
         def check_data():
             global timer
@@ -460,6 +449,8 @@ class PatientDetails(Screen):
         self.manager.get_screen("Patient_Details").ids["restart"].opacity = 1
         self.manager.get_screen("Patient_Details").ids["lblText"].opacity = 0
 
+
+        
 class Manager(ScreenManager):
     pass
 
@@ -467,9 +458,10 @@ class Manager(ScreenManager):
 class MyApp(App):
     def build(self):
         Window.clearcolor = (248 / 255, 247 / 255, 255 / 255, 1)
-        # Window.fullscreen = 'auto'
+        Window.fullscreen = 'auto'
         return Manager()
 
 
 if __name__ == "__main__":
     MyApp().run()
+
