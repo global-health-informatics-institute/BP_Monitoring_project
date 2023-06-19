@@ -46,7 +46,7 @@ db = mysql.connect(
     passwd= settings["database"]["passwd"],
     database= settings["database"]["database"]
 )
-cur = db.cursor()
+
 
 class MainWindow(Screen):
     pass
@@ -54,7 +54,8 @@ class MainWindow(Screen):
 
 class ScanWindow(Screen):
     today = date.today()
-
+    global cur
+    cur = db.cursor()
     def callback(self):
         pID = Parse_NID()
         global val
@@ -102,6 +103,7 @@ class ScanWindow(Screen):
             if record:
                 for rec in record:
                     N_idHash2 = rec[0]
+            
                     
                 # @BP_1
                 cur.execute(
@@ -253,7 +255,6 @@ class ScanWindow(Screen):
                     self.manager.get_screen("Patient_Details").ids["gender"].source = "images/male.png"
                 else:
                     self.manager.get_screen("Patient_Details").ids["gender"].source = "images/female.png"
-
         else:
 
             self.parent.current = "Scan"
@@ -283,10 +284,9 @@ class ScanWindow(Screen):
     def do_nothing(self):
         pass
 
-
 class PatientDetails(Screen):
     def regenerate(self):
-        N_id2 = ""
+        #N_id2 = ""
         nid = str(self.manager.get_screen("Patient_Details").ids["N_id"].text).split(" ")
         N_idHash = nid[1]
 
@@ -311,7 +311,7 @@ class PatientDetails(Screen):
                 if len(current_BPsys) < 1 or len(current_BPdia) < 1:
                     self.manager.get_screen("Patient_Details").ids["pBP"].text = ""
                     self.manager.get_screen("Patient_Details").ids["timeStamp"].text = ""
-
+                    
                 else:
                     pBP = current_BPsys + "/" + current_BPdia
                     self.manager.get_screen("Patient_Details").ids["pBP"].text = pBP
@@ -406,13 +406,13 @@ class PatientDetails(Screen):
 
     def generate_BP(self, *args):
         global timer
+        self.manager.get_screen("Patient_Details").ids["restart"].opacity = 1
         nid = str(self.manager.get_screen("Patient_Details").ids["N_id"].text).split(" ")
         serialPort = serial.Serial(settings["BP"]["bp_port"],
                                     settings["BP"]["baudrate"],
                                     settings["BP"]["bytesize"],
                                     timeout= 1,
                                     stopbits= serial.STOPBITS_ONE)
-
 
         def check_data():
             global timer
@@ -424,21 +424,38 @@ class PatientDetails(Screen):
                 timer.cancel()
                 data = str(serialData.decode('ASCII'))
                 check = Check_BP()
-                c_BP = check.check_port(data, nid)
+                c_BP = check.check_port(data)
+                category = check.category()
+                comment_box = check.comment_box(nid)
                 # act = actions.BP1(nid, data)
-
-                cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart) VALUES (%s,%s, %s, %s) ",
-                                            (c_BP["N_id2"], c_BP["sys_mmHg"], c_BP["dia_mmHg"], c_BP["BP_cart"]))
-                db.commit()
-                self.manager.get_screen("Patient_Details").ids["bpValue"].text = c_BP["bp"]
-                self.manager.get_screen("Patient_Details").ids["bpValue"].text = c_BP["recommendation"]
-                self.manager.get_screen("Patient_Details").ids["bpValue"].opacity = 1
-                self.manager.get_screen("Patient_Details").ids["comment"].text = c_BP["comment"]
-                # self.compose_response()
-                Pers_data().smsmode(c_BP["N_id2"], c_BP["bp"], c_BP["BP_cart"],
-                                    fname, val["gender"], val["printable_dob"])
-                self.buttons()
-
+                sql = "INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart, status) VALUES (%s, %s, %s, %s, %s) ",(comment_box["N_id2"], c_BP["sys_mmHg"], c_BP["dia_mmHg"], category["BP_cart"], 0)
+                print(sql)
+                
+                if comment_box["N_id2"] == " ":
+                    cur.execute("SELECT id FROM Demographic WHERE national_id= %s ", [N_id])
+                    recs = cur.fetchall()
+                    for rec in recs:
+                        N_id2 = rec[0]
+                status = 0
+                if c_BP["sys_mmHg"] != 0 and c_BP["dia_mmHg"] != 0:
+                    cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart, status, national_id) VALUES (%s, %s, %s, %s, %s, %s) ",
+                                                (comment_box["N_id2"], c_BP["sys_mmHg"], c_BP["dia_mmHg"], category["BP_cart"], status, comment_box["N_id"]))
+                
+                    db.commit()
+                    self.finish_off()
+                    self.manager.get_screen("Patient_Details").ids["bpValue"].text = category["bp"]
+                    self.manager.get_screen("Patient_Details").ids["bpValue"].text = category["recommendation"]
+                    self.manager.get_screen("Patient_Details").ids["bpValue"].opacity = 1
+                    self.manager.get_screen("Patient_Details").ids["comment"].text = comment_box["comment"]
+                    print(comment_box["comment"])
+                    # self.compose_response()
+                    Pers_data().smsmode(comment_box["N_id2"], category["bp"], category["BP_cart"],
+                                        fname, val["gender"], val["printable_dob"], comment_box["N_id"])
+                    self.buttons()
+                else:
+                    self.manager.get_screen("Patient_Details").ids["bpValue"].text = "Error...try again"
+                    self.buttons()
+                
         check_data()
     
     # tracing back to main thread
@@ -448,8 +465,25 @@ class PatientDetails(Screen):
         self.manager.get_screen("Patient_Details").ids["takeBP"].opacity = 1
         self.manager.get_screen("Patient_Details").ids["restart"].opacity = 1
         self.manager.get_screen("Patient_Details").ids["lblText"].opacity = 0
-
-
+#        self.manager.get_screen("Patient_Details").ids["bpValue"].opacity = 0
+    @mainthread
+    def finish_off(self):
+        self.manager.get_screen("Patient_Details").ids["restart"].opacity = 0
+    
+    def leave(self):
+        self.manager.get_screen("Patient_Details").ids["bpValue"].text = "Waiting for BP vitals..."
+        self.manager.get_screen("Patient_Details").ids["restart"].opacity = 0
+        self.manager.get_screen("Patient_Details").ids["takeBP"].opacity = 0
+        self.manager.get_screen("Patient_Details").ids["lblText"].opacity = 1
+        self.manager.get_screen("Patient_Details").ids["comment"].text = ""
+        self.manager.get_screen("Patient_Details").ids["pBP"].text = ""
+        self.manager.get_screen("Patient_Details").ids["timeStamp"].text = ""
+        self.manager.get_screen("Patient_Details").ids["pBP2"].text = ""
+        self.manager.get_screen("Patient_Details").ids["timeStamp2"].text = ""
+        self.manager.get_screen("Patient_Details").ids["pBP3"].text = ""
+        self.manager.get_screen("Patient_Details").ids["timeStamp3"].text = ""
+        self.manager.get_screen("Patient_Details").ids["pBP4"].text = ""
+        self.manager.get_screen("Patient_Details").ids["timeStamp4"].text = ""
         
 class Manager(ScreenManager):
     pass
@@ -458,7 +492,7 @@ class Manager(ScreenManager):
 class MyApp(App):
     def build(self):
         Window.clearcolor = (248 / 255, 247 / 255, 255 / 255, 1)
-        Window.fullscreen = 'auto'
+#        Window.fullscreen = 'auto'
         return Manager()
 
 

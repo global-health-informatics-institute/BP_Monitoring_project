@@ -6,6 +6,7 @@ from kivy.clock import mainthread, Clock
 from kivy.core.window import Window
 from kivy.uix.screenmanager import Screen, ScreenManager
 from kivy.uix.button import Button
+import mysql.connector as mysql
 
 def initialize_settings():
     settings = {}
@@ -16,9 +17,18 @@ def initialize_settings():
 settings = initialize_settings()
 URL = settings["url"]
 
+db = mysql.connect(
+    host=settings["database"]["host"],
+    user = settings["database"]["user"],
+    passwd= settings["database"]["passwd"],
+    database= settings["database"]["database"]
+)
+
+cur = db.cursor()
+
 class Pers_data:
     
-    def smsmode(self, N_id, bp, BP_cart, fname, gender, dob):
+    def smsmode(self, N_id, bp, BP_cart, fname, gender, dob, hex_id):
         ser_port = serial.Serial(settings["gsm"]["id"],
                             settings["gsm"]["baudrate"],
                             timeout= 0.5)
@@ -28,6 +38,20 @@ class Pers_data:
         mes = ser_port.read(64)
         time.sleep(5)
         print(mes)
+        
+        cur.execute("SELECT * from vitals WHERE status = 0")
+        rows = cur.fetchall()
+        for row in rows:
+            N_idU = row[1]
+            
+        if b'AT\r\r\nOK\r\n' in mes:
+            print("success")
+            cur.execute("UPDATE vitals SET status = 1 WHERE id = %s", [N_idU])
+            db.commit()
+            print("db updated")
+        else:
+            print("unsuccessful")
+            
 
         stres = 'AT+CMGF=1\r'
         ser_port.write(stres.encode())
@@ -46,16 +70,16 @@ class Pers_data:
         time.sleep(5)
         # print(msg)
 
-        response = str(N_id) + "|" + str(bp) + "|" + BP_cart + "|" + fname + "|" + gender + "|" + dob + '\r'
+        response = str(N_id) + "|" + str(bp) + "|" + BP_cart + "|" + fname + "|" + gender + "|" + dob +  "|" + hex_id + '\r'
         
         ser_port.write(str.encode(response))
         msgout = ser_port.read(1000)
         time.sleep(0.1)
         print(msgout)
-
+        
         ser_port.write(str.encode("\x1A"))
         read_port = ser_port.read(5)
-
+   
         print("response sent")
         return response
 
