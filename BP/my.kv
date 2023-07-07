@@ -138,7 +138,8 @@
     name: "Patient_Details"
     on_enter:
         root.generate_BP()
-
+    on_pre_leave:
+        root.leave()
 
     BoxLayout:
         orientation: "vertical"
@@ -153,18 +154,7 @@
                 Rectangle:
                     size: self.size
                     pos: self.pos
-
-            Button:
-                size_hint_x: .2
-                font_size: 18
-                bold:True
-                color: (0,0,0,1)
-                background_color: (210/255,210/255,207/255,1)
-                background_normal: "images/back.png"
-                on_press:
-                    app.root.current = "Scan"
-                    root.manager.transition.direction = "right"
-
+           
             Label:
                 text: "CAPTURE BP VITALS"
                 color: (0,0,0,1)
@@ -379,6 +369,7 @@
                 height: 40
                 pos_hint: {"center_x": 0.5, "center_y":0.2}
                 on_press:
+                    root.regenerate()
                     app.root.current = "Main"
 
 
