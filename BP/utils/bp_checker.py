@@ -102,12 +102,18 @@ class Check_BP():
         cur.execute("SELECT id FROM Demographic WHERE national_id= %s ", [N_id])
         recs = cur.fetchall()
         for rec in recs:
-            N_id2 = rec[0]
-
+            self.N_id2 = rec[0]
+        
+        result = {"N_id2":self.N_id2, "N_id":N_id}
+        # print(result)
+        
+        return result
+        
+    def fetch_cart(self):
         cur.execute("SELECT sys_mmHg, dia_mmHg, BP_cart FROM vitals WHERE id = %s ORDER BY time_stamp DESC LIMIT 0,1",
-                    [N_id2])
+                    [self.N_id2])
         rows = cur.fetchall()
-        print("This is NID2", N_id2)
+        #print("This is NID2", self.N_id2)
         if rows:
             for row in rows:
                 if len(str(row[0])) < 1 or len(str(row[1])) < 1:
@@ -219,7 +225,7 @@ class Check_BP():
         else:
             self.comment = "Data recorded"
             
-        result = {"comment": self.comment, "N_id2":N_id2, "N_id":N_id}
+        result = {"comment": self.comment}
         # print(result)
         return result
 

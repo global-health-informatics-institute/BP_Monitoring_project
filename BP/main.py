@@ -406,11 +406,11 @@ class PatientDetails(Screen):
 
     def generate_BP(self, *args):
         global timer
-        pID = Parse_NID()
+#         pID = Parse_NID()
         self.manager.get_screen("Patient_Details").ids["restart"].opacity = 1
         nid = str(self.manager.get_screen("Patient_Details").ids["N_id"].text).split(" ")
-        val = pID.parse_national_id(nid)
-        N_id = val["nation_id"]
+#         val = pID.parse_national_id(nid)
+#         N_id = val["nation_id"]
         serialPort = serial.Serial(settings["BP"]["bp_port"],
                                     settings["BP"]["baudrate"],
                                     settings["BP"]["bytesize"],
@@ -430,9 +430,10 @@ class PatientDetails(Screen):
                 c_BP = check.check_port(data)
                 category = check.category()
                 comment_box = check.comment_box(nid)
+                fetch = check.fetch_cart()
                 # act = actions.BP1(nid, data)
-                sql = "INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart, status) VALUES (%s, %s, %s, %s, %s) ",(comment_box["N_id2"], c_BP["sys_mmHg"], c_BP["dia_mmHg"], category["BP_cart"], 0)
-                print(sql)
+#                 sql = "INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart, status) VALUES (%s, %s, %s, %s, %s) ",(comment_box["N_id2"], c_BP["sys_mmHg"], c_BP["dia_mmHg"], category["BP_cart"], 0)
+#                 print(sql)
                 
                 if comment_box["N_id2"] == " ":
                     cur.execute("SELECT id FROM Demographic WHERE national_id= %s ", [N_id])
@@ -449,8 +450,8 @@ class PatientDetails(Screen):
                     self.manager.get_screen("Patient_Details").ids["bpValue"].text = category["bp"]
                     self.manager.get_screen("Patient_Details").ids["bpValue"].text = category["recommendation"]
                     self.manager.get_screen("Patient_Details").ids["bpValue"].opacity = 1
-                    self.manager.get_screen("Patient_Details").ids["comment"].text = comment_box["comment"]
-                    print(comment_box["comment"])
+                    self.manager.get_screen("Patient_Details").ids["comment"].text = fetch["comment"]
+                    print(fetch["comment"])
                     # self.compose_response()
                     Pers_data().smsmode(comment_box["N_id2"], category["bp"], category["BP_cart"],
                                         fname, val["gender"], val["printable_dob"], comment_box["N_id"])
