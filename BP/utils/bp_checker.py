@@ -3,7 +3,6 @@ import setts as settings
 import threading
 import hashlib
 import mysql.connector as mysql
-#from main import mysql
 from kivy.app import App
 from kivy.clock import mainthread, Clock
 from kivy.core.window import Window
@@ -50,8 +49,7 @@ class Check_BP():
         return{"dia_mmHg": self.dia_mmHg, "sys_mmHg": self.sys_mmHg}
             
     def category(self):
-#        self.sys_mmHg = check_port("sys_mmHg")
-#        self.dia_mmHg = check_port("dia_mmHg")
+
         if (self.sys_mmHg in range(1,89)) or (self.dia_mmHg in range(1,59)):
             self.BP_cart = "Low"
             self.bp = str(self.sys_mmHg) + "/" + str(self.dia_mmHg)
@@ -92,20 +90,13 @@ class Check_BP():
         d = hashlib.sha3_256(National_id)
         N_id = d.hexdigest()
         print(N_id)
-#        cur.execute("SELECT id FROM Demographic WHERE national_id= %s ", [N_id])
-#        recs = cur.fetchall()
-#        for rec in recs:
-#            self.N_id2 = rec[0]
 
-#        cur.execute("SELECT sys_mmHg, dia_mmHg, BP_cart, id FROM vitals WHERE id = (SELECT id FROM Demographic WHERE national_id = %s limit 1) ORDER BY time_stamp DESC LIMIT 1", [N_id])
-#        rows = cur.fetchall()
         cur.execute("SELECT id FROM Demographic WHERE national_id= %s ", [N_id])
         recs = cur.fetchall()
         for rec in recs:
             self.N_id2 = rec[0]
         
         result = {"N_id2":self.N_id2, "N_id":N_id}
-        # print(result)
         
         return result
         
@@ -113,7 +104,6 @@ class Check_BP():
         cur.execute("SELECT * FROM vitals WHERE id = %s ORDER BY time_stamp DESC LIMIT 1",
                     [self.N_id2])
         rows = cur.fetchall()
-        #print("This is NID2", self.N_id2)
         if rows:
             for row in rows:
                 if len(str(row[0])) < 1 or len(str(row[1])) < 1:
@@ -122,25 +112,19 @@ class Check_BP():
                     previous_BPsys = int(row[2])
                     previous_BPdia = int(row[3])
                     previous_BP_cart = row[4]
-    #                    self.N_id2 = row[3]
-    #                    print(self.N_id2)
+  
                     if previous_BPsys > 1 and previous_BPdia > 1:
                         # 1
                         if (self.BP_cart == "Low") and (previous_BP_cart == "Low"):
                             self.comment = "After comparing current with previous BP," + " " + "your BP is still low"
-                            print("1",self.comment)
                         elif (self.BP_cart == "Low") and (previous_BP_cart == "Normal"):
                             self.comment = " After comparing current with previous BP," + " " + "your BP has gone low"
-                            print("2")
                         elif (self.BP_cart == "Low") and (previous_BP_cart == "Elevated"):
                             self.comment = " After comparing current with previous BP," + " " + "your BP has gone low"
-                            print("3")
                         elif (self.BP_cart == "Low") and (previous_BP_cart == "Hypertension_Stage1"):
                             self.comment = " After comparing current with previous BP," + " " + " your BP has gone low"
-                            print("4")
                         elif (self.BP_cart == "Low") and (previous_BP_cart == "Hypertension_Stage2"):
                             self.comment = " After comparing current with previous BP," + " " + " your BP has gone low"
-                            print("5")
                         elif (self.BP_cart == "Low") and (previous_BP_cart == "Hypertensive_crisis"):
                             self.comment = " After comparing current with previous BP," + " " + " your BP has gone low"
                         
@@ -218,15 +202,11 @@ class Check_BP():
                         elif (self.BP_cart == "Hypertensive_crisis") and (previous_BP_cart == "Hypertensive_crisis"):
                             self.comment = "After comparing current with previous BP," + " " + " your BP is not improving. Visit a doctor now"
 
-                        #else:
-                         #   comment = ""
                     else:
                         self.comment = "Nothing to compare to currently"
         else:
             self.comment = "Data recorded"
             
         result = {"comment": self.comment}
-        # print(result)
         return result
 
-# check_port()
