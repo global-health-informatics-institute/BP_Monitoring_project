@@ -112,6 +112,7 @@ class Check_BP():
                     previous_BPsys = int(row[2])
                     previous_BPdia = int(row[3])
                     previous_BP_cart = row[4]
+                    print("prev BP *****",previous_BPsys, "/", previous_BPdia, previous_BP_cart)
   
                     if previous_BPsys > 1 and previous_BPdia > 1:
                         # 1

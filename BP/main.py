@@ -92,7 +92,6 @@ class ScanWindow(Screen):
         pID = Parse_NID()
         global val
         name = self.manager.get_screen("Scan").ids["textFocus"].text
-#        val = name.split('~')
         val = pID.parse_national_id(name)
         print(len(val))
         print(val)
@@ -121,13 +120,11 @@ class ScanWindow(Screen):
             d = hashlib.sha3_256(National_id)
             N_idHash = d.hexdigest()
             N_idHash2 = ""
+            
             # Calculate Age
-
-
             age = self.today.year - val["dob"].year - (
                     (self.today.month, self.today.day) < (val["dob"].month, val["dob"].day))
 
-#            dob = year + "-" + str(month) + "-" + day
             dob = val["dob"]
 
             cur.execute("SELECT * FROM Demographic WHERE national_id=%s", [N_idHash])
@@ -200,7 +197,6 @@ class ScanWindow(Screen):
 
 class PatientDetails(Screen):
     def regenerate(self):
-        #N_id2 = ""
         nid = str(self.manager.get_screen("Patient_Details").ids["N_id"].text).split(" ")
         N_idHash = nid[1]
 
@@ -320,11 +316,8 @@ class PatientDetails(Screen):
 
     def generate_BP(self, *args):
         global timer
-#         pID = Parse_NID()
         self.manager.get_screen("Patient_Details").ids["restart"].opacity = 1
         nid = str(self.manager.get_screen("Patient_Details").ids["N_id"].text).split(" ")
-#         val = pID.parse_national_id(nid)
-#         N_id = val["nation_id"]
         serialPort = serial.Serial(settings["BP"]["bp_port"],
                                     settings["BP"]["baudrate"],
                                     settings["BP"]["bytesize"],
@@ -345,9 +338,6 @@ class PatientDetails(Screen):
                 category = check.category()
                 comment_box = check.comment_box(nid)
                 fetch = check.fetch_cart()
-                # act = actions.BP1(nid, data)
-#                 sql = "INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart, status) VALUES (%s, %s, %s, %s, %s) ",(comment_box["N_id2"], c_BP["sys_mmHg"], c_BP["dia_mmHg"], category["BP_cart"], 0)
-#                 print(sql)
                 
                 if comment_box["N_id2"] == " ":
                     cur.execute("SELECT id FROM Demographic WHERE national_id= %s ", [N_id])
@@ -366,7 +356,6 @@ class PatientDetails(Screen):
                     self.manager.get_screen("Patient_Details").ids["bpValue"].opacity = 1
                     self.manager.get_screen("Patient_Details").ids["comment"].text = fetch["comment"]
                     print(fetch["comment"])
-                    # self.compose_response()
                     Pers_data().smsmode(comment_box["N_id2"], category["bp"], category["BP_cart"],
                                         fname, val["gender"], val["printable_dob"], comment_box["N_id"])
                     self.buttons()
@@ -383,7 +372,7 @@ class PatientDetails(Screen):
         self.manager.get_screen("Patient_Details").ids["takeBP"].opacity = 1
         self.manager.get_screen("Patient_Details").ids["restart"].opacity = 1
         self.manager.get_screen("Patient_Details").ids["lblText"].opacity = 0
-#        self.manager.get_screen("Patient_Details").ids["bpValue"].opacity = 0
+
     @mainthread
     def finish_off(self):
         self.manager.get_screen("Patient_Details").ids["restart"].opacity = 0
