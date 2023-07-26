@@ -56,6 +56,38 @@ class ScanWindow(Screen):
     today = date.today()
     global cur
     cur = db.cursor()
+    
+    def displayBP(self, current_BPsys, current_BPdia, fname, age, gender, date, val, num):
+        if len(current_BPsys) < 1 or len(current_BPdia) < 1:
+            self.manager.get_screen("Patient_Details").ids["N_id"].text = "ID: " + str(val["nation_id"])
+            self.manager.get_screen("Patient_Details").ids["N_id"].opacity = 0
+            self.manager.get_screen("Patient_Details").ids["f_name"].text = str(fname)
+            self.manager.get_screen("Patient_Details").ids["dob"].text = str(age) + " Years"
+            self.manager.get_screen("Patient_Details").ids["pBP"+str(num)].text = ""
+            self.manager.get_screen("Patient_Details").ids["timeStamp"+str(num)].text = ""
+            self.manager.transition.direction = "left"
+            self.parent.current = "Patient_Details"
+
+            if str(gender) == "MALE":
+                self.manager.get_screen("Patient_Details").ids["gender"].source = "images/male.png"
+            else:
+                self.manager.get_screen("Patient_Details").ids["gender"].source = "images/female.png"
+        else:
+            pBP = current_BPsys + "/" + current_BPdia
+            self.manager.get_screen("Patient_Details").ids["N_id"].text = "ID: " + str(val["nation_id"])
+            self.manager.get_screen("Patient_Details").ids["N_id"].opacity = 0
+            self.manager.get_screen("Patient_Details").ids["f_name"].text = str(fname)
+            self.manager.get_screen("Patient_Details").ids["dob"].text = str(age) + " Years"
+            self.manager.get_screen("Patient_Details").ids["pBP"+str(num)].text = pBP
+            self.manager.get_screen("Patient_Details").ids["timeStamp"+str(num)].text = date
+            self.manager.transition.direction = "left"
+            self.parent.current = "Patient_Details"
+
+            if str(gender) == "MALE":
+                self.manager.get_screen("Patient_Details").ids["gender"].source = "images/male.png"
+            else:
+                self.manager.get_screen("Patient_Details").ids["gender"].source = "images/female.png"
+    
     def callback(self):
         pID = Parse_NID()
         global val
@@ -107,136 +139,18 @@ class ScanWindow(Screen):
                     
                 # @BP_1
                 cur.execute(
-                    "SELECT sys_mmHg, dia_mmHg, time_stamp  FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 0,1",
+                    "SELECT sys_mmHg, dia_mmHg, time_stamp  FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 4",
                     [N_idHash2])
                 rows = cur.fetchall()
+                num = 0
                 if rows:
                     for row in rows:
                         current_BPsys = str(row[0])
                         current_BPdia = str(row[1])
                         timeStamp = str(row[2]).split(" ")
-                        date1 = timeStamp[0]
-                        if len(current_BPsys) < 1 or len(current_BPdia) < 1:
-                            self.manager.get_screen("Patient_Details").ids["N_id"].text = "ID: " + str(val["nation_id"])
-                            self.manager.get_screen("Patient_Details").ids["N_id"].opacity = 0
-                            self.manager.get_screen("Patient_Details").ids["f_name"].text = str(fname)
-                            self.manager.get_screen("Patient_Details").ids["dob"].text = str(age) + " Years"
-                            self.manager.get_screen("Patient_Details").ids["pBP"].text = ""
-                            self.manager.get_screen("Patient_Details").ids["timeStamp"].text = ""
-                            self.manager.transition.direction = "left"
-                            self.parent.current = "Patient_Details"
-
-                            if str(gender) == "MALE":
-                                self.manager.get_screen("Patient_Details").ids["gender"].source = "images/male.png"
-                            else:
-                                self.manager.get_screen("Patient_Details").ids["gender"].source = "images/female.png"
-                        else:
-                            pBP = current_BPsys + "/" + current_BPdia
-                            self.manager.get_screen("Patient_Details").ids["N_id"].text = "ID: " + str(val["nation_id"])
-                            self.manager.get_screen("Patient_Details").ids["N_id"].opacity = 0
-                            self.manager.get_screen("Patient_Details").ids["f_name"].text = str(fname)
-                            self.manager.get_screen("Patient_Details").ids["dob"].text = str(age) + " Years"
-                            self.manager.get_screen("Patient_Details").ids["pBP"].text = pBP
-                            self.manager.get_screen("Patient_Details").ids["timeStamp"].text = date1
-                            self.manager.transition.direction = "left"
-                            self.parent.current = "Patient_Details"
-
-                            if str(gender) == "MALE":
-                                self.manager.get_screen("Patient_Details").ids["gender"].source = "images/male.png"
-                            else:
-                                self.manager.get_screen("Patient_Details").ids["gender"].source = "images/female.png"
-
-                            # @BP 2
-                            cur.execute(
-                                "SELECT sys_mmHg, dia_mmHg, time_stamp  FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 1,1",
-                                [N_idHash2])
-                            rows2 = cur.fetchall()
-                            if rows2:
-                                for row2 in rows2:
-                                    previous_BPsys2 = str(row2[0])
-                                    previous_BPdia2 = str(row2[1])
-                                    timeStamp2 = str(row2[2]).split(" ")
-                                    date2 = timeStamp2[0]
-
-                                    if len(previous_BPsys2) < 1 or len(previous_BPdia2) < 1:
-                                        self.manager.get_screen("Patient_Details").ids["pBP2"].text = ""
-                                        self.manager.get_screen("Patient_Details").ids["timeStamp2"].text = ""
-                                    else:
-                                        pBP2 = previous_BPsys2 + "/" + previous_BPdia2
-                                        self.manager.get_screen("Patient_Details").ids["pBP2"].text = pBP2
-                                        self.manager.get_screen("Patient_Details").ids["timeStamp2"].text = date2
-
-                                        # @BP 3
-                                        cur.execute(
-                                            "SELECT sys_mmHg, dia_mmHg, time_stamp  FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 2,1",
-                                            [N_idHash2])
-                                        rows3 = cur.fetchall()
-                                        if rows3:
-                                            for row3 in rows3:
-                                                previous_BPsys3 = str(row3[0])
-                                                previous_BPdia3 = str(row3[1])
-                                                timeStamp3 = str(row3[2]).split(" ")
-                                                date3 = timeStamp3[0]
-                                                if len(previous_BPsys3) < 1 or len(previous_BPdia3) < 1:
-                                                    self.manager.get_screen("Patient_Details").ids["pBP3"].text = ""
-                                                    self.manager.get_screen("Patient_Details").ids[
-                                                        "timeStamp3"].text = ""
-
-                                                else:
-                                                    pBP3 = previous_BPsys3 + "/" + previous_BPdia3
-                                                    self.manager.get_screen("Patient_Details").ids["pBP3"].text = pBP3
-                                                    self.manager.get_screen("Patient_Details").ids[
-                                                        "timeStamp3"].text = date3
-
-                                                    # @BP 4
-                                                    cur.execute(
-                                                        "SELECT sys_mmHg, dia_mmHg, time_stamp  FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 3,1",
-                                                        [N_idHash2])
-                                                    rows4 = cur.fetchall()
-                                                    if rows4:
-                                                        for row4 in rows4:
-                                                            previous_BPsys4 = str(row4[0])
-                                                            previous_BPdia4 = str(row4[1])
-                                                            timeStamp4 = str(row4[2]).split(" ")
-                                                            date4 = timeStamp4[0]
-                                                            if len(previous_BPsys4) < 1 or len(previous_BPdia4) < 1:
-                                                                self.manager.get_screen("Patient_Details").ids[
-                                                                    "pBP4"].text = ""
-                                                                self.manager.get_screen("Patient_Details").ids[
-                                                                    "timeStamp4"].text = ""
-
-                                                            else:
-                                                                pBP4 = previous_BPsys4 + "/" + previous_BPdia4
-                                                                self.manager.get_screen("Patient_Details").ids[
-                                                                    "pBP4"].text = pBP4
-                                                                self.manager.get_screen("Patient_Details").ids[
-                                                                    "timeStamp4"].text = date4
-
-                                                    else:
-                                                        self.manager.get_screen("Patient_Details").ids["pBP4"].text = ""
-                                                        self.manager.get_screen("Patient_Details").ids[
-                                                            "timeStamp4"].text = ""
-                                        else:
-                                            self.manager.get_screen("Patient_Details").ids["pBP3"].text = ""
-                                            self.manager.get_screen("Patient_Details").ids["timeStamp3"].text = ""
-                            else:
-                                self.manager.get_screen("Patient_Details").ids["pBP2"].text = ""
-                                self.manager.get_screen("Patient_Details").ids["timeStamp2"].text = ""
-
-                else:
-                    self.manager.get_screen("Patient_Details").ids["N_id"].text = "ID: " + str(val["nation_id"])
-                    self.manager.get_screen("Patient_Details").ids["N_id"].opacity = 0
-                    self.manager.get_screen("Patient_Details").ids["f_name"].text = str(fname)
-                    self.manager.get_screen("Patient_Details").ids["dob"].text = str(age) + " Years"
-                    self.manager.get_screen("Patient_Details").ids["pBP"].text = ""
-                    self.manager.get_screen("Patient_Details").ids["timeStamp"].text = ""
-                    self.manager.transition.direction = "left"
-                    self.parent.current = "Patient_Details"
-
-                    if str(gender) == "MALE":
-                        self.manager.get_screen("Patient_Details").ids["gender"].source = "images/male.png"
-                    else:
-                        self.manager.get_screen("Patient_Details").ids["gender"].source = "images/female.png"
+                        date = timeStamp[0]
+                        self.displayBP(current_BPsys, current_BPdia, fname, age, gender, date, val, num)
+                        num += 1
 
             else:
                 cur.execute("INSERT INTO Demographic (national_id, Full_name, Gender, DOB) VALUES (%s, %s, %s, %s) ",
@@ -309,13 +223,13 @@ class PatientDetails(Screen):
                 timeStamp = str(row[2]).split(" ")
                 pdate = timeStamp[0]
                 if len(current_BPsys) < 1 or len(current_BPdia) < 1:
-                    self.manager.get_screen("Patient_Details").ids["pBP"].text = ""
-                    self.manager.get_screen("Patient_Details").ids["timeStamp"].text = ""
+                    self.manager.get_screen("Patient_Details").ids["pBP0"].text = ""
+                    self.manager.get_screen("Patient_Details").ids["timeStamp0"].text = ""
                     
                 else:
                     pBP = current_BPsys + "/" + current_BPdia
-                    self.manager.get_screen("Patient_Details").ids["pBP"].text = pBP
-                    self.manager.get_screen("Patient_Details").ids["timeStamp"].text = pdate
+                    self.manager.get_screen("Patient_Details").ids["pBP0"].text = pBP
+                    self.manager.get_screen("Patient_Details").ids["timeStamp0"].text = pdate
 
                     # @pBP 2
                     cur.execute(
@@ -329,13 +243,13 @@ class PatientDetails(Screen):
                             timeStamp2 = str(row2[2]).split(" ")
                             date2 = timeStamp2[0]
                             if len(previous_BPsys2) < 1 or len(previous_BPdia2) < 1:
-                                self.manager.get_screen("Patient_Details").ids["pBP2"].text = ""
-                                self.manager.get_screen("Patient_Details").ids["timeStamp2"].text = ""
+                                self.manager.get_screen("Patient_Details").ids["pBP1"].text = ""
+                                self.manager.get_screen("Patient_Details").ids["timeStamp1"].text = ""
 
                             else:
                                 pBP2 = previous_BPsys2 + "/" + previous_BPdia2
-                                self.manager.get_screen("Patient_Details").ids["pBP2"].text = pBP2
-                                self.manager.get_screen("Patient_Details").ids["timeStamp2"].text = date2
+                                self.manager.get_screen("Patient_Details").ids["pBP1"].text = pBP2
+                                self.manager.get_screen("Patient_Details").ids["timeStamp1"].text = date2
 
                                 # @pBP 3
                                 cur.execute(
@@ -349,13 +263,13 @@ class PatientDetails(Screen):
                                         timeStamp3 = str(row3[2]).split(" ")
                                         date3 = timeStamp3[0]
                                         if len(previous_BPsys3) < 1 or len(previous_BPdia3) < 1:
-                                            self.manager.get_screen("Patient_Details").ids["pBP3"].text = ""
-                                            self.manager.get_screen("Patient_Details").ids["timeStamp3"].text = ""
+                                            self.manager.get_screen("Patient_Details").ids["pBP2"].text = ""
+                                            self.manager.get_screen("Patient_Details").ids["timeStamp2"].text = ""
 
                                         else:
                                             pBP3 = previous_BPsys3 + "/" + previous_BPdia3
-                                            self.manager.get_screen("Patient_Details").ids["pBP3"].text = pBP3
-                                            self.manager.get_screen("Patient_Details").ids["timeStamp3"].text = date3
+                                            self.manager.get_screen("Patient_Details").ids["pBP2"].text = pBP3
+                                            self.manager.get_screen("Patient_Details").ids["timeStamp2"].text = date3
 
                                         # @pBP 4
                                         cur.execute(
@@ -369,30 +283,30 @@ class PatientDetails(Screen):
                                                 timeStamp4 = str(row4[2]).split(" ")
                                                 date4 = timeStamp4[0]
                                                 if len(previous_BPsys4) < 1 or len(previous_BPdia4) < 1:
-                                                    self.manager.get_screen("Patient_Details").ids["pBP4"].text = ""
+                                                    self.manager.get_screen("Patient_Details").ids["pBP3"].text = ""
                                                     self.manager.get_screen("Patient_Details").ids[
-                                                        "timeStamp4"].text = ""
+                                                        "timeStamp3"].text = ""
 
                                                 else:
                                                     pBP4 = previous_BPsys4 + "/" + previous_BPdia4
-                                                    self.manager.get_screen("Patient_Details").ids["pBP4"].text = pBP4
+                                                    self.manager.get_screen("Patient_Details").ids["pBP3"].text = pBP4
                                                     self.manager.get_screen("Patient_Details").ids[
-                                                        "timeStamp4"].text = date4
+                                                        "timeStamp3"].text = date4
 
                                         else:
-                                            self.manager.get_screen("Patient_Details").ids["pBP4"].text = ""
-                                            self.manager.get_screen("Patient_Details").ids["timeStamp4"].text = ""
+                                            self.manager.get_screen("Patient_Details").ids["pBP3"].text = ""
+                                            self.manager.get_screen("Patient_Details").ids["timeStamp3"].text = ""
                                 else:
-                                    self.manager.get_screen("Patient_Details").ids["pBP3"].text = ""
-                                    self.manager.get_screen("Patient_Details").ids["timeStamp3"].text = ""
+                                    self.manager.get_screen("Patient_Details").ids["pBP2"].text = ""
+                                    self.manager.get_screen("Patient_Details").ids["timeStamp2"].text = ""
 
                     else:
-                        self.manager.get_screen("Patient_Details").ids["pBP2"].text = ""
-                        self.manager.get_screen("Patient_Details").ids["timeStamp2"].text = ""
+                        self.manager.get_screen("Patient_Details").ids["pBP1"].text = ""
+                        self.manager.get_screen("Patient_Details").ids["timeStamp1"].text = ""
         else:
 
-            self.manager.get_screen("Patient_Details").ids["pBP"].text = ""
-            self.manager.get_screen("Patient_Details").ids["timeStamp"].text = ""
+            self.manager.get_screen("Patient_Details").ids["pBP0"].text = ""
+            self.manager.get_screen("Patient_Details").ids["timeStamp0"].text = ""
 
         self.manager.get_screen("Patient_Details").ids["bpValue"].text = "Waiting for BP vitals..."
         self.manager.get_screen("Patient_Details").ids["restart"].opacity = 0
