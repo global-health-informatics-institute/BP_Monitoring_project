@@ -27,6 +27,8 @@ serialPort = serial.Serial(settings["BP"]["bp_port"],
                                    )
 
 class Check_BP():
+    global cur
+    cur = db.cursor()
     def __init__(self):
         self.bp = ""
         self.BP_cart = ""
@@ -93,6 +95,7 @@ class Check_BP():
 
         cur.execute("SELECT id FROM Demographic WHERE national_id= %s ", [N_id])
         recs = cur.fetchall()
+        db.commit()
         for rec in recs:
             self.N_id2 = rec[0]
         
@@ -101,17 +104,19 @@ class Check_BP():
         return result
         
     def fetch_cart(self):
-        cur.execute("SELECT * FROM vitals WHERE id = %s ORDER BY time_stamp DESC LIMIT 1",
+        cur.execute("SELECT sys_mmHg, dia_mmHg, BP_cart FROM vitals WHERE id = %s ORDER BY time_stamp DESC LIMIT 1",
                     [self.N_id2])
         rows = cur.fetchall()
+        db.commit()
+        print(rows)
         if rows:
             for row in rows:
                 if len(str(row[0])) < 1 or len(str(row[1])) < 1:
                     pass
                 else:
-                    previous_BPsys = int(row[2])
-                    previous_BPdia = int(row[3])
-                    previous_BP_cart = row[4]
+                    previous_BPsys = int(row[0])
+                    previous_BPdia = int(row[1])
+                    previous_BP_cart = row[2]
                     print("prev BP *****",previous_BPsys, "/", previous_BPdia, previous_BP_cart)
   
                     if previous_BPsys > 1 and previous_BPdia > 1:

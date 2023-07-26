@@ -20,6 +20,7 @@ import setts as settings
 from urllib.parse import urlencode, unquote
 import pycurl
 from io import BytesIO
+import gc
 
 from utils.nat_id import Parse_NID
 from utils.bp_checker import Check_BP
@@ -53,6 +54,7 @@ class MainWindow(Screen):
 
 
 class ScanWindow(Screen):
+    gc.collect()
     today = date.today()
     global cur
     cur = db.cursor()
