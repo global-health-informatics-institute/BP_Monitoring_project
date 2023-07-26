@@ -110,7 +110,7 @@ class Check_BP():
         return result
         
     def fetch_cart(self):
-        cur.execute("SELECT sys_mmHg, dia_mmHg, BP_cart FROM vitals WHERE id = %s ORDER BY time_stamp DESC LIMIT 0,1",
+        cur.execute("SELECT * FROM vitals WHERE id = %s ORDER BY time_stamp DESC LIMIT 1",
                     [self.N_id2])
         rows = cur.fetchall()
         #print("This is NID2", self.N_id2)
@@ -119,9 +119,9 @@ class Check_BP():
                 if len(str(row[0])) < 1 or len(str(row[1])) < 1:
                     pass
                 else:
-                    previous_BPsys = int(row[0])
-                    previous_BPdia = int(row[1])
-                    previous_BP_cart = row[2]
+                    previous_BPsys = int(row[2])
+                    previous_BPdia = int(row[3])
+                    previous_BP_cart = row[4]
     #                    self.N_id2 = row[3]
     #                    print(self.N_id2)
                     if previous_BPsys > 1 and previous_BPdia > 1:

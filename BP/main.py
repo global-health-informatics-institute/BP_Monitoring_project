@@ -394,14 +394,14 @@ class PatientDetails(Screen):
         self.manager.get_screen("Patient_Details").ids["takeBP"].opacity = 0
         self.manager.get_screen("Patient_Details").ids["lblText"].opacity = 1
         self.manager.get_screen("Patient_Details").ids["comment"].text = ""
-        self.manager.get_screen("Patient_Details").ids["pBP"].text = ""
-        self.manager.get_screen("Patient_Details").ids["timeStamp"].text = ""
+        self.manager.get_screen("Patient_Details").ids["pBP0"].text = ""
+        self.manager.get_screen("Patient_Details").ids["timeStamp0"].text = ""
+        self.manager.get_screen("Patient_Details").ids["pBP1"].text = ""
+        self.manager.get_screen("Patient_Details").ids["timeStamp1"].text = ""
         self.manager.get_screen("Patient_Details").ids["pBP2"].text = ""
         self.manager.get_screen("Patient_Details").ids["timeStamp2"].text = ""
         self.manager.get_screen("Patient_Details").ids["pBP3"].text = ""
         self.manager.get_screen("Patient_Details").ids["timeStamp3"].text = ""
-        self.manager.get_screen("Patient_Details").ids["pBP4"].text = ""
-        self.manager.get_screen("Patient_Details").ids["timeStamp4"].text = ""
         
 class Manager(ScreenManager):
     pass
