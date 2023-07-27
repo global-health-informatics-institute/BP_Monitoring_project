@@ -401,8 +401,8 @@ class Manager(ScreenManager):
 class MyApp(App):
     def build(self):
         Window.clearcolor = (248 / 255, 247 / 255, 255 / 255, 1)
-        #Window.fullscreen = 'auto'
-        #Window.rotation = -90
+        Window.fullscreen = 'auto'
+        Window.rotation = -90
         return Manager()
 
 
