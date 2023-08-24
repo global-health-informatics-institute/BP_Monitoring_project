@@ -35,7 +35,7 @@ config = ConfigParser()
 #accessing file with all configuration settings
 def initialize_settings():
     settings = {}
-    with open("/home/pi/BP_Monitoring_project/BP/conn.config") as json_file:
+    with open("conn.config") as json_file:
         settings = json.load(json_file)
     return settings
 
@@ -163,8 +163,8 @@ class ScanWindow(Screen):
                 self.manager.get_screen("Patient_Details").ids["N_id"].opacity = 0
                 self.manager.get_screen("Patient_Details").ids["f_name"].text = str(fname)
                 self.manager.get_screen("Patient_Details").ids["dob"].text = str(age) + " Years"
-                self.manager.get_screen("Patient_Details").ids["pBP"].text = ""
-                self.manager.get_screen("Patient_Details").ids["timeStamp"].text = ""
+                self.manager.get_screen("Patient_Details").ids["pBP0"].text = ""
+                self.manager.get_screen("Patient_Details").ids["timeStamp0"].text = ""
                 self.manager.transition.direction = "left"
                 self.parent.current = "Patient_Details"
 
@@ -249,6 +249,7 @@ class PatientDetails(Screen):
         self.manager.get_screen("Patient_Details").ids["bpValue"].text = "Waiting for BP vitals..."
         self.manager.get_screen("Patient_Details").ids["restart"].opacity = 0
         self.manager.get_screen("Patient_Details").ids["takeBP"].opacity = 0
+        self.manager.get_screen("Patient_Details").ids["pr"].opacity = 0
         self.manager.get_screen("Patient_Details").ids["lblText"].opacity = 1
         self.manager.get_screen("Patient_Details").ids["lblText"].text = "Press the Blue Round Button"
         self.manager.get_screen("Patient_Details").ids["comment"].text = ""
@@ -289,12 +290,13 @@ class PatientDetails(Screen):
                         N_id2 = rec[0]
                 status = 0
                 if c_BP["sys_mmHg"] != 0 and c_BP["dia_mmHg"] != 0:
-                    cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart, status, national_id) VALUES (%s, %s, %s, %s, %s, %s) ",
-                                                (comment_box["N_id2"], c_BP["sys_mmHg"], c_BP["dia_mmHg"], category["BP_cart"], status, comment_box["N_id"]))
+                    cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart, status, national_id, p_rate) VALUES (%s, %s, %s, %s, %s, %s, %s) ",
+                                                (comment_box["N_id2"], c_BP["sys_mmHg"], c_BP["dia_mmHg"], category["BP_cart"], status, comment_box["N_id"], c_BP["p_rate"]))
                 
                     db.commit()
                     self.finish_off()
                     self.manager.get_screen("Patient_Details").ids["bpValue"].text = category["bp"]
+                    self.manager.get_screen("Patient_Details").ids["pr"].text = str(c_BP["p_rate"])
                     self.manager.get_screen("Patient_Details").ids["bpValue"].text = category["recommendation"]
                     self.manager.get_screen("Patient_Details").ids["bpValue"].opacity = 1
                     self.manager.get_screen("Patient_Details").ids["comment"].text = fetch["comment"]
@@ -345,8 +347,8 @@ class MyApp(App):
     def build(self):
         Window.clearcolor = (248 / 255, 247 / 255, 255 / 255, 1)
         #automate boot to full screen and orient page to vertical
-        Window.fullscreen = 'auto'
-        Window.rotation = -90
+        #Window.fullscreen = 'auto'
+        #Window.rotation = -90
         return Manager()
 
 

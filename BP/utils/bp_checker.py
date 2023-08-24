@@ -40,6 +40,7 @@ class Check_BP():
         self.comm_count = ""
         self.comment = ""
         self.nid = ""
+        self.pulse_rate = ""
 
     def check_port(self, data):
         BP = list(data)
@@ -47,8 +48,9 @@ class Check_BP():
             self.dia_mmHg = int(BP[4] + BP[5], 16)
             x = int(BP[2] + BP[3], 16)
             self.sys_mmHg = self.dia_mmHg + x
+            self.pulse_rate = int(BP[6] + BP[7], 16)
 
-        return{"dia_mmHg": self.dia_mmHg, "sys_mmHg": self.sys_mmHg}
+        return{"dia_mmHg": self.dia_mmHg, "sys_mmHg": self.sys_mmHg, "p_rate": self.pulse_rate}
             
     def category(self):
 
