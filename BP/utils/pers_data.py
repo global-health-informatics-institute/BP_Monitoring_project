@@ -28,7 +28,7 @@ cur = db.cursor()
 
 class Pers_data:
     
-    def smsmode(self, N_id, bp, BP_cart, fname, gender, dob, hex_id):
+    def smsmode(self, N_id, bp, BP_cart, fname, gender, dob, hex_id, p_rate):
         ser_port = serial.Serial(settings["gsm"]["id"],
                             settings["gsm"]["baudrate"],
                             timeout= 0.5)
@@ -65,12 +65,13 @@ class Pers_data:
         
         # cmd1 = 'AT+CMGS=\r'
         cmd1 = 'AT+CMGS="'+settings["server_number"]+'"\r'
+        print(settings["server_number"])
         ser_port.write(cmd1.encode())
         msg = ser_port.read(64)
         time.sleep(5)
         # print(msg)
 
-        response = str(N_id) + "|" + str(bp) + "|" + BP_cart + "|" + fname + "|" + gender + "|" + dob +  "|" + hex_id + '\r'
+        response = str(N_id) + "|" + str(bp) + "|" + BP_cart + "|" + fname + "|" + gender + "|" + dob +  "|" + hex_id + "|" + str(p_rate) +'\r'
         
         ser_port.write(str.encode(response))
         msgout = ser_port.read(1000)

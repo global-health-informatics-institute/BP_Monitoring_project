@@ -35,7 +35,7 @@ config = ConfigParser()
 #accessing file with all configuration settings
 def initialize_settings():
     settings = {}
-    with open("conn.config") as json_file:
+    with open("/home/pi/BP_Monitoring_project/BP/conn.config") as json_file:
         settings = json.load(json_file)
     return settings
 
@@ -60,15 +60,17 @@ class ScanWindow(Screen):
     today = date.today()
     global cur
     cur = db.cursor()
+    print("ndabwera!")
     
     #display the 4 most recent bp readings from the corresponding patient history if available
-    def displayBP(self, current_BPsys, current_BPdia, fname, age, gender, date, val, num):
+    def displayBP(self, current_BPsys, current_BPdia, fname, age, gender, date, val, num, pr):
         if len(current_BPsys) < 1 or len(current_BPdia) < 1:
             self.manager.get_screen("Patient_Details").ids["N_id"].text = "ID: " + str(val["nation_id"])
             self.manager.get_screen("Patient_Details").ids["N_id"].opacity = 0
             self.manager.get_screen("Patient_Details").ids["f_name"].text = str(fname)
             self.manager.get_screen("Patient_Details").ids["dob"].text = str(age) + " Years"
             self.manager.get_screen("Patient_Details").ids["pBP"+str(num)].text = ""
+            self.manager.get_screen("Patient_Details").ids["pr"+str(num)].text = ""
             self.manager.get_screen("Patient_Details").ids["timeStamp"+str(num)].text = ""
             self.manager.transition.direction = "left"
             self.parent.current = "Patient_Details"
@@ -84,6 +86,7 @@ class ScanWindow(Screen):
             self.manager.get_screen("Patient_Details").ids["f_name"].text = str(fname)
             self.manager.get_screen("Patient_Details").ids["dob"].text = str(age) + " Years"
             self.manager.get_screen("Patient_Details").ids["pBP"+str(num)].text = pBP
+            self.manager.get_screen("Patient_Details").ids["pr"+str(num)].text = pr
             self.manager.get_screen("Patient_Details").ids["timeStamp"+str(num)].text = date
             self.manager.transition.direction = "left"
             self.parent.current = "Patient_Details"
@@ -140,7 +143,7 @@ class ScanWindow(Screen):
                     N_idHash2 = rec[0]
                     
                 cur.execute(
-                    "SELECT sys_mmHg, dia_mmHg, time_stamp  FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 4",
+                    "SELECT sys_mmHg, dia_mmHg, time_stamp, p_rate FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 4",
                     [N_idHash2])
                 rows = cur.fetchall()
                 db.commit()
@@ -151,8 +154,20 @@ class ScanWindow(Screen):
                         current_BPdia = str(row[1])
                         timeStamp = str(row[2]).split(" ")
                         date = timeStamp[0]
-                        self.displayBP(current_BPsys, current_BPdia, fname, age, gender, date, val, num)
+                        pr = str(row[3])
+                        self.displayBP(current_BPsys, current_BPdia, fname, age, gender, date, val, num, pr)
                         num += 1
+                        
+                else:
+                    self.manager.get_screen("Patient_Details").ids["N_id"].text = "ID: " + str(val["nation_id"])
+                    self.manager.get_screen("Patient_Details").ids["N_id"].opacity = 0
+                    self.manager.get_screen("Patient_Details").ids["f_name"].text = str(fname)
+                    self.manager.get_screen("Patient_Details").ids["dob"].text = str(age) + " Years"
+                    self.manager.get_screen("Patient_Details").ids["pBP0"].text = ""
+                    self.manager.get_screen("Patient_Details").ids["timeStamp0"].text = ""
+                    self.manager.get_screen("Patient_Details").ids["pr0"].text = ""
+                    self.manager.transition.direction = "left"
+                    self.parent.current = "Patient_Details"
                         
             #insert patient details in Demographic table if not already available
             else:
@@ -165,6 +180,7 @@ class ScanWindow(Screen):
                 self.manager.get_screen("Patient_Details").ids["dob"].text = str(age) + " Years"
                 self.manager.get_screen("Patient_Details").ids["pBP0"].text = ""
                 self.manager.get_screen("Patient_Details").ids["timeStamp0"].text = ""
+                self.manager.get_screen("Patient_Details").ids["pr0"].text = ""
                 self.manager.transition.direction = "left"
                 self.parent.current = "Patient_Details"
 
@@ -204,15 +220,17 @@ class ScanWindow(Screen):
 
 class PatientDetails(Screen):
     #funtion to process all 4 bp reading in history table
-    def showBP(self, current_BPsys, current_BPdia, pdate, num):
+    def showBP(self, current_BPsys, current_BPdia, pdate, num, pr):
         if len(current_BPsys) < 1 or len(current_BPdia) < 1:
             self.manager.get_screen("Patient_Details").ids["pBP"+str(num)].text = ""
             self.manager.get_screen("Patient_Details").ids["timeStamp"+str(num)].text = ""
+            self.manager.get_screen("Patient_Details").ids["pr"+str(num)].text = ""
             
         else:
             pBP = current_BPsys + "/" + current_BPdia
             self.manager.get_screen("Patient_Details").ids["pBP"+str(num)].text = pBP
             self.manager.get_screen("Patient_Details").ids["timeStamp"+str(num)].text = pdate
+            self.manager.get_screen("Patient_Details").ids["pr"+str(num)].text = pr
     
     #refresh/replace bp history with new additions (after clicking 'take-bp' button)
     def regenerate(self):
@@ -228,7 +246,7 @@ class PatientDetails(Screen):
         for rec in recs:
             N_id2 = rec[0]
         cur.execute(
-            "SELECT sys_mmHg, dia_mmHg, time_stamp  FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 4",
+            "SELECT sys_mmHg, dia_mmHg, time_stamp, p_rate FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 4",
             [N_id2])
         rows = cur.fetchall()
         db.commit()
@@ -239,7 +257,8 @@ class PatientDetails(Screen):
                 current_BPdia = str(row[1])
                 timeStamp = str(row[2]).split(" ")
                 pdate = timeStamp[0]
-                self.showBP(current_BPsys, current_BPdia, pdate, num)
+                pr = str(row[3])
+                self.showBP(current_BPsys, current_BPdia, pdate, num, pr)
                 num += 1
                 
         else:
@@ -249,7 +268,7 @@ class PatientDetails(Screen):
         self.manager.get_screen("Patient_Details").ids["bpValue"].text = "Waiting for BP vitals..."
         self.manager.get_screen("Patient_Details").ids["restart"].opacity = 0
         self.manager.get_screen("Patient_Details").ids["takeBP"].opacity = 0
-        self.manager.get_screen("Patient_Details").ids["pr"].opacity = 0
+        self.manager.get_screen("Patient_Details").ids["pr"].text = "Waiting for pulse rate..."
         self.manager.get_screen("Patient_Details").ids["lblText"].opacity = 1
         self.manager.get_screen("Patient_Details").ids["lblText"].text = "Press the Blue Round Button"
         self.manager.get_screen("Patient_Details").ids["comment"].text = ""
@@ -302,7 +321,7 @@ class PatientDetails(Screen):
                     self.manager.get_screen("Patient_Details").ids["comment"].text = fetch["comment"]
                     print(fetch["comment"])
                     Pers_data().smsmode(comment_box["N_id2"], category["bp"], category["BP_cart"],
-                                        fname, val["gender"], val["printable_dob"], comment_box["N_id"])
+                                        fname, val["gender"], val["printable_dob"], comment_box["N_id"], c_BP["p_rate"])
                     self.buttons()
                 else:
                     self.manager.get_screen("Patient_Details").ids["bpValue"].text = "Error...try again"
@@ -332,12 +351,17 @@ class PatientDetails(Screen):
         self.manager.get_screen("Patient_Details").ids["comment"].text = ""
         self.manager.get_screen("Patient_Details").ids["pBP0"].text = ""
         self.manager.get_screen("Patient_Details").ids["timeStamp0"].text = ""
+        self.manager.get_screen("Patient_Details").ids["pr0"].text = ""
         self.manager.get_screen("Patient_Details").ids["pBP1"].text = ""
         self.manager.get_screen("Patient_Details").ids["timeStamp1"].text = ""
+        self.manager.get_screen("Patient_Details").ids["pr1"].text = ""
         self.manager.get_screen("Patient_Details").ids["pBP2"].text = ""
         self.manager.get_screen("Patient_Details").ids["timeStamp2"].text = ""
+        self.manager.get_screen("Patient_Details").ids["pr2"].text = ""
         self.manager.get_screen("Patient_Details").ids["pBP3"].text = ""
         self.manager.get_screen("Patient_Details").ids["timeStamp3"].text = ""
+        self.manager.get_screen("Patient_Details").ids["pr3"].text = ""
+        self.manager.get_screen("Patient_Details").ids["pr"].text = "Waiting for BP vitals..."
         
 class Manager(ScreenManager):
     pass
@@ -346,9 +370,9 @@ class Manager(ScreenManager):
 class MyApp(App):
     def build(self):
         Window.clearcolor = (248 / 255, 247 / 255, 255 / 255, 1)
-        #automate boot to full screen and orient page to vertical
+    #automate boot to full screen and orient page to vertical
         #Window.fullscreen = 'auto'
-        #Window.rotation = -90
+        Window.rotation = -90
         return Manager()
 
 
