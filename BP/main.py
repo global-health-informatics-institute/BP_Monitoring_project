@@ -128,7 +128,11 @@ class ScanWindow(Screen):
             d = hashlib.sha3_256(National_id)
             N_idHash = d.hexdigest()
             N_idHash2 = ""
-            
+            current_BPsys = ""
+            current_BPdia = ""
+            date = ""
+            pr = ""
+            num = ""
             # Calculate Age
             age = self.today.year - val["dob"].year - (
                     (self.today.month, self.today.day) < (val["dob"].month, val["dob"].day))
@@ -159,30 +163,15 @@ class ScanWindow(Screen):
                         num += 1
                         
                 else:
-                    self.manager.get_screen("Patient_Details").ids["N_id"].text = "ID: " + str(val["nation_id"])
-                    self.manager.get_screen("Patient_Details").ids["N_id"].opacity = 0
-                    self.manager.get_screen("Patient_Details").ids["f_name"].text = str(fname)
-                    self.manager.get_screen("Patient_Details").ids["dob"].text = str(age) + " Years"
-                    self.manager.get_screen("Patient_Details").ids["pBP0"].text = ""
-                    self.manager.get_screen("Patient_Details").ids["timeStamp0"].text = ""
-                    self.manager.get_screen("Patient_Details").ids["pr0"].text = ""
-                    self.manager.transition.direction = "left"
-                    self.parent.current = "Patient_Details"
+                    self.displayBP(current_BPsys, current_BPdia, fname, age, gender, date, val, num, pr)
+
                         
             #insert patient details in Demographic table if not already available
             else:
                 cur.execute("INSERT INTO Demographic (national_id, Full_name, Gender, DOB) VALUES (%s, %s, %s, %s) ",
                             (N_idHash, fname, n_gender, dob))
                 db.commit()
-                self.manager.get_screen("Patient_Details").ids["N_id"].text = "ID: " + str(val["nation_id"])
-                self.manager.get_screen("Patient_Details").ids["N_id"].opacity = 0
-                self.manager.get_screen("Patient_Details").ids["f_name"].text = str(fname)
-                self.manager.get_screen("Patient_Details").ids["dob"].text = str(age) + " Years"
-                self.manager.get_screen("Patient_Details").ids["pBP0"].text = ""
-                self.manager.get_screen("Patient_Details").ids["timeStamp0"].text = ""
-                self.manager.get_screen("Patient_Details").ids["pr0"].text = ""
-                self.manager.transition.direction = "left"
-                self.parent.current = "Patient_Details"
+                self.displayBP(current_BPsys, current_BPdia, fname, age, gender, date, val, num, pr)
 
                 if str(gender) == "MALE":
                     self.manager.get_screen("Patient_Details").ids["gender"].source = "images/male.png"
@@ -371,7 +360,7 @@ class MyApp(App):
     def build(self):
         Window.clearcolor = (248 / 255, 247 / 255, 255 / 255, 1)
     #automate boot to full screen and orient page to vertical
-        #Window.fullscreen = 'auto'
+        Window.fullscreen = 'auto'
         Window.rotation = -90
         return Manager()
 
