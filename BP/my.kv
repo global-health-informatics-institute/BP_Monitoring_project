@@ -222,6 +222,7 @@
                 font_size: "22dp"
                 text: "Waiting For BP Vitals...."
                 bold: True
+                italic: True
         BoxLayout:
             size_hint_y: None
             height: 55
@@ -232,12 +233,11 @@
                 text: "Pulse Rate:"
                 font_size: "22dp"
                 size_hint_x: None
-                width: 150
+                width: 120
                 color: (0,0,0,1)
                 text_size: self.size
                 halign: "left"
                 valign: "middle"
-                text: ""
             Label:
                 id: pr
                 text_size: self.size
@@ -247,6 +247,7 @@
                 font_size: "22dp"
                 text: "Waiting For pulse rate"
                 bold: True
+                italic: True
 
         BoxLayout:
             padding: [10,0]
@@ -391,7 +392,7 @@
 
             BoxLayout:
                 size_hint_y: None
-                height: 180
+                height: 170
                 orientation: "vertical"
                 Label:
                     text: "RECOMMENDATION"
@@ -403,7 +404,6 @@
 
                 Label:
 	                id: comment
-                    text: "After comparing current with previous BP," + " " + " your BP has greatly improved." + " " + " Continue the procedures the doctors advised you"
 	                text_size: self.width, None
 	                halign: "left"
 	                valign: "middle"
