@@ -89,28 +89,25 @@ class Check_BP():
         return{"bp": self.bp, "BP_cart": self.BP_cart, "recommendation":self.recommendation}
 
     def comment_box(self, nid):
-        N_idHash = nid[1]
+        N_idHash = nid
         National_id = str(N_idHash).encode("ASCII")
         d = hashlib.sha3_256(National_id)
-        N_id = d.hexdigest()
-        print(N_id)
+        self.N_id = d.hexdigest()
 
-        cur.execute("SELECT id FROM Demographic WHERE national_id= %s ", [N_id])
+        cur.execute("SELECT id FROM Demographic WHERE national_id= %s ", [self.N_id])
         recs = cur.fetchall()
         db.commit()
         for rec in recs:
             self.N_id2 = rec[0]
         
-        result = {"N_id2":self.N_id2, "N_id":N_id}
+        return {"N_id2":self.N_id2, "N_id":self.N_id}
         
-        return result
         
     def fetch_cart(self):
         cur.execute("SELECT sys_mmHg, dia_mmHg, BP_cart FROM vitals WHERE id = %s ORDER BY time_stamp DESC LIMIT 1",
                     [self.N_id2])
         rows = cur.fetchall()
         db.commit()
-        print(rows)
         if rows:
             for row in rows:
                 if len(str(row[0])) < 1 or len(str(row[1])) < 1:
@@ -119,7 +116,6 @@ class Check_BP():
                     previous_BPsys = int(row[0])
                     previous_BPdia = int(row[1])
                     previous_BP_cart = row[2]
-                    print("prev BP *****",previous_BPsys, "/", previous_BPdia, previous_BP_cart)
   
                     if previous_BPsys > 1 and previous_BPdia > 1:
                         # 1
