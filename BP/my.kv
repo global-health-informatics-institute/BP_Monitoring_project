@@ -83,11 +83,11 @@
                 color: (0,0,0,1)
                 size_hint_x: .8
                 bold: True
-                font_size: 18
+                font_size: 20
 
         Label:
-            text: "Scan National ID to capture demographic data"
-            font_size:20
+            text: "Scan National ID"
+            font_size:25
             bold: True
             pos_hint: {"center_x": 0.5, "center_y": .5}
             size_hint_x: .7
@@ -119,7 +119,7 @@
             text: "Insert ID here"
             bold: True
             size_hint_x: .7
-            font_size:20
+            font_size:24
             size_hint_y: None
             height: 40
             pos_hint: {"center_x": 0.5, "center_y": .5}
@@ -183,12 +183,13 @@
                         text_size: self.size
                         halign: "left"
                         valign: "middle"
-                        font_size: "22dp"
+                        font_size: "25dp"
                         bold: True
 
                 BoxLayout:
                     Label:
                         id: dob
+                        font_size: "20dp"
                         text_size: self.size
                         color: (0,0,0,1)
 
@@ -264,15 +265,19 @@
                     color: (0,0,0,1)
                     bold: True
                     size_hint_y: None
-                    height: 30
-                    font_size: "20dp"
+                    height: 10
+                    font_size: "25dp"
+                    underline: True
                 BoxLayout:
                     orientation: "horizontal"
+                    size_hint: None,None
+                    width:390
+                    height:80
                     Label:
                         text_size: self.size
-                        size_hint_x: None
                         font_size: "20dp"
                         valign: "middle"
+                        halign: "left"
                         text: "DATE"
                         color: (0,0,0,1)
                         italic: True
@@ -281,6 +286,7 @@
                     Label:
                         text_size: self.size
                         valign: "middle"
+                        halign: "center"
                         font_size: "20dp"
                         color: (0,0,0,1)
                         italic: True
@@ -289,7 +295,7 @@
                         bold: True
                     Label:
                         text_size: self.size
-                        halign: "center"
+                        halign: "right"
                         valign: "middle"
                         font_size: "20dp"
                         color: (0,0,0,1)
@@ -301,116 +307,127 @@
                     orientation: "horizontal"
                     BoxLayout:
                         orientation: "vertical"
-                        size_hint_x: None
+                        size_hint: None,None
+                        width:180
+                        height:100
                         Label:
                             id: timeStamp0
                             text_size: self.size
                             valign: "middle"
-                            font_size: "18dp"
+                            font_size: "22dp"
                             color: (0,0,0,1)
                         Label:
                             id: timeStamp1
                             text_size: self.size
                             halign: "left"
                             valign: "middle"
-                            font_size: "18dp"
+                            font_size: "22dp"
                             color: (0,0,0,1)
                         Label:
                             id: timeStamp2
                             text_size: self.size
                             halign: "left"
                             valign: "middle"
-                            font_size: "18dp"
+                            font_size: "22dp"
                             color: (0,0,0,1)
                         Label:
                             id: timeStamp3
                             text_size: self.size
                             halign: "left"
                             valign: "middle"
-                            font_size: "18dp"
+                            font_size: "22dp"
                             color: (0,0,0,1)
                     BoxLayout:
                         orientation: "vertical"
+                        size_hint: None,None
+                        width:150
+                        height:100
                         Label:
                             id: pBP0
                             text_size: self.size
                             valign: "middle"
-                            halign: "center"
-                            font_size: "20dp"
+                            halign: "left"
+                            font_size: "22dp"
                             color: (0,0,0,1)
                         Label:
                             id: pBP1
                             text_size: self.size
                             valign: "middle"
-                            halign: "center"
-                            font_size: "20dp"
+                            halign: "left"
+                            font_size: "22dp"
                             color: (0,0,0,1)
                         Label:
                             id: pBP2
                             text_size: self.size
                             valign: "middle"
-                            halign: "center"
-                            font_size: "20dp"
+                            halign: "left"
+                            font_size: "22dp"
                             color: (0,0,0,1)
                         Label:
                             id: pBP3
                             text_size: self.size
                             valign: "middle"
-                            halign: "center"
-                            font_size: "20dp"
+                            halign: "left"
+                            font_size: "22dp"
                             color: (0,0,0,1)
                     BoxLayout:
                         orientation: "vertical"
+                        size_hint: None,None
+                        width:60
+                        height:100
                         Label:
                             id: pr0
                             text_size: self.size
                             valign: "middle"
-                            halign: "center"
-                            font_size: "20dp"
+                            halign: "right"
+                            font_size: "22dp"
                             color: (0,0,0,1)
                         Label:
                             id: pr1
                             text_size: self.size
                             valign: "middle"
-                            halign: "center"
-                            font_size: "20dp"
+                            halign: "right"
+                            font_size: "22dp"
                             color: (0,0,0,1)
                         Label:
                             id: pr2
                             text_size: self.size
                             valign: "middle"
-                            halign: "center"
-                            font_size: "20dp"
+                            halign: "right"
+                            font_size: "22dp"
                             color: (0,0,0,1)
                         Label:
                             id: pr3
                             text_size: self.size
                             valign: "middle"
-                            halign: "center"
-                            font_size: "20dp"
+                            halign: "right"
+                            font_size: "22dp"
                             color: (0,0,0,1)
 
-            BoxLayout:
+        BoxLayout:
+            size_hint_y: None
+            height: 170
+            orientation: "vertical"
+            Label:
+                text: "RECOMMENDATION"
+                color: (0,0,0,1)
+                bold: True
+                font_size: "25dp"
                 size_hint_y: None
-                height: 170
-                orientation: "vertical"
-                Label:
-                    text: "RECOMMENDATION"
-                    color: (0,0,0,1)
-                    bold: True
-                    font_size: "20dp"
-                    size_hint_y: None
-                    height: 30
+                height: 30
+                underline: True
 
-                Label:
-	                id: comment
-	                text_size: self.width, None
-	                halign: "left"
-	                valign: "middle"
-	                color: (0,0,0,1)
-	                font_size: "20dp"
-                	bold: True
-                    height: 30
+            Label:
+                padding: [10,0]
+                id: comment
+                text_size: self.width, None
+                text: "After compairing previous bp with current bp, your bp has now gone low. but please continue with the advice given to you by your doctor"
+                halign: "left"
+                valign: "middle"
+                color: (0,0,0,1)
+                font_size: "23dp"
+                bold: True
+                height: 30
 
         BoxLayout:
             orientation: "vertical"

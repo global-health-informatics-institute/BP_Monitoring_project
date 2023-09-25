@@ -367,8 +367,8 @@ class MyApp(App):
     def build(self):
         Window.clearcolor = (248 / 255, 247 / 255, 255 / 255, 1)
     #automate boot to full screen and orient page to vertical
-       # Window.fullscreen = 'auto'
-        #Window.rotation = -90
+        Window.fullscreen = 'auto'
+        Window.rotation = -90
         return Manager()
 
 
