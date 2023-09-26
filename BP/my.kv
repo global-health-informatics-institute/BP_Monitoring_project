@@ -221,7 +221,7 @@
                 valign: "middle"
                 color: (0,0,0,1)
                 font_size: "22dp"
-                text: "Waiting For BP Vitals...."
+                text: "Waiting for BP Vitals...."
                 bold: True
                 italic: True
         BoxLayout:
@@ -246,7 +246,7 @@
                 valign: "middle"
                 color: (0,0,0,1)
                 font_size: "22dp"
-                text: "Waiting For pulse rate"
+                text: "Waiting for pulse rate"
                 bold: True
                 italic: True
 
@@ -418,14 +418,13 @@
                 underline: True
 
             Label:
-                padding: [10,0]
+                padding: [20,0]
                 id: comment
                 text_size: self.width, None
-                text: "After compairing previous bp with current bp, your bp has now gone low. but please continue with the advice given to you by your doctor"
                 halign: "left"
                 valign: "middle"
                 color: (0,0,0,1)
-                font_size: "23dp"
+                font_size: "25dp"
                 bold: True
                 height: 30
 
@@ -435,10 +434,10 @@
             height: 70
             Label:
                 id: lblText
-                text: "Press the Blue Round Button"
+                text: "Press the Blue Round Button to start"
                 color: (0,0,0,1)
                 bold: True
-                font_size: "20dp"
+                font_size: "22dp"
 
         BoxLayout:
             padding: 70
@@ -452,7 +451,7 @@
                 padding:  [20,10]
                 size_hint_x: .2
                 opacity: 0
-                font_size: "20dp"
+                font_size: "22dp"
                 size_hint_y: None
                 height: 40
                 pos_hint: {"center_x": 0.5, "center_y":0.2}
@@ -466,7 +465,7 @@
                 bold: True
                 text: "Take BP"
                 size_hint_x: .2
-                font_size: "20dp"
+                font_size: "22dp"
                 size_hint_y: None
                 opacity: 0
                 height: 40
