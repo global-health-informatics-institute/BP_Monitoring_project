@@ -10,7 +10,6 @@ from kivy.clock import mainthread, Clock
 from kivy.core.window import Window
 from kivy.uix.screenmanager import Screen, ScreenManager
 from kivy.uix.button import Button
-from kivy.animation import Animation
 from datetime import date
 from _thread import interrupt_main
 import json
@@ -368,7 +367,7 @@ class MyApp(App):
     def build(self):
         Window.clearcolor = (248 / 255, 247 / 255, 255 / 255, 1)
     #automate boot to full screen and orient page to vertical
-       # Window.fullscreen = 'auto'
+        #Window.fullscreen = 'auto'
         #Window.rotation = -90
         return Manager()
 

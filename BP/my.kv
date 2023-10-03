@@ -19,7 +19,7 @@
             Label:
                 text: "ELECTRONIC BP MONITORING SYSTEM"
                 size_hint_x: 1
-                font_size: 18
+                font_size: 25
                 bold:True
                 color: (0,0,0,1)
 
@@ -83,11 +83,11 @@
                 color: (0,0,0,1)
                 size_hint_x: .8
                 bold: True
-                font_size: 20
+                font_size: 25
 
         Label:
             text: "Scan National ID"
-            font_size:25
+            font_size:28
             bold: True
             pos_hint: {"center_x": 0.5, "center_y": .5}
             size_hint_x: .7
@@ -101,7 +101,7 @@
             source: "images/id.jpeg"
             size_hint: (.7, .8)
             pos_hint: {"center_x": 0.5}
-
+ 
         TextInput:
             id: textFocus
             opacity: 0
@@ -119,7 +119,7 @@
             text: "Insert ID here"
             bold: True
             size_hint_x: .7
-            font_size:24
+            font_size:28
             size_hint_y: None
             height: 40
             pos_hint: {"center_x": 0.5, "center_y": .5}
@@ -147,7 +147,7 @@
 
         BoxLayout:
             size_hint_y: None
-            height: 80
+            height: 50
             canvas.before:
                 Color:
                     rgba: (210/255,210/255,207/255,1)
@@ -160,15 +160,15 @@
                 color: (0,0,0,1)
                 size_hint_x: .8
                 bold: True
-                font_size: 18
+                font_size: 30
 
         BoxLayout:
             size_hint_y: None
-            height: 50
-            padding: [10, 0]
+            height: 60
+            padding: [0, 0]
             Image:
                 id: gender
-                size_hint_x: 0.2
+                size_hint_x: None
                 size_hint_y: 1
                 size: self.texture_size
                 allow_stretch: True
@@ -183,13 +183,13 @@
                         text_size: self.size
                         halign: "left"
                         valign: "middle"
-                        font_size: "25dp"
+                        font_size: "29dp"
                         bold: True
 
                 BoxLayout:
                     Label:
                         id: dob
-                        font_size: "20dp"
+                        font_size: "25dp"
                         text_size: self.size
                         color: (0,0,0,1)
 
@@ -201,15 +201,14 @@
 
         BoxLayout:
             size_hint_y: None
-            height: 50
-            padding: [30,0]
+            height: 60
+            padding: [10,0]
             Label:
                 color: (0,0,0,1)
-                font_size: "15dp"
                 text: "Current BP:"
-                font_size: "22dp"
-                size_hint_x: None
-                width: 120
+                font_size: "30dp"
+                size_hint: None, None
+                width: 180
                 color: (0,0,0,1)
                 text_size: self.size
                 halign: "left"
@@ -218,23 +217,22 @@
                 id: bpValue
                 text_size: self.size
                 halign: "left"
-                valign: "middle"
+                valign: "top"
                 color: (0,0,0,1)
-                font_size: "22dp"
-                text: "Waiting for BP Vitals...."
+                font_size: "28dp"
+                text: "Waiting for BP vitals"
                 bold: True
                 italic: True
         BoxLayout:
             size_hint_y: None
-            height: 55
-            padding: [30,0]
+            height: 60
+            padding: [10,0]
             Label:
                 color: (0,0,0,1)
-                font_size: "15dp"
+                font_size: "30dp"
                 text: "Pulse Rate:"
-                font_size: "22dp"
-                size_hint_x: None
-                width: 120
+                size_hint: None,None
+                width: 180
                 color: (0,0,0,1)
                 text_size: self.size
                 halign: "left"
@@ -243,13 +241,23 @@
                 id: pr
                 text_size: self.size
                 halign: "left"
-                valign: "middle"
+                valign: "top"
                 color: (0,0,0,1)
-                font_size: "22dp"
+                font_size: "28dp"
                 text: "Waiting for pulse rate"
                 bold: True
                 italic: True
-
+        BoxLayout:
+            padding: 20
+            orientation: "horizontal"
+            size_hint_y: None
+            height: 50
+            Label:
+                id: lblText
+                text: "<-- Press the blue start button on the left"
+                color: (0,0,0,1)
+                bold: True
+                font_size: "25dp"
         BoxLayout:
             padding: [10,0]
             size_hint_y: None
@@ -266,16 +274,17 @@
                     bold: True
                     size_hint_y: None
                     height: 10
-                    font_size: "25dp"
+                    font_size: "30dp"
                     underline: True
                 BoxLayout:
                     orientation: "horizontal"
                     size_hint: None,None
-                    width:390
-                    height:80
+                    width:420
+                    height:70
+                    spacing: 10
                     Label:
                         text_size: self.size
-                        font_size: "20dp"
+                        font_size: "27dp"
                         valign: "middle"
                         halign: "left"
                         text: "DATE"
@@ -287,7 +296,7 @@
                         text_size: self.size
                         valign: "middle"
                         halign: "center"
-                        font_size: "20dp"
+                        font_size: "27dp"
                         color: (0,0,0,1)
                         italic: True
                         text: "BP"
@@ -297,10 +306,10 @@
                         text_size: self.size
                         halign: "right"
                         valign: "middle"
-                        font_size: "20dp"
+                        font_size: "27dp"
                         color: (0,0,0,1)
                         italic: True
-                        text: "PR"
+                        text: "Pulse Rate"
                         underline: True
                         bold: True
                 BoxLayout:
@@ -309,99 +318,99 @@
                         orientation: "vertical"
                         size_hint: None,None
                         width:180
-                        height:100
+                        height:90
                         Label:
                             id: timeStamp0
                             text_size: self.size
                             valign: "middle"
-                            font_size: "22dp"
+                            font_size: "28dp"
                             color: (0,0,0,1)
                         Label:
                             id: timeStamp1
                             text_size: self.size
                             halign: "left"
                             valign: "middle"
-                            font_size: "22dp"
+                            font_size: "28dp"
                             color: (0,0,0,1)
                         Label:
                             id: timeStamp2
                             text_size: self.size
                             halign: "left"
                             valign: "middle"
-                            font_size: "22dp"
+                            font_size: "28dp"
                             color: (0,0,0,1)
                         Label:
                             id: timeStamp3
                             text_size: self.size
                             halign: "left"
                             valign: "middle"
-                            font_size: "22dp"
+                            font_size: "28dp"
                             color: (0,0,0,1)
                     BoxLayout:
                         orientation: "vertical"
                         size_hint: None,None
                         width:150
-                        height:100
+                        height:90
                         Label:
                             id: pBP0
                             text_size: self.size
                             valign: "middle"
                             halign: "left"
-                            font_size: "22dp"
+                            font_size: "28dp"
                             color: (0,0,0,1)
                         Label:
                             id: pBP1
                             text_size: self.size
                             valign: "middle"
                             halign: "left"
-                            font_size: "22dp"
+                            font_size: "28dp"
                             color: (0,0,0,1)
                         Label:
                             id: pBP2
                             text_size: self.size
                             valign: "middle"
                             halign: "left"
-                            font_size: "22dp"
+                            font_size: "28dp"
                             color: (0,0,0,1)
                         Label:
                             id: pBP3
                             text_size: self.size
                             valign: "middle"
                             halign: "left"
-                            font_size: "22dp"
+                            font_size: "28dp"
                             color: (0,0,0,1)
                     BoxLayout:
                         orientation: "vertical"
                         size_hint: None,None
                         width:60
-                        height:100
+                        height:90
                         Label:
                             id: pr0
                             text_size: self.size
                             valign: "middle"
                             halign: "right"
-                            font_size: "22dp"
+                            font_size: "28dp"
                             color: (0,0,0,1)
                         Label:
                             id: pr1
                             text_size: self.size
                             valign: "middle"
                             halign: "right"
-                            font_size: "22dp"
+                            font_size: "28dp"
                             color: (0,0,0,1)
                         Label:
                             id: pr2
                             text_size: self.size
                             valign: "middle"
                             halign: "right"
-                            font_size: "22dp"
+                            font_size: "28dp"
                             color: (0,0,0,1)
                         Label:
                             id: pr3
                             text_size: self.size
                             valign: "middle"
                             halign: "right"
-                            font_size: "22dp"
+                            font_size: "28dp"
                             color: (0,0,0,1)
 
         BoxLayout:
@@ -412,7 +421,7 @@
                 text: "RECOMMENDATION"
                 color: (0,0,0,1)
                 bold: True
-                font_size: "25dp"
+                font_size: "30dp"
                 size_hint_y: None
                 height: 30
                 underline: True
@@ -424,23 +433,14 @@
                 halign: "left"
                 valign: "middle"
                 color: (0,0,0,1)
-                font_size: "25dp"
+                font_size: "27dp"
                 bold: True
                 height: 30
 
-        BoxLayout:
-            orientation: "vertical"
-            size_hint_y: None
-            height: 70
-            Label:
-                id: lblText
-                text: "Press the Blue Round Button to start"
-                color: (0,0,0,1)
-                bold: True
-                font_size: "22dp"
+        
 
         BoxLayout:
-            padding: 70
+            padding: 30
             size_hint_y: None
             height: 80
             spacing: 20
