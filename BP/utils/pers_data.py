@@ -28,7 +28,7 @@ cur = db.cursor()
 
 class Pers_data:
     
-    def smsmode(self, N_id, bp, BP_cart, fname, gender, dob, hex_id, p_rate):
+    def smsmode(self, bp, BP_cart, fname, gender, dob, hex_id, p_rate):
         ser_port = serial.Serial(settings["gsm"]["id"],
                             settings["gsm"]["baudrate"],
                             timeout= 0.5)
@@ -42,11 +42,11 @@ class Pers_data:
         cur.execute("SELECT * from vitals WHERE status = 0")
         rows = cur.fetchall()
         for row in rows:
-            N_idU = row[1]
+            N_idU = row[6]
             
         if b'AT\r\r\nOK\r\n' in mes:
             print("success")
-            cur.execute("UPDATE vitals SET status = 1 WHERE id = %s", [N_idU])
+            cur.execute("UPDATE vitals SET status = 1 WHERE national_id = %s", [N_idU])
             db.commit()
             print("db updated")
         else:
@@ -71,7 +71,7 @@ class Pers_data:
         time.sleep(5)
         # print(msg)
 
-        response = str(N_id) + "|" + str(bp) + "|" + BP_cart + "|" + fname + "|" + gender + "|" + dob +  "|" + hex_id + "|" + str(p_rate) +'\r'
+        response = str(bp) + "|" + BP_cart + "|" + fname + "|" + gender + "|" + dob +  "|" + hex_id + "|" + str(p_rate) +'\r'
         
         ser_port.write(str.encode(response))
         msgout = ser_port.read(1000)

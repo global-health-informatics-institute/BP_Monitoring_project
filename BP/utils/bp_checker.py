@@ -101,11 +101,14 @@ class Check_BP():
             self.N_id2 = rec[0]
         
         return {"N_id2":self.N_id2, "N_id":self.N_id}
+        # return {"N_id":self.N_id}
         
         
     def fetch_cart(self):
-        cur.execute("SELECT sys_mmHg, dia_mmHg, BP_cart FROM vitals WHERE id = %s ORDER BY time_stamp DESC LIMIT 1",
-                    [self.N_id2])
+        # cur.execute("SELECT sys_mmHg, dia_mmHg, BP_cart FROM vitals WHERE id = %s ORDER BY time_stamp DESC LIMIT 1",
+                    # [self.N_id2])
+        cur.execute("SELECT sys_mmHg, dia_mmHg, BP_cart FROM vitals WHERE national_id = %s ORDER BY time_stamp DESC LIMIT 1",
+                    [self.N_id])
         rows = cur.fetchall()
         db.commit()
         if rows:

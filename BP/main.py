@@ -148,9 +148,12 @@ class ScanWindow(Screen):
                 for rec in record:
                     N_idHash2 = rec[0]
                     
+                # cur.execute(
+                    # "SELECT sys_mmHg, dia_mmHg, time_stamp, p_rate FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 4",
+                    # [N_idHash2])
                 cur.execute(
-                    "SELECT sys_mmHg, dia_mmHg, time_stamp, p_rate FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 4",
-                    [N_idHash2])
+                    "SELECT sys_mmHg, dia_mmHg, time_stamp, p_rate FROM vitals WHERE national_id= %s ORDER BY time_stamp DESC LIMIT 4",
+                    [N_idHash])
                 rows = cur.fetchall()
                 db.commit()
                 num = 0
@@ -233,14 +236,18 @@ class PatientDetails(Screen):
         National_id = str(N_idHash).encode("ASCII")
         d = hashlib.sha3_256(National_id)
         N_id = d.hexdigest()
+        print("for line 236 in main this is N_id", N_id)
 
-        cur.execute("SELECT id FROM Demographic WHERE national_id= %s ", [N_id])
-        recs = cur.fetchall()
-        for rec in recs:
-            N_id2 = rec[0]
+        # cur.execute("SELECT id FROM Demographic WHERE national_id= %s ", [N_id])
+        # recs = cur.fetchall()
+        # for rec in recs:
+            # N_id2 = rec[0]
+        # cur.execute(
+            # "SELECT sys_mmHg, dia_mmHg, time_stamp, p_rate FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 4",
+            # [N_id2])
         cur.execute(
-            "SELECT sys_mmHg, dia_mmHg, time_stamp, p_rate FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 4",
-            [N_id2])
+            "SELECT sys_mmHg, dia_mmHg, time_stamp, p_rate FROM vitals WHERE national_id= %s ORDER BY time_stamp DESC LIMIT 4",
+            [N_id])
         rows = cur.fetchall()
         db.commit()
         num = 0
@@ -302,10 +309,13 @@ class PatientDetails(Screen):
                 status = 0
                 
                 if c_BP["sys_mmHg"] != 0 and c_BP["dia_mmHg"] != 0:
+                    print("we on line 312")
                     cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart, status, national_id, p_rate) VALUES (%s, %s, %s, %s, %s, %s, %s) ",
                                                 (comment_box["N_id2"], c_BP["sys_mmHg"], c_BP["dia_mmHg"], category["BP_cart"], status, comment_box["N_id"], c_BP["p_rate"]))
+                    #cur.execute("INSERT INTO vitals (sys_mmHg, dia_mmHg, BP_cart, status, national_id, p_rate) VALUES (%s, %s, %s, %s, %s, %s) ",
+                                                #(c_BP["sys_mmHg"], c_BP["dia_mmHg"], category["BP_cart"], status, comment_box["N_id"], c_BP["p_rate"]))
                     
-                    comment_box["N_id2"] =""
+                    # comment_box["N_id2"] =""
                     db.commit()
                     self.finish_off()
                     self.manager.get_screen("Patient_Details").ids["bpValue"].text = category["bp"]
@@ -313,7 +323,7 @@ class PatientDetails(Screen):
                     self.manager.get_screen("Patient_Details").ids["bpValue"].text = category["recommendation"]
                     self.manager.get_screen("Patient_Details").ids["bpValue"].opacity = 1
                     self.manager.get_screen("Patient_Details").ids["comment"].text = fetch["comment"]
-                    Pers_data().smsmode(comment_box["N_id2"], category["bp"], category["BP_cart"],
+                    Pers_data().smsmode(category["bp"], category["BP_cart"],
                                         fname, val["gender"], val["printable_dob"], comment_box["N_id"], c_BP["p_rate"])
                     self.buttons()
                 else:
@@ -368,7 +378,7 @@ class MyApp(App):
     def build(self):
         Window.clearcolor = (248 / 255, 247 / 255, 255 / 255, 1)
     #automate boot to full screen and orient page to vertical
-       # Window.fullscreen = 'auto'
+        #Window.fullscreen = 'auto'
         #Window.rotation = -90
         return Manager()
 
