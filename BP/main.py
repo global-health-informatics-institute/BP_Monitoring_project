@@ -1,4 +1,4 @@
-import RPi.GPIO as GPIO
+#import RPi.GPIO as GPIO
 import sys
 import time
 import mysql.connector as mysql
@@ -265,21 +265,21 @@ class ScanWindow(Screen):
         self.manager.get_screen("Scan").ids["textFocus"].text = " "
         self.manager.get_screen("Scan").ids["textFocus"].focus = True
 
-    def On_LED(self):
-        self.do_nothing()
-        LED_PIN = 6
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setwarnings(False)
-        GPIO.setup(LED_PIN, GPIO.OUT)
-        GPIO.output(LED_PIN, GPIO.HIGH)
+    # def On_LED(self):
+    #     self.do_nothing()
+    #     LED_PIN = 6
+    #     GPIO.setmode(GPIO.BCM)
+    #     GPIO.setwarnings(False)
+    #     GPIO.setup(LED_PIN, GPIO.OUT)
+    #     GPIO.output(LED_PIN, GPIO.HIGH)
 
-    def Off_LED(self):
-        self.do_nothing()
-        LED_PIN = 6
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setwarnings(False)
-        GPIO.setup(LED_PIN, GPIO.OUT)
-        GPIO.output(LED_PIN, GPIO.LOW)
+    # def Off_LED(self):
+    #     self.do_nothing()
+    #     LED_PIN = 6
+    #     GPIO.setmode(GPIO.BCM)
+    #     GPIO.setwarnings(False)
+    #     GPIO.setup(LED_PIN, GPIO.OUT)
+    #     GPIO.output(LED_PIN, GPIO.LOW)
 
     def do_nothing(self):
         pass
@@ -406,8 +406,11 @@ class PatientDetails(Screen):
 
     def generate_BP(self, *args):
         global timer
+        pID = Parse_NID()
         self.manager.get_screen("Patient_Details").ids["restart"].opacity = 1
         nid = str(self.manager.get_screen("Patient_Details").ids["N_id"].text).split(" ")
+        val = pID.parse_national_id(nid)
+        N_id = val["nation_id"]
         serialPort = serial.Serial(settings["BP"]["bp_port"],
                                     settings["BP"]["baudrate"],
                                     settings["BP"]["bytesize"],
@@ -492,7 +495,8 @@ class Manager(ScreenManager):
 class MyApp(App):
     def build(self):
         Window.clearcolor = (248 / 255, 247 / 255, 255 / 255, 1)
-#        Window.fullscreen = 'auto'
+        #Window.fullscreen = 'auto'
+        #Window.rotation = -90
         return Manager()
 
 
