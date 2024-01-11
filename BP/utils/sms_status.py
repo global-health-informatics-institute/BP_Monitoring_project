@@ -5,7 +5,7 @@ import mysql.connector as mysql
 
 def initialize_settings():
     settings = {}
-    with open("/home/pi/BP_Monitoring_project/BP/conn.config") as json_file:
+    with open("conn.config") as json_file:
         settings = json.load(json_file)
     return settings
 
@@ -26,21 +26,18 @@ ser_port = serial.Serial(settings["gsm"]["id"],
                             timeout= 0.5)
 
 #while True:
-# cur.execute("SELECT * from vitals WHERE status = 0")
-cur.execute("SELECT v.id, v.sys_mmHg, v.dia_mmHg, v.BP_cart, D.Full_name, D.Gender, D.DOB, v.national_id, v.p_rate from vitals v JOIN Demographic D ON v.national_id = D.national_id WHERE status = 0")
+cur.execute("SELECT * from vitals WHERE status = 0")
 rows = cur.fetchall()
 print (rows)
 for row in rows:
-    N_id = row[0]
+    N_id = row[1]
 #    print("this is id ", N_id)
-    bp = str(row[1]) + "/" + str(row[2])
+    bp = str(row[2]) + "/" + str(row[3])
 #    print(bp)
-    BP_cart = row[3]
-    fname = row[4]
-    gender = row[5]
-    dob = row[6]
+    BP_cart = row[4]
+#    gender = r0w[5]
+    dob = row[5]
     hex_id = row[7]
-    p_rate = row[8]
     
     checkAT = 'AT\r'
     ser_port.write(checkAT.encode())
@@ -65,8 +62,8 @@ for row in rows:
     msg = ser_port.read(64)
     time.sleep(5)
     
-    # response = str(N_id) + "|" + str(bp) + "|" + BP_cart + "|" + str(dob) + "|" + str(hex_id) + "|" + str(p_rate) + '\r'
-    response = str(N_id) + "|" + str(bp) + "|" + BP_cart + "|" + fname + "|" + gender + "|" + str(dob) +  "|" + hex_id + "|" + str(p_rate) +'\r'
+    response = str(N_id) + "|" + str(bp) + "|" + BP_cart + "|" + str(dob) + "|" + str(hex_id) + '\r'
+        
     ser_port.write(str.encode(response))
     msgout = ser_port.read(1000)
     time.sleep(0.1)

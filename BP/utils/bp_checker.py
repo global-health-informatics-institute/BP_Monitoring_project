@@ -126,12 +126,16 @@ class Check_BP():
                             self.comment = "After comparing current with previous BP," + " " + "your BP is still low"
                         elif (self.BP_cart == "Low") and (previous_BP_cart == "Normal"):
                             self.comment = " After comparing current with previous BP," + " " + "your BP has gone low"
+                            print("2")
                         elif (self.BP_cart == "Low") and (previous_BP_cart == "Elevated"):
                             self.comment = " After comparing current with previous BP," + " " + "your BP has gone low"
+                            print("3")
                         elif (self.BP_cart == "Low") and (previous_BP_cart == "Hypertension_Stage1"):
                             self.comment = " After comparing current with previous BP," + " " + " your BP has gone low"
+                            print("4")
                         elif (self.BP_cart == "Low") and (previous_BP_cart == "Hypertension_Stage2"):
                             self.comment = " After comparing current with previous BP," + " " + " your BP has gone low"
+                            print("5")
                         elif (self.BP_cart == "Low") and (previous_BP_cart == "Hypertensive_crisis"):
                             self.comment = " After comparing current with previous BP," + " " + " your BP has gone low"
                         
