@@ -1,4 +1,4 @@
-#import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 import sys
 import time
 import mysql.connector as mysql
@@ -147,7 +147,6 @@ class ScanWindow(Screen):
             if record:
                 for rec in record:
                     N_idHash2 = rec[0]
-            
                     
                 # cur.execute(
                     # "SELECT sys_mmHg, dia_mmHg, time_stamp, p_rate FROM vitals WHERE id= %s ORDER BY time_stamp DESC LIMIT 4",
@@ -202,13 +201,13 @@ class ScanWindow(Screen):
         GPIO.setup(LED_PIN, GPIO.OUT)
         GPIO.output(LED_PIN, GPIO.HIGH)
 
-    # def Off_LED(self):
-    #     self.do_nothing()
-    #     LED_PIN = 6
-    #     GPIO.setmode(GPIO.BCM)
-    #     GPIO.setwarnings(False)
-    #     GPIO.setup(LED_PIN, GPIO.OUT)
-    #     GPIO.output(LED_PIN, GPIO.LOW)
+    def Off_LED(self):
+        self.do_nothing()
+        LED_PIN = 6
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setwarnings(False)
+        GPIO.setup(LED_PIN, GPIO.OUT)
+        GPIO.output(LED_PIN, GPIO.LOW)
 
     def do_nothing(self):
         pass
@@ -280,8 +279,6 @@ class PatientDetails(Screen):
         global timer, nid
         self.manager.get_screen("Patient_Details").ids["restart"].opacity = 1
         nid = str(self.manager.get_screen("Patient_Details").ids["N_id"].text).split(" ")
-        val = pID.parse_national_id(nid)
-        N_id = val["nation_id"]
         serialPort = serial.Serial(settings["BP"]["bp_port"],
                                     settings["BP"]["baudrate"],
                                     settings["BP"]["bytesize"],
@@ -312,36 +309,38 @@ class PatientDetails(Screen):
                 status = 0
                 
                 if c_BP["sys_mmHg"] != 0 and c_BP["dia_mmHg"] != 0:
-                    print("we on line 312")
-                    cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart, status, national_id, p_rate) VALUES (%s, %s, %s, %s, %s, %s, %s) ",
-                                                (comment_box["N_id2"], c_BP["sys_mmHg"], c_BP["dia_mmHg"], category["BP_cart"], status, comment_box["N_id"], c_BP["p_rate"]))
-                    
-                    db.commit()
-                    self.finish_off()
-<<<<<<< HEAD
                     screen = self.manager.get_screen("Patient_Details")
                     screen.ids["bpValue"].text = f"{category['recommendation']}"
                     screen.ids["bpValue"].opacity = 1
+                    print("we on line 312")
+                    cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart, status, national_id, p_rate) VALUES (%s, %s, %s, %s, %s, %s, %s) ",
+                                                (comment_box["N_id2"], c_BP["sys_mmHg"], c_BP["dia_mmHg"], category["BP_cart"], status, comment_box["N_id"], c_BP["p_rate"]))
+                    #cur.execute("INSERT INTO vitals (sys_mmHg, dia_mmHg, BP_cart, status, national_id, p_rate) VALUES (%s, %s, %s, %s, %s, %s) ",
+                                                #(c_BP["sys_mmHg"], c_BP["dia_mmHg"], category["BP_cart"], status, comment_box["N_id"], c_BP["p_rate"]))
+                    
+                    # comment_box["N_id2"] =""
+                    db.commit()
+                    self.finish_off()
+                    screen = self.manager.get_screen("Patient_Details")
+                    screen.ids["bpValue"].text = f"{category['recommendation']}"
+                    screen.ids["bpValue"].opacity = 1
+                    #self.manager.get_screen("Patient_Details").ids["bpValue"].text = category["bp"]
                     self.manager.get_screen("Patient_Details").ids["pr"].text = str(c_BP["p_rate"])
-=======
-                    self.manager.get_screen("Patient_Details").ids["bpValue"].text = category["bp"]
-                    self.manager.get_screen("Patient_Details").ids["pr"].text = str(c_BP["p_rate"])
-                    self.manager.get_screen("Patient_Details").ids["bpValue"].text = category["recommendation"]
-                    self.manager.get_screen("Patient_Details").ids["bpValue"].opacity = 1
->>>>>>> eb6ef7250a441d6f8e7237c8f10b59760cc5138b
+                    #self.manager.get_screen("Patient_Details").ids["bpValue"].text = category["recommendation"]
+                    #self.manager.get_screen("Patient_Details").ids["bpValue"].opacity = 1
                     self.manager.get_screen("Patient_Details").ids["comment"].text = fetch["comment"]
-                    Pers_data().smsmode(category["bp"], category["BP_cart"],
+                    Pers_data().smsmode(comment_box["N_id2"], category["bp"], category["BP_cart"],
                                         fname, val["gender"], val["printable_dob"], comment_box["N_id"], c_BP["p_rate"])
                     self.buttons()
                 else:
                     self.manager.get_screen("Patient_Details").ids["bpValue"].text = "Error...try again"
                     self.buttons()
                     timer.cancel()
-            
-                
+             
                 
         check_data()
-            
+           
+                
     # tracing back to main thread
     #this is set for all major graphical changes
     @mainthread
@@ -385,8 +384,8 @@ class MyApp(App):
     def build(self):
         Window.clearcolor = (248 / 255, 247 / 255, 255 / 255, 1)
     #automate boot to full screen and orient page to vertical
-        #Window.fullscreen = 'auto'
-        #Window.rotation = -90
+        Window.fullscreen = 'auto'
+        Window.rotation = -90
         return Manager()
 
 
