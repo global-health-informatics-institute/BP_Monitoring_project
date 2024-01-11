@@ -315,19 +315,13 @@ class PatientDetails(Screen):
                     print("we on line 312")
                     cur.execute("INSERT INTO vitals (id, sys_mmHg, dia_mmHg, BP_cart, status, national_id, p_rate) VALUES (%s, %s, %s, %s, %s, %s, %s) ",
                                                 (comment_box["N_id2"], c_BP["sys_mmHg"], c_BP["dia_mmHg"], category["BP_cart"], status, comment_box["N_id"], c_BP["p_rate"]))
-                    #cur.execute("INSERT INTO vitals (sys_mmHg, dia_mmHg, BP_cart, status, national_id, p_rate) VALUES (%s, %s, %s, %s, %s, %s) ",
-                                                #(c_BP["sys_mmHg"], c_BP["dia_mmHg"], category["BP_cart"], status, comment_box["N_id"], c_BP["p_rate"]))
                     
-                    # comment_box["N_id2"] =""
                     db.commit()
                     self.finish_off()
                     screen = self.manager.get_screen("Patient_Details")
                     screen.ids["bpValue"].text = f"{category['recommendation']}"
                     screen.ids["bpValue"].opacity = 1
-                    #self.manager.get_screen("Patient_Details").ids["bpValue"].text = category["bp"]
                     self.manager.get_screen("Patient_Details").ids["pr"].text = str(c_BP["p_rate"])
-                    #self.manager.get_screen("Patient_Details").ids["bpValue"].text = category["recommendation"]
-                    #self.manager.get_screen("Patient_Details").ids["bpValue"].opacity = 1
                     self.manager.get_screen("Patient_Details").ids["comment"].text = fetch["comment"]
                     Pers_data().smsmode(comment_box["N_id2"], category["bp"], category["BP_cart"],
                                         fname, val["gender"], val["printable_dob"], comment_box["N_id"], c_BP["p_rate"])
