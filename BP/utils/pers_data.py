@@ -10,7 +10,7 @@ import mysql.connector as mysql
 
 def initialize_settings():
     settings = {}
-    with open("/home/pi/BP_Monitoring_project/BP/conn.config") as json_file:
+    with open("/home/pi/BP_Monitoring_project/BP/utils/conn.config") as json_file:
         settings = json.load(json_file)
     return settings
 
@@ -28,7 +28,7 @@ cur = db.cursor()
 
 class Pers_data:
     
-    def smsmode(self, N_id, bp, BP_cart, fname, gender, dob, hex_id, p_rate):
+    def smsmode(self, bp, BP_cart, fname, gender, dob, hex_id, p_rate):
         ser_port = serial.Serial(settings["gsm"]["id"],
                             settings["gsm"]["baudrate"],
                             timeout= 0.5)
@@ -42,7 +42,7 @@ class Pers_data:
         cur.execute("SELECT * from vitals WHERE status = 0")
         rows = cur.fetchall()
         for row in rows:
-            N_idU = row[7]
+            N_idU = row[6]
             
         if b'AT\r\r\nOK\r\n' in mes:
             print("success")
@@ -71,7 +71,7 @@ class Pers_data:
         time.sleep(5)
         # print(msg)
 
-        response = str(N_id) + "|" + str(bp) + "|" + BP_cart + "|" + fname + "|" + gender + "|" + dob +  "|" + hex_id + "|" + str(p_rate) +'\r'
+        response = str(bp) + "|" + BP_cart + "|" + fname + "|" + gender + "|" + dob +  "|" + hex_id + "|" + str(p_rate) +'\r'
         
         ser_port.write(str.encode(response))
         msgout = ser_port.read(1000)
